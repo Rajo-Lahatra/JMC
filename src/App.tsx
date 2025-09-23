@@ -1,34 +1,28 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import React, { useState } from 'react'
 import './App.css'
+import { CreateMissionForm } from './components/CreateMissionForm'
+import { MissionsList } from './components/MissionsList'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [refresh, setRefresh] = useState(0)
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div className="App">
+      <header>
+        <h1>Joe-Adams & Madison Consulting Guinée – État de suivi des dossiers en cours</h1>
+      </header>
+
+      <main>
+        <section className="mission-creation">
+          <CreateMissionForm onCreated={() => setRefresh(r => r + 1)} />
+        </section>
+
+        <section className="missions-list">
+          <h2>Liste des missions</h2>
+          <MissionsList key={refresh} />
+        </section>
+      </main>
+    </div>
   )
 }
 

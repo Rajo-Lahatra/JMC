@@ -1,42 +1,153 @@
-#root {
-  max-width: 1280px;
+/* ─── Variables globales ───────────────────────────────────────── */
+:root {
+  --font-family: 'Segoe UI', Roboto, sans-serif;
+  --color-bg: #f5f6fa;
+  --color-card: #ffffff;
+  --color-primary: #3b82f6;
+  --color-primary-dark: #2563eb;
+  --color-text: #1f2937;
+  --color-border: #e5e7eb;
+  --color-error: #dc2626;
+  --radius: 8px;
+  --spacing: 16px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.5;
+  padding: var(--spacing);
+}
+
+/* ─── App container ───────────────────────────────────────────── */
+.App {
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
+}
+
+.App header {
   text-align: center;
+  margin-bottom: var(--spacing);
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.App header h1 {
+  font-size: 2rem;
+  color: var(--color-primary-dark);
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+/* ─── Grille principale ───────────────────────────────────────── */
+.App main {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: var(--spacing);
+}
+
+/* ─── Formulaire “Créer une mission” ──────────────────────────── */
+.create-mission-form {
+  background: var(--color-card);
+  padding: var(--spacing);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.create-mission-form h2 {
+  margin-bottom: var(--spacing);
+  color: var(--color-primary);
+}
+
+.create-mission-form label {
+  display: block;
+  margin-top: var(--spacing);
+  font-weight: 500;
+}
+
+.create-mission-form input,
+.create-mission-form select,
+.create-mission-form textarea {
+  width: 100%;
+  padding: 0.5em;
+  margin-top: 4px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-family: var(--font-family);
+}
+
+.create-mission-form textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.create-mission-form button {
+  margin-top: var(--spacing);
+  padding: 0.75em 1.5em;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.create-mission-form button:disabled {
+  background: var(--color-border);
+  cursor: not-allowed;
+}
+
+/* ─── Liste des missions ──────────────────────────────────────── */
+.missions-list h2 {
+  margin-bottom: var(--spacing);
+  color: var(--color-primary);
+}
+
+.missions-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--color-card);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.missions-table th,
+.missions-table td {
+  padding: 0.75em;
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  font-size: 0.95rem;
+}
+
+.missions-table thead {
+  background: var(--color-primary);
+  color: white;
+}
+
+.missions-table tbody tr:nth-child(even) {
+  background: #f9fafb;
+}
+
+.missions-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ─── Messages et erreurs ─────────────────────────────────────── */
+p[style*="color: var(--color-error)"],  
+p[style*="color: red"] {
+  color: var(--color-error);
+  margin-top: var(--spacing);
+}
+
+/* ─── Responsive ──────────────────────────────────────────────── */
+@media (max-width: 800px) {
+  .App main {
+    grid-template-columns: 1fr;
   }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
 }
