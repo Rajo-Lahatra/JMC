@@ -9,7 +9,7 @@ function App() {
   return (
     <div className="App">
       <header>
-        <h1>Joe-Adams & Madison Consulting Guinée – État de suivi des dossiers en cours</h1>
+        <h1>Joe-Adams and Madison Consulting Guinée – État de suivi des dossiers en cours</h1>
       </header>
 
       <main>
