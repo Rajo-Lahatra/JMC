@@ -11,31 +11,33 @@ export function MissionsList() {
 
   useEffect(() => {
     setLoading(true)
+    ;(async () => {
+      // --- fetch collaborators sans génériques Supabase, puis cast
+      const { data: rawCollabs, error: collabError } =
+        await supabase
+          .from('collaborators')
+          .select('*')
 
-    // Fetch all collaborator fields and satisfy the two-type-args requirement
-    supabase
-      .from<'collaborators', Collaborator>('collaborators')
-      .select('*')
-      .then(({ data, error }) => {
-        if (error) {
-          console.error('Fetch collaborators error:', error)
-        } else if (data) {
-          setCollabs(data)
-        }
-      })
+      if (collabError) {
+        console.error('Fetch collaborators error:', collabError)
+      } else if (rawCollabs) {
+        setCollabs(rawCollabs as Collaborator[])
+      }
 
-    // Fetch all missions
-    supabase
-      .from<'missions', Mission>('missions')
-      .select('*')
-      .then(({ data, error }) => {
-        if (error) {
-          console.error('Fetch missions error:', error)
-        } else if (data) {
-          setMissions(data)
-        }
-        setLoading(false)
-      })
+      // --- fetch missions
+      const { data: rawMissions, error: missionError } =
+        await supabase
+          .from('missions')
+          .select('*')
+
+      if (missionError) {
+        console.error('Fetch missions error:', missionError)
+      } else if (rawMissions) {
+        setMissions(rawMissions as Mission[])
+      }
+
+      setLoading(false)
+    })()
   }, [])
 
   const getName = (id: string) => {
@@ -50,7 +52,7 @@ export function MissionsList() {
       .eq('mission_id', id)
 
     const { error } = await supabase
-      .from<'missions', Mission>('missions')
+      .from('missions')
       .delete()
       .eq('id', id)
 
@@ -78,9 +80,7 @@ export function MissionsList() {
         </thead>
         <tbody>
           {loading ? (
-            <tr>
-              <td colSpan={8}>Chargement…</td>
-            </tr>
+            <tr><td colSpan={8}>Chargement…</td></tr>
           ) : (
             missions.map(m => (
               <tr key={m.id}>
@@ -92,12 +92,8 @@ export function MissionsList() {
                 <td>{m.stage}</td>
                 <td>{m.billable ? 'Oui' : 'Non'}</td>
                 <td>
-                  <button onClick={() => setSelected(m)}>
-                    Voir le détail
-                  </button>
-                  <button onClick={() => handleDelete(m.id)}>
-                    Supprimer
-                  </button>
+                  <button onClick={() => setSelected(m)}>Voir le détail</button>
+                  <button onClick={() => handleDelete(m.id)}>Supprimer</button>
                 </td>
               </tr>
             ))
@@ -108,51 +104,21 @@ export function MissionsList() {
       {selected && (
         <div className="drawer-overlay" onClick={() => setSelected(null)}>
           <div className="drawer-content" onClick={e => e.stopPropagation()}>
-            <button
-              className="drawer-close"
-              onClick={() => setSelected(null)}
-            >
-              ×
-            </button>
+            <button className="drawer-close" onClick={() => setSelected(null)}>×</button>
             <h3>Détails de la mission</h3>
             <ul className="mission-detail-list">
-              <li>
-                <strong>Dossier :</strong> {selected.dossier_number}
-              </li>
-              <li>
-                <strong>Client :</strong> {selected.client_name}
-              </li>
-              <li>
-                <strong>Titre :</strong> {selected.title}
-              </li>
-              <li>
-                <strong>Service :</strong> {selected.service}
-              </li>
-              <li>
-                <strong>Associé :</strong> {getName(selected.partner_id!)}
-              </li>
-              <li>
-                <strong>Étape :</strong> {selected.stage}
-              </li>
-              <li>
-                <strong>Facturable :</strong>{' '}
-                {selected.billable ? 'Oui' : 'Non'}
-              </li>
-              <li>
-                <strong>Facturation :</strong> {selected.invoice_stage}
-              </li>
-              <li>
-                <strong>Recouvrement :</strong> {selected.recovery_stage}
-              </li>
-              <li>
-                <strong>Échéance :</strong> {selected.due_date || '–'}
-              </li>
-              <li>
-                <strong>Situation :</strong> {selected.situation_state || '–'}
-              </li>
-              <li>
-                <strong>Actions :</strong> {selected.situation_actions || '–'}
-              </li>
+              <li><strong>Dossier :</strong> {selected.dossier_number}</li>
+              <li><strong>Client :</strong> {selected.client_name}</li>
+              <li><strong>Titre :</strong> {selected.title}</li>
+              <li><strong>Service :</strong> {selected.service}</li>
+              <li><strong>Associé :</strong> {getName(selected.partner_id!)}</li>
+              <li><strong>Étape :</strong> {selected.stage}</li>
+              <li><strong>Facturable :</strong> {selected.billable ? 'Oui' : 'Non'}</li>
+              <li><strong>Facturation :</strong> {selected.invoice_stage}</li>
+              <li><strong>Recouvrement :</strong> {selected.recovery_stage}</li>
+              <li><strong>Échéance :</strong> {selected.due_date || '–'}</li>
+              <li><strong>Situation :</strong> {selected.situation_state || '–'}</li>
+              <li><strong>Actions :</strong> {selected.situation_actions || '–'}</li>
             </ul>
           </div>
         </div>
