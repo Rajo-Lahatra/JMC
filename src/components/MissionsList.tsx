@@ -11,16 +11,22 @@ export function MissionsList() {
 
   useEffect(() => {
     setLoading(true)
+    
+    // On récupère toutes les colonnes pour matcher le type Collaborator
     supabase
-      .from('collaborators')
-      .select('id, first_name, last_name')
-      .then(({ data }) => data && setCollabs(data))
+      .from<Collaborator>('collaborators')
+      .select('id, first_name, last_name, grade, email, created_at, updated_at')
+      .then(({ data, error }) => {
+        if (error) console.error(error)
+        else if (data) setCollabs(data)
+      })
 
     supabase
-      .from('missions')
+      .from<Mission>('missions')
       .select('*')
-      .then(({ data }) => {
-        if (data) setMissions(data)
+      .then(({ data, error }) => {
+        if (error) console.error(error)
+        else if (data) setMissions(data)
         setLoading(false)
       })
   }, [])
@@ -84,10 +90,7 @@ export function MissionsList() {
       {selected && (
         <div className="drawer-overlay" onClick={() => setSelected(null)}>
           <div className="drawer-content" onClick={e => e.stopPropagation()}>
-            <button
-              className="drawer-close"
-              onClick={() => setSelected(null)}
-            >
+            <button className="drawer-close" onClick={() => setSelected(null)}>
               ×
             </button>
             <h3>Détails de la mission</h3>
