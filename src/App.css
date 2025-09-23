@@ -1,3 +1,5 @@
+/* src/App.css */
+
 /* ─── Variables globales ───────────────────────────────────────── */
 :root {
   --font-family: 'Segoe UI', Roboto, sans-serif;
@@ -12,6 +14,7 @@
   --spacing: 16px;
 }
 
+/* ─── Reset & box-sizing ───────────────────────────────────────── */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -42,15 +45,28 @@ body {
   color: var(--color-primary-dark);
 }
 
-/* ─── Grille principale ───────────────────────────────────────── */
-.App main {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: var(--spacing);
+/* ─── Contenu principal & bouton créer ───────────────────────── */
+.main-content {
+  padding: var(--spacing) 0;
+}
+
+.btn-create-mission {
+  display: inline-block;
+  margin-bottom: var(--spacing);
+  padding: 0.75em 1.5em;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 1rem;
 }
 
 /* ─── Formulaire “Créer une mission” ──────────────────────────── */
 .create-mission-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing);
   background: var(--color-card);
   padding: var(--spacing);
   border: 1px solid var(--color-border);
@@ -58,14 +74,12 @@ body {
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-.create-mission-form h2 {
-  margin-bottom: var(--spacing);
-  color: var(--color-primary);
+.create-mission-form h2,
+.create-mission-form label {
+  margin: 0;
 }
 
 .create-mission-form label {
-  display: block;
-  margin-top: var(--spacing);
   font-weight: 500;
 }
 
@@ -74,7 +88,6 @@ body {
 .create-mission-form textarea {
   width: 100%;
   padding: 0.5em;
-  margin-top: 4px;
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   font-size: 1rem;
@@ -87,7 +100,7 @@ body {
 }
 
 .create-mission-form button {
-  margin-top: var(--spacing);
+  align-self: flex-start;
   padding: 0.75em 1.5em;
   background: var(--color-primary);
   color: white;
@@ -95,11 +108,6 @@ body {
   border-radius: var(--radius);
   cursor: pointer;
   font-size: 1rem;
-}
-
-.create-mission-form button:disabled {
-  background: var(--color-border);
-  cursor: not-allowed;
 }
 
 /* ─── Liste des missions ──────────────────────────────────────── */
@@ -138,8 +146,53 @@ body {
   border-bottom: none;
 }
 
+/* ─── Drawer (panneau latéral) ───────────────────────────────── */
+.drawer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: flex-end;
+  z-index: 1000;
+}
+
+.drawer-content {
+  background: var(--color-card);
+  width: 360px;
+  max-width: 90%;
+  height: 100%;
+  padding: var(--spacing);
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.2);
+  overflow-y: auto;
+  position: relative;
+}
+
+.drawer-close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+/* ─── Détails dans le drawer ─────────────────────────────────── */
+.mission-detail-list {
+  list-style: none;
+  padding: 0;
+  margin: var(--spacing) 0 0;
+}
+
+.mission-detail-list li {
+  margin-bottom: 0.75rem;
+}
+
 /* ─── Messages et erreurs ─────────────────────────────────────── */
-p[style*="color: var(--color-error)"],  
+p[style*="color: var(--color-error)"],
 p[style*="color: red"] {
   color: var(--color-error);
   margin-top: var(--spacing);
@@ -147,7 +200,34 @@ p[style*="color: red"] {
 
 /* ─── Responsive ──────────────────────────────────────────────── */
 @media (max-width: 800px) {
-  .App main {
-    grid-template-columns: 1fr;
+  .btn-create-mission {
+    width: 100%;
+    text-align: center;
   }
+  .drawer-content {
+    width: 100%;
+  }
+  .App main {
+    display: block;
+  }
+}
+/* ─── En-tête avec logo ───────────────────────────────────────── */
+.App-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing);
+  margin-bottom: var(--spacing);
+}
+
+/* Taille et espacement du logo */
+.App-logo {
+  height: 48px;
+  width: auto;
+}
+
+/* Si vous souhaitez réduire le texte à droite du logo */
+.App-header h1 {
+  font-size: 1.75rem;
+  line-height: 1.2;
 }
