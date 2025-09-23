@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import './App.css'
 import { CreateMissionForm } from './components/CreateMissionForm'
 import { MissionsList } from './components/MissionsList'
