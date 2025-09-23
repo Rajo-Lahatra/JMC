@@ -12,23 +12,33 @@ export function MissionsList() {
   useEffect(() => {
     setLoading(true)
 
-    // Récupérer tous les champs de Collaborator
-    supabase
-      .from<Collaborator>('collaborators')
-      .select('*')
-      .then(({ data, error }) => {
-        if (error) console.error('Fetch collaborators error:', error)
-        else if (data) setCollabs(data)
-      })
+    ;(async () => {
+      const { data: collabData, error: collabError }:
+        { data: Collaborator[] | null; error: unknown } =
+        await supabase
+          .from('collaborators')
+          .select('*')
 
-    supabase
-      .from<Mission>('missions')
-      .select('*')
-      .then(({ data, error }) => {
-        if (error) console.error('Fetch missions error:', error)
-        else if (data) setMissions(data)
-        setLoading(false)
-      })
+      if (collabError) {
+        console.error('Fetch collaborators error:', collabError)
+      } else if (collabData) {
+        setCollabs(collabData)
+      }
+
+      const { data: missionData, error: missionError }:
+        { data: Mission[] | null; error: unknown } =
+        await supabase
+          .from<Mission>('missions')
+          .select('*')
+
+      if (missionError) {
+        console.error('Fetch missions error:', missionError)
+      } else if (missionData) {
+        setMissions(missionData)
+      }
+
+      setLoading(false)
+    })()
   }, [])
 
   const getName = (id: string) => {
@@ -80,8 +90,12 @@ export function MissionsList() {
                 <td>{m.stage}</td>
                 <td>{m.billable ? 'Oui' : 'Non'}</td>
                 <td>
-                  <button onClick={() => setSelected(m)}>Voir le détail</button>
-                  <button onClick={() => handleDelete(m.id)}>Supprimer</button>
+                  <button onClick={() => setSelected(m)}>
+                    Voir le détail
+                  </button>
+                  <button onClick={() => handleDelete(m.id)}>
+                    Supprimer
+                  </button>
                 </td>
               </tr>
             ))
