@@ -25,6 +25,5 @@ function App() {
     </div>
   )
 }
-console.log('🔵 BUILD TAG: ', process.env.VERCEL_GIT_COMMIT_SHA)
 
 export default App
