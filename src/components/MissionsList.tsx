@@ -12,27 +12,22 @@ export function MissionsList() {
   useEffect(() => {
     setLoading(true)
 
-    // On récupère seulement les 3 champs pour matcher CollaboratorPreview
+    // 1. On ne récupère que l'aperçu
     supabase
-      .from<CollaboratorPreview>('collaborators')
-      .select('id, first_name, last_name')
+      .from('collaborators')
+      .select<CollaboratorPreview>('id, first_name, last_name')
       .then(({ data, error }) => {
-        if (error) {
-          console.error('Error fetching collaborators:', error)
-        } else if (data) {
-          setCollabs(data)
-        }
+        if (error) console.error('Fetch collaborators error:', error)
+        else if (data) setCollabs(data)
       })
 
+    // 2. On récupère toutes les missions
     supabase
       .from<Mission>('missions')
       .select('*')
       .then(({ data, error }) => {
-        if (error) {
-          console.error('Error fetching missions:', error)
-        } else if (data) {
-          setMissions(data)
-        }
+        if (error) console.error('Fetch missions error:', error)
+        else if (data) setMissions(data)
         setLoading(false)
       })
   }, [])
@@ -53,11 +48,8 @@ export function MissionsList() {
       .delete()
       .eq('id', id)
 
-    if (error) {
-      console.error('Error deleting mission:', error)
-    } else {
-      setMissions(prev => prev.filter(m => m.id !== id))
-    }
+    if (error) console.error('Delete mission error:', error)
+    else setMissions(prev => prev.filter(m => m.id !== id))
   }
 
   return (
@@ -77,9 +69,7 @@ export function MissionsList() {
         </thead>
         <tbody>
           {loading ? (
-            <tr>
-              <td colSpan={8}>Chargement…</td>
-            </tr>
+            <tr><td colSpan={8}>Chargement…</td></tr>
           ) : (
             missions.map(m => (
               <tr key={m.id}>
@@ -115,43 +105,20 @@ export function MissionsList() {
             </button>
             <h3>Détails de la mission</h3>
             <ul className="mission-detail-list">
+              <li><strong>Dossier :</strong> {selected.dossier_number}</li>
+              <li><strong>Client :</strong> {selected.client_name}</li>
+              <li><strong>Titre :</strong> {selected.title}</li>
+              <li><strong>Service :</strong> {selected.service}</li>
+              <li><strong>Associé :</strong> {getName(selected.partner_id!)}</li>
+              <li><strong>Étape :</strong> {selected.stage}</li>
               <li>
-                <strong>Dossier :</strong> {selected.dossier_number}
+                <strong>Facturable :</strong> {selected.billable ? 'Oui' : 'Non'}
               </li>
-              <li>
-                <strong>Client :</strong> {selected.client_name}
-              </li>
-              <li>
-                <strong>Titre :</strong> {selected.title}
-              </li>
-              <li>
-                <strong>Service :</strong> {selected.service}
-              </li>
-              <li>
-                <strong>Associé :</strong> {getName(selected.partner_id!)}
-              </li>
-              <li>
-                <strong>Étape :</strong> {selected.stage}
-              </li>
-              <li>
-                <strong>Facturable :</strong>{' '}
-                {selected.billable ? 'Oui' : 'Non'}
-              </li>
-              <li>
-                <strong>Facturation :</strong> {selected.invoice_stage}
-              </li>
-              <li>
-                <strong>Recouvrement :</strong> {selected.recovery_stage}
-              </li>
-              <li>
-                <strong>Échéance :</strong> {selected.due_date || '–'}
-              </li>
-              <li>
-                <strong>Situation :</strong> {selected.situation_state || '–'}
-              </li>
-              <li>
-                <strong>Actions :</strong> {selected.situation_actions || '–'}
-              </li>
+              <li><strong>Facturation :</strong> {selected.invoice_stage}</li>
+              <li><strong>Recouvrement :</strong> {selected.recovery_stage}</li>
+              <li><strong>Échéance :</strong> {selected.due_date || '–'}</li>
+              <li><strong>Situation :</strong> {selected.situation_state || '–'}</li>
+              <li><strong>Actions :</strong> {selected.situation_actions || '–'}</li>
             </ul>
           </div>
         </div>
