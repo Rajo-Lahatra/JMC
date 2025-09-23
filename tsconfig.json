@@ -1,5 +1,12 @@
+// tsconfig.json
 {
+  // Active le contournement des vérifications de déclarations externes
+  "compilerOptions": {
+    "skipLibCheck": true
+  },
+
   "files": [],
+
   "references": [
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }

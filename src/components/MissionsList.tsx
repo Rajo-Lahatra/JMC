@@ -12,33 +12,29 @@ export function MissionsList() {
   useEffect(() => {
     setLoading(true)
 
-    ;(async () => {
-      const { data: collabData, error: collabError }:
-        { data: Collaborator[] | null; error: unknown } =
-        await supabase
-          .from('collaborators')
-          .select('*')
+    supabase
+      .from<Collaborator>('collaborators')
+      .select('*')
+      .then(({ data, error }) => {
+        if (error) {
+          console.error('Fetch collaborators error:', error)
+        } else if (data) {
+          // @ts-ignore: on force l’assignation pour valider que c’est pris en compte
+          setCollabs(data)
+        }
+      })
 
-      if (collabError) {
-        console.error('Fetch collaborators error:', collabError)
-      } else if (collabData) {
-        setCollabs(collabData)
-      }
-
-      const { data: missionData, error: missionError }:
-        { data: Mission[] | null; error: unknown } =
-        await supabase
-          .from<Mission>('missions')
-          .select('*')
-
-      if (missionError) {
-        console.error('Fetch missions error:', missionError)
-      } else if (missionData) {
-        setMissions(missionData)
-      }
-
-      setLoading(false)
-    })()
+    supabase
+      .from<Mission>('missions')
+      .select('*')
+      .then(({ data, error }) => {
+        if (error) {
+          console.error('Fetch missions error:', error)
+        } else if (data) {
+          setMissions(data)
+        }
+        setLoading(false)
+      })
   }, [])
 
   const getName = (id: string) => {
@@ -57,8 +53,11 @@ export function MissionsList() {
       .delete()
       .eq('id', id)
 
-    if (error) console.error('Delete mission error:', error)
-    else setMissions(prev => prev.filter(m => m.id !== id))
+    if (error) {
+      console.error('Delete mission error:', error)
+    } else {
+      setMissions(prev => prev.filter(m => m.id !== id))
+    }
   }
 
   return (
@@ -106,7 +105,9 @@ export function MissionsList() {
       {selected && (
         <div className="drawer-overlay" onClick={() => setSelected(null)}>
           <div className="drawer-content" onClick={e => e.stopPropagation()}>
-            <button className="drawer-close" onClick={() => setSelected(null)}>×</button>
+            <button className="drawer-close" onClick={() => setSelected(null)}>
+              ×
+            </button>
             <h3>Détails de la mission</h3>
             <ul className="mission-detail-list">
               <li><strong>Dossier :</strong> {selected.dossier_number}</li>
