@@ -25,6 +25,9 @@ export type CollaboratorGrade =
 export type FinancialInvoiceStage = 'none' | 'acompte' | 'totale' | 'solde';
 export type FinancialRecoveryStage = 'none' | 'partiel' | 'total';
 
+export type CollaboratorPreview = 
+  Pick<Collaborator, 'id' | 'first_name' | 'last_name'>
+
 export interface Collaborator {
   id: string;
   first_name: string;

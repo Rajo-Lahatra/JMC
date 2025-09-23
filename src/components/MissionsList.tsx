@@ -1,32 +1,38 @@
 // src/components/MissionsList.tsx
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabaseClient'
-import type { Mission, Collaborator } from '../types'
+import type { Mission, CollaboratorPreview } from '../types'
 
 export function MissionsList() {
   const [missions, setMissions] = useState<Mission[]>([])
-  const [collabs, setCollabs] = useState<Collaborator[]>([])
-  const [loading, setLoading] = useState(false)
+  const [collabs, setCollabs] = useState<CollaboratorPreview[]>([])
+  const [loading, setLoading] = useState<boolean>(false)
   const [selected, setSelected] = useState<Mission | null>(null)
 
   useEffect(() => {
     setLoading(true)
-    
-    // On récupère toutes les colonnes pour matcher le type Collaborator
+
+    // On récupère seulement les 3 champs pour matcher CollaboratorPreview
     supabase
-      .from<Collaborator>('collaborators')
-      .select('id, first_name, last_name, grade, email, created_at, updated_at')
+      .from<CollaboratorPreview>('collaborators')
+      .select('id, first_name, last_name')
       .then(({ data, error }) => {
-        if (error) console.error(error)
-        else if (data) setCollabs(data)
+        if (error) {
+          console.error('Error fetching collaborators:', error)
+        } else if (data) {
+          setCollabs(data)
+        }
       })
 
     supabase
       .from<Mission>('missions')
       .select('*')
       .then(({ data, error }) => {
-        if (error) console.error(error)
-        else if (data) setMissions(data)
+        if (error) {
+          console.error('Error fetching missions:', error)
+        } else if (data) {
+          setMissions(data)
+        }
         setLoading(false)
       })
   }, [])
@@ -37,10 +43,21 @@ export function MissionsList() {
   }
 
   const handleDelete = async (id: string) => {
-    await supabase.from('mission_collaborators').delete().eq('mission_id', id)
-    const { error } = await supabase.from('missions').delete().eq('id', id)
-    if (error) console.error(error)
-    else setMissions(prev => prev.filter(m => m.id !== id))
+    await supabase
+      .from('mission_collaborators')
+      .delete()
+      .eq('mission_id', id)
+
+    const { error } = await supabase
+      .from('missions')
+      .delete()
+      .eq('id', id)
+
+    if (error) {
+      console.error('Error deleting mission:', error)
+    } else {
+      setMissions(prev => prev.filter(m => m.id !== id))
+    }
   }
 
   return (
@@ -90,23 +107,51 @@ export function MissionsList() {
       {selected && (
         <div className="drawer-overlay" onClick={() => setSelected(null)}>
           <div className="drawer-content" onClick={e => e.stopPropagation()}>
-            <button className="drawer-close" onClick={() => setSelected(null)}>
+            <button
+              className="drawer-close"
+              onClick={() => setSelected(null)}
+            >
               ×
             </button>
             <h3>Détails de la mission</h3>
             <ul className="mission-detail-list">
-              <li><strong>Dossier :</strong> {selected.dossier_number}</li>
-              <li><strong>Client :</strong> {selected.client_name}</li>
-              <li><strong>Titre :</strong> {selected.title}</li>
-              <li><strong>Service :</strong> {selected.service}</li>
-              <li><strong>Associé :</strong> {getName(selected.partner_id!)}</li>
-              <li><strong>Étape :</strong> {selected.stage}</li>
-              <li><strong>Facturable :</strong> {selected.billable ? 'Oui' : 'Non'}</li>
-              <li><strong>Facturation :</strong> {selected.invoice_stage}</li>
-              <li><strong>Recouvrement :</strong> {selected.recovery_stage}</li>
-              <li><strong>Échéance :</strong> {selected.due_date || '–'}</li>
-              <li><strong>Situation :</strong> {selected.situation_state || '–'}</li>
-              <li><strong>Actions :</strong> {selected.situation_actions || '–'}</li>
+              <li>
+                <strong>Dossier :</strong> {selected.dossier_number}
+              </li>
+              <li>
+                <strong>Client :</strong> {selected.client_name}
+              </li>
+              <li>
+                <strong>Titre :</strong> {selected.title}
+              </li>
+              <li>
+                <strong>Service :</strong> {selected.service}
+              </li>
+              <li>
+                <strong>Associé :</strong> {getName(selected.partner_id!)}
+              </li>
+              <li>
+                <strong>Étape :</strong> {selected.stage}
+              </li>
+              <li>
+                <strong>Facturable :</strong>{' '}
+                {selected.billable ? 'Oui' : 'Non'}
+              </li>
+              <li>
+                <strong>Facturation :</strong> {selected.invoice_stage}
+              </li>
+              <li>
+                <strong>Recouvrement :</strong> {selected.recovery_stage}
+              </li>
+              <li>
+                <strong>Échéance :</strong> {selected.due_date || '–'}
+              </li>
+              <li>
+                <strong>Situation :</strong> {selected.situation_state || '–'}
+              </li>
+              <li>
+                <strong>Actions :</strong> {selected.situation_actions || '–'}
+              </li>
             </ul>
           </div>
         </div>
