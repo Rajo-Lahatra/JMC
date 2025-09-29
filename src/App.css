@@ -62,22 +62,19 @@ body {
 
 /* ─── Bouton “Créer une mission” ─────────────────────────────── */
 .btn-create-mission {
-  display: inline-block;
-  margin-bottom: var(--spacing);
-  padding: 0.75em 1.5em;
-  background: var(--color-primary);
+  background-color: var(--color-primary-dark); /* marron */
   color: white;
   border: none;
   border-radius: var(--radius);
+  padding: 0.75em 1.5em;
   cursor: pointer;
   font-size: 1rem;
   transition: background-color 0.3s ease;
 }
 
 .btn-create-mission:hover {
-  background-color: #eea125; /* fuel-yellow */
+  background-color: #3a1f14;
 }
-
 /* ─── Drawer (panneau latéral) ───────────────────────────────── */
 .drawer-overlay {
   position: fixed;
@@ -105,10 +102,7 @@ body {
 }
 
 .drawer-close {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  background: var(--color-primary);
+  background-color: var(--color-primary-dark); /* marron */
   color: white;
   border: none;
   font-size: 1.5rem;

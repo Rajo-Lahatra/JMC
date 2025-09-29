@@ -18,9 +18,9 @@
 }
 
 button {
-  background-color: var(--color-accent);
-  color: black; /* ← texte noir */
-  border: 1px solid var(--color-muted);
+  background-color: var(--color-primary-dark); /* ← marron profond */
+  color: white;
+  border: none;
   padding: 6px 12px;
   border-radius: 4px;
   cursor: pointer;
@@ -30,7 +30,7 @@ button {
 }
 
 button:hover {
-  background-color: var(--color-accent-alt);
+  background-color: #3a1f14; /* marron encore plus foncé au survol */
 }
 
 
