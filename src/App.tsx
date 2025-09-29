@@ -3,6 +3,7 @@ import { useState } from 'react'
 import './App.css'
 import { CreateMissionForm } from './components/CreateMissionForm'
 import { MissionsList } from './components/MissionsList'
+import { MonProfil } from './components/MonProfil' // ✅ nouvel import
 
 function App() {
   const [refresh, setRefresh] = useState(0)
@@ -26,6 +27,11 @@ function App() {
           État de suivi des dossiers en cours
         </h1>
       </header>
+
+      {/* ✅ Section Mon Profil */}
+      <section className="profil-section">
+        <MonProfil />
+      </section>
 
       <main className="main-content">
         <button
