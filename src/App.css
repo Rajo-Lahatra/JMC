@@ -1,20 +1,22 @@
-/* src/App.css */
-
-/* ─── Variables globales ───────────────────────────────────────── */
+/* ─── Palette inspirée du logo ───────────────────────────────── */
 :root {
   --font-family: 'Segoe UI', Roboto, sans-serif;
-  --color-bg: #f5f6fa;
-  --color-card: #ffffff;
-  --color-primary: #3b82f6;
-  --color-primary-dark: #2563eb;
-  --color-text: #1f2937;
-  --color-border: #e5e7eb;
-  --color-error: #dc2626;
+
+  /* Couleurs principales */
+  --color-bg: #fdfaf6;            /* Fond général beige doux */
+  --color-card: #ffffff;          /* Cartes, drawer */
+  --color-primary: #fba519;       /* Boutons, accents */
+  --color-primary-dark: #492a1d;  /* Titres, header */
+  --color-text: #65452f;          /* Texte principal */
+  --color-border: #988577;        /* Bordures douces */
+  --color-error: #dc2626;         /* Erreurs */
+
+  /* Design system */
   --radius: 8px;
   --spacing: 16px;
 }
 
-/* ─── Reset & box-sizing ───────────────────────────────────────── */
+/* ─── Reset & base ───────────────────────────────────────────── */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -29,27 +31,38 @@ body {
   padding: var(--spacing);
 }
 
-/* ─── App container ───────────────────────────────────────────── */
+/* ─── Conteneur principal ────────────────────────────────────── */
 .App {
   max-width: 1200px;
   margin: 0 auto;
 }
 
-.App header {
-  text-align: center;
+/* ─── En-tête avec logo ──────────────────────────────────────── */
+.App-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing);
   margin-bottom: var(--spacing);
 }
 
-.App header h1 {
-  font-size: 2rem;
+.App-logo {
+  height: 48px;
+  width: auto;
+}
+
+.App-header h1 {
+  font-size: 1.75rem;
+  line-height: 1.2;
   color: var(--color-primary-dark);
 }
 
-/* ─── Contenu principal & bouton créer ───────────────────────── */
+/* ─── Contenu principal ──────────────────────────────────────── */
 .main-content {
   padding: var(--spacing) 0;
 }
 
+/* ─── Bouton “Créer une mission” ─────────────────────────────── */
 .btn-create-mission {
   display: inline-block;
   margin-bottom: var(--spacing);
@@ -60,90 +73,11 @@ body {
   border-radius: var(--radius);
   cursor: pointer;
   font-size: 1rem;
+  transition: background-color 0.3s ease;
 }
 
-/* ─── Formulaire “Créer une mission” ──────────────────────────── */
-.create-mission-form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing);
-  background: var(--color-card);
-  padding: var(--spacing);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
-
-.create-mission-form h2,
-.create-mission-form label {
-  margin: 0;
-}
-
-.create-mission-form label {
-  font-weight: 500;
-}
-
-.create-mission-form input,
-.create-mission-form select,
-.create-mission-form textarea {
-  width: 100%;
-  padding: 0.5em;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  font-size: 1rem;
-  font-family: var(--font-family);
-}
-
-.create-mission-form textarea {
-  min-height: 80px;
-  resize: vertical;
-}
-
-.create-mission-form button {
-  align-self: flex-start;
-  padding: 0.75em 1.5em;
-  background: var(--color-primary);
-  color: white;
-  border: none;
-  border-radius: var(--radius);
-  cursor: pointer;
-  font-size: 1rem;
-}
-
-/* ─── Liste des missions ──────────────────────────────────────── */
-.missions-list h2 {
-  margin-bottom: var(--spacing);
-  color: var(--color-primary);
-}
-
-.missions-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: var(--color-card);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  border-radius: var(--radius);
-  overflow: hidden;
-}
-
-.missions-table th,
-.missions-table td {
-  padding: 0.75em;
-  border-bottom: 1px solid var(--color-border);
-  text-align: left;
-  font-size: 0.95rem;
-}
-
-.missions-table thead {
-  background: var(--color-primary);
-  color: white;
-}
-
-.missions-table tbody tr:nth-child(even) {
-  background: #f9fafb;
-}
-
-.missions-table tbody tr:last-child td {
-  border-bottom: none;
+.btn-create-mission:hover {
+  background-color: #eea125; /* fuel-yellow */
 }
 
 /* ─── Drawer (panneau latéral) ───────────────────────────────── */
@@ -168,66 +102,35 @@ body {
   box-shadow: -2px 0 8px rgba(0, 0, 0, 0.2);
   overflow-y: auto;
   position: relative;
+  border-left: 4px solid var(--color-primary-dark);
+  color: var(--color-text);
 }
 
 .drawer-close {
   position: absolute;
   top: 0.5rem;
   right: 0.5rem;
-  background: none;
+  background: var(--color-primary);
+  color: white;
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
+  padding: 0.25em 0.5em;
+  border-radius: var(--radius);
 }
 
-/* ─── Détails dans le drawer ─────────────────────────────────── */
-.mission-detail-list {
-  list-style: none;
-  padding: 0;
-  margin: var(--spacing) 0 0;
-}
-
-.mission-detail-list li {
-  margin-bottom: 0.75rem;
-}
-
-/* ─── Messages et erreurs ─────────────────────────────────────── */
-p[style*="color: var(--color-error)"],
-p[style*="color: red"] {
-  color: var(--color-error);
-  margin-top: var(--spacing);
-}
-
-/* ─── Responsive ──────────────────────────────────────────────── */
+/* ─── Responsive ─────────────────────────────────────────────── */
 @media (max-width: 800px) {
   .btn-create-mission {
     width: 100%;
     text-align: center;
   }
+
   .drawer-content {
     width: 100%;
   }
+
   .App main {
     display: block;
   }
-}
-/* ─── En-tête avec logo ───────────────────────────────────────── */
-.App-header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing);
-  margin-bottom: var(--spacing);
-}
-
-/* Taille et espacement du logo */
-.App-logo {
-  height: 48px;
-  width: auto;
-}
-
-/* Si vous souhaitez réduire le texte à droite du logo */
-.App-header h1 {
-  font-size: 1.75rem;
-  line-height: 1.2;
 }
