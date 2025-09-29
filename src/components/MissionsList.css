@@ -33,8 +33,6 @@ button:hover {
   background-color: #3a1f14; /* marron encore plus foncé au survol */
 }
 
-
-
 .drawer-content {
   background-color: white;
   border-left: 4px solid var(--color-primary);
