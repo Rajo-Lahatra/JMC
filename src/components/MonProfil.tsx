@@ -1,9 +1,10 @@
 // src/components/MonProfil.tsx
+import type { User } from '@supabase/supabase-js'
 import { useEffect, useState } from 'react'
 import { supabase } from '../supabaseClient'
 
 export function MonProfil() {
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState<User | null>(null)
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {

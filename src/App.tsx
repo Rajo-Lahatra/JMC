@@ -1,4 +1,5 @@
 // src/App.tsx
+import type { User } from '@supabase/supabase-js'
 import { useEffect, useState } from 'react'
 import './App.css'
 import { CreateMissionForm } from './components/CreateMissionForm'
@@ -11,7 +12,7 @@ import { supabase } from './lib/supabaseClient'
 function App() {
   const [refresh, setRefresh] = useState(0)
   const [showCreate, setShowCreate] = useState(false)
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState<User | null>(null)
 
   const handleCreated = () => {
     setRefresh(r => r + 1)
