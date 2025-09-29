@@ -1,0 +1,43 @@
+.missions-table {
+  background-color: var(--color-gray);
+  color: var(--color-text);
+  border: 1px solid var(--color-muted);
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.missions-table th {
+  background-color: var(--color-primary);
+  color: white;
+  padding: 8px;
+}
+
+.missions-table td {
+  padding: 8px;
+  border-top: 1px solid var(--color-muted);
+}
+
+button {
+  background-color: var(--color-accent);
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: var(--color-accent-alt);
+}
+
+.drawer-content {
+  background-color: white;
+  border-left: 4px solid var(--color-primary);
+  color: var(--color-text);
+}
+
+.drawer-close {
+  background-color: var(--color-accent);
+  color: white;
+}
+

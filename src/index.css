@@ -2,9 +2,14 @@
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
+  --color-primary: #492a1d;       /* cocoa-bean → fond sombre, titres */
+  --color-accent: #fba519;        /* sun → boutons, éléments interactifs */
+  --color-accent-alt: #eea125;    /* fuel-yellow → hover ou variante */
+  --color-muted: #988577;         /* stonewall → bordures, fonds doux */
+  --color-gray: #bcbcc0;          /* french-gray → fond tableau, texte secondaire */
+  --color-text: #65452f;          /* quincy → texte principal */
+  --color-bg: #fdfaf6;            /* fond général doux (optionnel) */
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
   background-color: #242424;
 
   font-synthesis: none;

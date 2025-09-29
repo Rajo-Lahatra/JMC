@@ -1,4 +1,5 @@
 // src/components/MissionsList.tsx
+import './MissionsList.css'
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import type { Mission, Collaborator } from '../types'
