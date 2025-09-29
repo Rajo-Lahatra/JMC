@@ -1,18 +1,28 @@
 // src/App.tsx
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 import { CreateMissionForm } from './components/CreateMissionForm'
 import { MissionsList } from './components/MissionsList'
-import { MonProfil } from './components/MonProfil' // ✅ nouvel import
+import { MonProfil } from './components/MonProfil'
+import { LoginForm } from './components/LoginForm'
+import { LogoutButton } from './components/LogoutButton' // ✅ nouvel import
+import { supabase } from './lib/supabaseClient'
 
 function App() {
   const [refresh, setRefresh] = useState(0)
   const [showCreate, setShowCreate] = useState(false)
+  const [user, setUser] = useState(null)
 
   const handleCreated = () => {
     setRefresh(r => r + 1)
     setShowCreate(false)
   }
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      setUser(data?.user)
+    })
+  }, [])
 
   return (
     <div className="App">
@@ -28,43 +38,52 @@ function App() {
         </h1>
       </header>
 
-      {/* ✅ Section Mon Profil */}
-      <section className="profil-section">
-        <MonProfil />
-      </section>
-
-      <main className="main-content">
-        <button
-          className="btn-create-mission"
-          onClick={() => setShowCreate(true)}
-        >
-          Créer une mission
-        </button>
-
-        <section className="missions-list">
-          <h2>Liste des missions</h2>
-          <MissionsList key={refresh} />
+      {/* ✅ Connexion ou Profil */}
+      {!user ? (
+        <section className="login-section">
+          <LoginForm />
         </section>
-      </main>
+      ) : (
+        <>
+          <section className="profil-section">
+            <MonProfil />
+            <LogoutButton /> {/* ✅ bouton déconnexion */}
+          </section>
 
-      {showCreate && (
-        <div
-          className="drawer-overlay"
-          onClick={() => setShowCreate(false)}
-        >
-          <div
-            className="drawer-content"
-            onClick={e => e.stopPropagation()}
-          >
+          <main className="main-content">
             <button
-              className="drawer-close"
+              className="btn-create-mission"
+              onClick={() => setShowCreate(true)}
+            >
+              Créer une mission
+            </button>
+
+            <section className="missions-list">
+              <h2>Liste des missions</h2>
+              <MissionsList key={refresh} />
+            </section>
+          </main>
+
+          {showCreate && (
+            <div
+              className="drawer-overlay"
               onClick={() => setShowCreate(false)}
             >
-              ×
-            </button>
-            <CreateMissionForm onCreated={handleCreated} />
-          </div>
-        </div>
+              <div
+                className="drawer-content"
+                onClick={e => e.stopPropagation()}
+              >
+                <button
+                  className="drawer-close"
+                  onClick={() => setShowCreate(false)}
+                >
+                  ×
+                </button>
+                <CreateMissionForm onCreated={handleCreated} />
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   )

@@ -154,4 +154,18 @@ body {
   margin: 2rem auto;
   max-width: 600px;
 }
+.btn-logout {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  margin: 1rem 0;
+  font-weight: bold;
+}
+
+.btn-logout:hover {
+  background-color: #c0392b;
+}
 
