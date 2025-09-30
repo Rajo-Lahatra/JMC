@@ -197,4 +197,62 @@ fieldset {
   opacity: 0.5;
   pointer-events: none;
 }
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 700px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+}
+
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.create-mission-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.create-mission-form label {
+  font-weight: bold;
+  margin-bottom: 0.3rem;
+}
+
+.create-mission-form input,
+.create-mission-form select,
+.create-mission-form textarea {
+  padding: 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.create-mission-form textarea {
+  min-height: 120px;
+  resize: vertical;
+}
 

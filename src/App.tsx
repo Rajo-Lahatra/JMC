@@ -66,23 +66,14 @@ function App() {
           </main>
 
           {showCreate && (
-            <div
-              className="drawer-overlay"
-              onClick={() => setShowCreate(false)}
-            >
-              <div
-                className="drawer-content"
-                onClick={e => e.stopPropagation()}
-              >
-                <button
-                  className="drawer-close"
-                  onClick={() => setShowCreate(false)}
-                >
-                  ×
-                </button>
-                <CreateMissionForm onCreated={handleCreated} />
-              </div>
-            </div>
+            <div className="modal-overlay" onClick={() => setShowCreate(false)}>
+    <div className="modal-content" onClick={e => e.stopPropagation()}>
+      <button className="modal-close" onClick={() => setShowCreate(false)}>
+        ×
+      </button>
+      <CreateMissionForm onCreated={handleCreated} />
+    </div>
+  </div>
           )}
         </>
       )}
