@@ -46,11 +46,10 @@ function App() {
         </section>
       ) : (
         <>
-         <div className="profil-floating">
-  <MonProfil />
+<div className="profil-bar">
+  <span className="profil-name">{user?.user_metadata?.prenom} {user?.user_metadata?.nom}</span>
   <LogoutButton />
 </div>
-
           <main className="main-content">
             <button
               className="btn-create-mission"
