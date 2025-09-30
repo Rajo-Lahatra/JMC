@@ -43,4 +43,23 @@ button:hover {
   background-color: var(--color-accent);
   color: white;
 }
+.recipient-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.recipient-actions button {
+  background: #0078d4;
+  color: white;
+  border: none;
+  padding: 0.5rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.recipient-actions button:hover {
+  background: #005a9e;
+}
 

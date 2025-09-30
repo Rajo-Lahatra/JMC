@@ -162,39 +162,77 @@ const openMail = () => {
         </div>
       )}
 
-      {emailMission && (
-        <div className="modal-overlay" onClick={() => setEmailMission(null)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <button className="modal-close" onClick={() => setEmailMission(null)}>×</button>
-            <h3>📧 Situation du dossier</h3>
-            <form id="mailFrm" onSubmit={e => e.preventDefault()}>
-              <label>À :</label>
-              <input name="to" defaultValue={getEmail(emailMission.partner_id)} />
+ {emailMission && (
+  <div className="modal-overlay" onClick={() => setEmailMission(null)}>
+    <div className="modal-content" onClick={e => e.stopPropagation()}>
+      <button className="modal-close" onClick={() => setEmailMission(null)}>×</button>
+      <h3>📧 Situation du dossier</h3>
 
-              <label>CC :</label>
-              <input name="cc" defaultValue="" />
+      {/* ✅ Boutons rapides de destinataires */}
+      <div className="recipient-actions">
+        <button
+          type="button"
+          onClick={() => {
+            const partners = collabs.filter(c => c.grade === 'Partner').map(c => c.email)
+            const f = document.getElementById('mailFrm') as HTMLFormElement
+            const toField = f.elements.namedItem('to') as HTMLInputElement
+            toField.value = partners.join('; ')
+          }}
+        >
+          📨 Envoyer à tous les associés
+        </button>
 
-              <label>Objet :</label>
-              <input
-                name="subject"
-                defaultValue={`[J&M] Situation du dossier ${emailMission.dossier_number} — ${emailMission.client_name}`}
-              />
+        <button
+          type="button"
+          onClick={() => {
+            const managers = collabs.filter(c => c.grade === 'Manager').map(c => c.email)
+            const f = document.getElementById('mailFrm') as HTMLFormElement
+            const toField = f.elements.namedItem('to') as HTMLInputElement
+            toField.value = managers.join('; ')
+          }}
+        >
+          📨 Envoyer aux managers
+        </button>
+      </div>
 
-              <label>Message :</label>
-              <textarea
-                name="body"
-                rows={12}
-                defaultValue={composeSituation(emailMission)}
-              />
+      <form id="mailFrm" onSubmit={e => e.preventDefault()}>
+        <label>À :</label>
+        <input
+          name="to"
+          defaultValue={getEmail(emailMission.partner_id)}
+          style={{ width: '100%', fontSize: '1rem', padding: '0.6rem' }}
+        />
 
-              <div className="email-actions">
-                <button type="button" onClick={copyToClipboard}>📋 Copier</button>
-                <button type="button" onClick={openMail}>📤 Ouvrir dans le client mail</button>
-                <button type="button" onClick={() => setEmailMission(null)}>✖ Fermer</button>
-                           </div>
-            </form>
-          </div>
+        <label>CC :</label>
+        <input
+          name="cc"
+          defaultValue=""
+          style={{ width: '100%', fontSize: '1rem', padding: '0.6rem' }}
+        />
+
+        <label>Objet :</label>
+        <input
+          name="subject"
+          defaultValue={`[J&M] Situation du dossier ${emailMission.dossier_number} — ${emailMission.client_name}`}
+          style={{ width: '100%', fontSize: '1rem', padding: '0.6rem' }}
+        />
+
+        <label>Message :</label>
+        <textarea
+          name="body"
+          rows={16}   // ✅ plus grand
+          style={{ width: '100%', fontSize: '1rem', padding: '0.8rem' }}
+          defaultValue={composeSituation(emailMission)}
+        />
+
+        <div className="email-actions">
+          <button type="button" onClick={copyToClipboard}>📋 Copier</button>
+          <button type="button" onClick={openMail}>📤 Ouvrir dans le client mail</button>
+          <button type="button" onClick={() => setEmailMission(null)}>✖ Fermer</button>
         </div>
+      </form>
+    </div>
+  </div>
       )}
     </>
   )
