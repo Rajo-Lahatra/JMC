@@ -45,11 +45,6 @@ export function MissionsList({ refreshFlag }: { refreshFlag: number }) {
     return c ? `${c.first_name} ${c.last_name}` : id
   }
 
-  const getEmail = (id: string | null) => {
-    const c = collabs.find(c => c.id === id)
-    return c?.email || ''
-  }
-
   const handleDelete = async (id: string) => {
     await supabase.from('mission_collaborators').delete().eq('mission_id', id)
     const { error } = await supabase.from('missions').delete().eq('id', id)
