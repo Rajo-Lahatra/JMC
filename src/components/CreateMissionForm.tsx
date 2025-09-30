@@ -1,14 +1,20 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabaseClient'
-import type {
-  Collaborator,
-  ServiceLine,
-  MissionStage,
-} from '../types'
+import type { ServiceLine, MissionStage } from '../types'
 import './CreateMissionForm.css'
 
+// ✅ Nouveau type adapté à ta sélection
+type CollaboratorLite = {
+  id: string
+  first_name: string
+  last_name: string
+  grade: string
+  email: string
+  auth_id: string | null
+}
+
 export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
-  const [collabs, setCollabs] = useState<Collaborator[]>([])
+  const [collabs, setCollabs] = useState<CollaboratorLite[]>([])
   const [currentUserGrade, setCurrentUserGrade] = useState<string | null>(null)
 
   const [dossierNumber, setDossierNumber] = useState('')
@@ -39,7 +45,7 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
       .order('last_name', { ascending: true })
       .then(({ data, error }) => {
         if (error) console.error('Erreur chargement collaborateurs:', error)
-        else if (data) setCollabs(data as Collaborator[])
+        else if (data) setCollabs(data as CollaboratorLite[])
       })
 
     // ✅ Identifier l’utilisateur connecté et récupérer son grade
@@ -105,7 +111,6 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
 
     onCreated()
   }
-
   // Calculs automatiques
   const remainingToInvoice =
     feesAmount && invoiceAmount
@@ -256,7 +261,7 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
       {/* ✅ Section financière visible seulement pour Manager / Senior Manager / Partner */}
       {canEditFinance && (
         <>
-          {/* Bouton pour basculer en mode édition (lecture seule par défaut si non Manager+) */}
+          {/* Bouton pour basculer en mode édition (lecture seule par défaut si Junior/Senior) */}
           <div className="finance-toggle">
             <button
               type="button"
