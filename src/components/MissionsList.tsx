@@ -92,7 +92,11 @@ const openMail = () => {
   const mailto = `mailto:${to}?subject=${subject}${cc ? `&cc=${cc}` : ''}&body=${body}`
   window.location.href = mailto
 }
+const [editingMissionId, setEditingMissionId] = useState<string | null>(null)
 
+const handleEdit = (id: string) => {
+  setEditingMissionId(id)
+}
 
   return (
     <>
@@ -130,6 +134,7 @@ const openMail = () => {
                   <button onClick={() => setSelected(m)}>Voir</button>
                   <button onClick={() => handleDelete(m.id)}>Supprimer</button>
                   <button onClick={() => setEmailMission(m)}>Envoyer situation</button>
+                  <button onClick={() => onEdit(mission.id)}>✏️ Éditer</button>
                 </td>
               </tr>
             ))
