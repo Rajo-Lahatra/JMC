@@ -22,7 +22,6 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
   const [invoiceAmount, setInvoiceAmount] = useState('')
   const [recoveryAmount, setRecoveryAmount] = useState('')
   const [dueDate, setDueDate] = useState<string>('')
-  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     supabase
@@ -35,18 +34,14 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
       })
   }, [])
 
-  const partners = collabs.filter(c => c.grade === 'Partner')
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setLoading(true)
 
-    const { data: userData, error: userError } = await supabase.auth.getUser()
+    const { data: userData } = await supabase.auth.getUser()
     const creatorId = userData?.user?.id
 
     if (!creatorId) {
       console.error('Utilisateur non identifié')
-      setLoading(false)
       return
     }
 
@@ -67,13 +62,12 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
         recovery_amount: billable ? recoveryAmount || null : null,
         due_date: dueDate || null,
         partner_id: partnerId,
-        created_by: creatorId, // ✅ Ajout ici
+        created_by: creatorId,
       }])
       .select('id')
 
     if (missionError || !missions?.length) {
       console.error(missionError)
-      setLoading(false)
       return
     }
 
@@ -90,7 +84,6 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
       if (linkError) console.error(linkError)
     }
 
-    setLoading(false)
     onCreated()
   }
 
