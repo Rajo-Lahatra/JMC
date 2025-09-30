@@ -14,7 +14,7 @@ const stageLabels: Record<string, string> = {
   simple_suivi: 'Suivi simple',
 }
 
-export function MissionsList() {
+export function MissionsList({ refreshFlag }: { refreshFlag: number }) {
   const [missions, setMissions] = useState<Mission[]>([])
   const [collabs, setCollabs] = useState<Collaborator[]>([])
   const [loading, setLoading] = useState<boolean>(false)
@@ -35,7 +35,7 @@ export function MissionsList() {
 
       setLoading(false)
     })()
-  }, [])
+  }, [refreshFlag]) // ✅ déclenche le rechargement
 
   const getName = (id: string) => {
     const c = collabs.find(c => c.id === id)

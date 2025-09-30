@@ -14,9 +14,17 @@ function App() {
   const [user, setUser] = useState<User | null>(null)
 
   const handleCreated = () => {
-    setRefresh(r => r + 1)
-    setShowCreate(false)
+  setShowCreate(false)         // ✅ ferme la fenêtre
+  setRefreshFlag(prev => prev + 1) // ✅ déclenche le rechargement
   }
+const [refreshFlag, setRefreshFlag] = useState(0)
+
+const handleCreated = () => {
+  setShowCreate(false)
+  setRefreshFlag(prev => prev + 1)
+}
+
+<MissionsList refreshFlag={refreshFlag} />
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -63,12 +71,10 @@ function App() {
             </section>
           </main>
 
-          {showCreate && (
-            <div className="modal-overlay" onClick={() => setShowCreate(false)}>
+         {showCreate && (
+  <div className="modal-overlay" onClick={() => setShowCreate(false)}>
     <div className="modal-content" onClick={e => e.stopPropagation()}>
-      <button className="modal-close" onClick={() => setShowCreate(false)}>
-        ×
-      </button>
+      <button className="modal-close" onClick={() => setShowCreate(false)}>×</button>
       <CreateMissionForm onCreated={handleCreated} />
     </div>
   </div>
