@@ -13,6 +13,7 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
   const [title, setTitle] = useState('')
   const [service, setService] = useState<ServiceLine>('TLS')
   const [partnerId, setPartnerId] = useState<string | null>(null)
+  const [creatorId, setCreatorId] = useState<string | null>(null) // ✅ nouveau champ
   const [stage, setStage] = useState<MissionStage>('opportunite')
   const [assignedIds, setAssignedIds] = useState<string[]>([])
   const [situationState, setSituationState] = useState('')
@@ -38,16 +39,10 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
     e.preventDefault()
     console.log('✅ Soumission du formulaire')
 
-    const { data: userData, error: userError } = await supabase.auth.getUser()
-    if (userError) console.error('Erreur récupération utilisateur:', userError)
-
-    const creatorId = userData?.user?.id
     if (!creatorId) {
-      console.error('❌ Utilisateur non identifié')
-      console.log('👤 ID utilisateur connecté :', creatorId)
+      console.error('❌ Aucun créateur sélectionné')
       return
     }
-    console.log('👤 Utilisateur identifié :', creatorId)
 
     const { data: missions, error: missionError } = await supabase
       .from('missions')
@@ -66,7 +61,7 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
         recovery_amount: billable ? recoveryAmount || null : null,
         due_date: dueDate || null,
         partner_id: partnerId,
-        created_by: creatorId,
+        created_by: creatorId, // ✅ sélectionné manuellement
       }])
       .select('id')
 
@@ -141,6 +136,20 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
               {c.first_name} {c.last_name}
             </option>
           ))}
+      </select>
+
+      <label>Collaborateur créateur</label>
+      <select
+        value={creatorId ?? ''}
+        onChange={e => setCreatorId(e.target.value || null)}
+        required
+      >
+        <option value="">— Sélectionner —</option>
+        {collabs.map(c => (
+          <option key={c.id} value={c.id}>
+            {c.first_name} {c.last_name} ({c.grade})
+          </option>
+        ))}
       </select>
 
       <label>Étape du dossier</label>
