@@ -44,6 +44,7 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
     const creatorId = userData?.user?.id
     if (!creatorId) {
       console.error('❌ Utilisateur non identifié')
+      console.log('👤 ID utilisateur connecté :', creatorId)
       return
     }
     console.log('👤 Utilisateur identifié :', creatorId)
