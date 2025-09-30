@@ -95,7 +95,136 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
 
   return (
     <form onSubmit={handleSubmit} className="create-mission-form">
-      {/* ... formulaire inchangé ... */}
+      <label>Numéro de dossier</label>
+      <input
+        value={dossierNumber}
+        onChange={e => setDossierNumber(e.target.value)}
+        required
+      />
+
+      <label>Nom du client / prospect</label>
+      <input
+        value={clientName}
+        onChange={e => setClientName(e.target.value)}
+        required
+      />
+
+      <label>Titre de la mission</label>
+      <input
+        value={title}
+        onChange={e => setTitle(e.target.value)}
+        required
+      />
+
+      <label>Ligne de service</label>
+      <select
+        value={service}
+        onChange={e => setService(e.target.value as ServiceLine)}
+      >
+        <option value="TLS">TLS</option>
+        <option value="GCS">GCS</option>
+        <option value="LT">LT</option>
+        <option value="Advisory">Advisory</option>
+      </select>
+
+      <label>Associé responsable</label>
+      <select
+        value={partnerId ?? ''}
+        onChange={e => setPartnerId(e.target.value || null)}
+      >
+        <option value="">— Sélectionner —</option>
+        {collabs
+          .filter(c => c.grade === 'Partner')
+          .map(c => (
+            <option key={c.id} value={c.id}>
+              {c.first_name} {c.last_name}
+            </option>
+          ))}
+      </select>
+
+      <label>Étape du dossier</label>
+      <select
+        value={stage}
+        onChange={e => setStage(e.target.value as MissionStage)}
+      >
+        <option value="opportunite">Opportunité</option>
+        <option value="lettre_envoyee">Lettre envoyée</option>
+        <option value="lettre_signee">Lettre signée</option>
+        <option value="staff_traitement">Traitement interne</option>
+        <option value="revue_manager">Revue manager</option>
+        <option value="revue_associes">Revue des associés</option>
+        <option value="livrable_envoye">Livrable envoyé</option>
+        <option value="simple_suivi">Suivi simple</option>
+      </select>
+
+      <label>Collaborateurs en charge</label>
+      <select
+        multiple
+        value={assignedIds}
+        onChange={e =>
+          setAssignedIds(Array.from(e.target.selectedOptions, opt => opt.value))
+        }
+      >
+        {collabs.map(c => (
+          <option key={c.id} value={c.id}>
+            {c.first_name} {c.last_name} ({c.grade})
+          </option>
+        ))}
+      </select>
+
+      <label>Situation actuelle</label>
+      <textarea
+        value={situationState}
+        onChange={e => setSituationState(e.target.value)}
+      />
+
+      <label>Actions à prendre</label>
+      <textarea
+        value={situationActions}
+        onChange={e => setSituationActions(e.target.value)}
+      />
+
+      <label>
+        <input
+          type="checkbox"
+          checked={billable}
+          onChange={e => setBillable(e.target.checked)}
+        />
+        Mission facturable
+      </label>
+
+      <fieldset disabled={!billable} style={{ opacity: billable ? 1 : 0.5 }}>
+        <legend>Détails financiers</legend>
+
+        <label>Honoraires prévus</label>
+        <input
+          type="number"
+          value={feesAmount}
+          onChange={e => setFeesAmount(e.target.value)}
+        />
+
+        <label>Montant facturé</label>
+        <input
+          type="number"
+          value={invoiceAmount}
+          onChange={e => setInvoiceAmount(e.target.value)}
+        />
+
+        <label>Montant recouvré</label>
+        <input
+          type="number"
+          value={recoveryAmount}
+          onChange={e => setRecoveryAmount(e.target.value)}
+        />
+      </fieldset>
+
+      <label>Date d’échéance</label>
+      <input
+        type="date"
+        value={dueDate}
+        onChange={e => setDueDate(e.target.value)}
+      />
+
       <button type="submit">Créer mission</button>
     </form>
   )
