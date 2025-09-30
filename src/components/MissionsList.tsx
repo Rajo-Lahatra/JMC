@@ -20,6 +20,8 @@ export function MissionsList({ refreshFlag }: { refreshFlag: number }) {
   const [loading, setLoading] = useState<boolean>(false)
   const [selected, setSelected] = useState<Mission | null>(null)
   const [emailMission, setEmailMission] = useState<Mission | null>(null)
+  const [selectedRecipients, setSelectedRecipients] = useState<string[]>([])
+
 
   useEffect(() => {
     setLoading(true)
@@ -168,38 +170,56 @@ const openMail = () => {
       <button className="modal-close" onClick={() => setEmailMission(null)}>×</button>
       <h3>📧 Situation du dossier</h3>
 
-      {/* ✅ Boutons rapides de destinataires */}
-      <div className="recipient-actions">
-        <button
-          type="button"
-          onClick={() => {
-            const partners = collabs.filter(c => c.grade === 'Partner').map(c => c.email)
-            const f = document.getElementById('mailFrm') as HTMLFormElement
-            const toField = f.elements.namedItem('to') as HTMLInputElement
-            toField.value = partners.join('; ')
-          }}
-        >
-          📨 Envoyer à tous les associés
-        </button>
+      {/* ✅ Sélecteur multi-choix */}
+      <div className="recipient-selector">
+        <p><strong>Choisir les destinataires :</strong></p>
+        <div className="recipient-list">
+          {collabs.map(c => (
+            <label key={c.id} className="recipient-item">
+              <input
+                type="checkbox"
+                checked={selectedRecipients.includes(c.email)}
+                onChange={e => {
+                  if (e.target.checked) {
+                    setSelectedRecipients(prev => [...prev, c.email])
+                  } else {
+                    setSelectedRecipients(prev => prev.filter(mail => mail !== c.email))
+                  }
+                }}
+              />
+              {c.first_name} {c.last_name} ({c.grade}) — {c.email}
+            </label>
+          ))}
+        </div>
 
-        <button
-          type="button"
-          onClick={() => {
-            const managers = collabs.filter(c => c.grade === 'Manager').map(c => c.email)
-            const f = document.getElementById('mailFrm') as HTMLFormElement
-            const toField = f.elements.namedItem('to') as HTMLInputElement
-            toField.value = managers.join('; ')
-          }}
-        >
-          📨 Envoyer aux managers
-        </button>
+        {/* Boutons rapides */}
+        <div className="recipient-actions">
+          <button
+            type="button"
+            onClick={() =>
+              setSelectedRecipients(collabs.filter(c => c.grade === 'Partner').map(c => c.email))
+            }
+          >
+            📨 Tous les associés
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              setSelectedRecipients(collabs.filter(c => c.grade === 'Manager').map(c => c.email))
+            }
+          >
+            📨 Tous les managers
+          </button>
+          <button type="button" onClick={() => setSelectedRecipients([])}>❌ Vider</button>
+        </div>
       </div>
 
       <form id="mailFrm" onSubmit={e => e.preventDefault()}>
         <label>À :</label>
         <input
           name="to"
-          defaultValue={getEmail(emailMission.partner_id)}
+          value={selectedRecipients.join('; ')}
+          readOnly
           style={{ width: '100%', fontSize: '1rem', padding: '0.6rem' }}
         />
 
@@ -220,7 +240,7 @@ const openMail = () => {
         <label>Message :</label>
         <textarea
           name="body"
-          rows={16}   // ✅ plus grand
+          rows={16}
           style={{ width: '100%', fontSize: '1rem', padding: '0.8rem' }}
           defaultValue={composeSituation(emailMission)}
         />

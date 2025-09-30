@@ -62,4 +62,47 @@ button:hover {
 .recipient-actions button:hover {
   background: #005a9e;
 }
+.recipient-selector {
+  margin-bottom: 1rem;
+  padding: 0.8rem;
+  background: #f9f9f9;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
+.recipient-list {
+  max-height: 200px;
+  overflow-y: auto;
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  background: #fff;
+}
+
+.recipient-item {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-size: 0.9rem;
+}
+
+.recipient-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.recipient-actions button {
+  background: #0078d4;
+  color: white;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.recipient-actions button:hover {
+  background: #005a9e;
+}
 
