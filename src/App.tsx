@@ -5,26 +5,18 @@ import './App.css'
 import { CreateMissionForm } from './components/CreateMissionForm'
 import { MissionsList } from './components/MissionsList'
 import { LoginForm } from './components/LoginForm'
-import { LogoutButton } from './components/LogoutButton' // ✅ nouvel import
+import { LogoutButton } from './components/LogoutButton'
 import { supabase } from './lib/supabaseClient'
 
 function App() {
-  const [refresh, setRefresh] = useState(0)
   const [showCreate, setShowCreate] = useState(false)
   const [user, setUser] = useState<User | null>(null)
+  const [refreshFlag, setRefreshFlag] = useState(0) // ✅ utilisé pour recharger MissionsList
 
   const handleCreated = () => {
-  setShowCreate(false)         // ✅ ferme la fenêtre
-  setRefreshFlag(prev => prev + 1) // ✅ déclenche le rechargement
+    setShowCreate(false)
+    setRefreshFlag(prev => prev + 1)
   }
-const [refreshFlag, setRefreshFlag] = useState(0)
-
-const handleCreated = () => {
-  setShowCreate(false)
-  setRefreshFlag(prev => prev + 1)
-}
-
-<MissionsList refreshFlag={refreshFlag} />
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -46,17 +38,19 @@ const handleCreated = () => {
         </h1>
       </header>
 
-      {/* ✅ Connexion ou Profil */}
       {!user ? (
         <section className="login-section">
           <LoginForm />
         </section>
       ) : (
         <>
-<div className="profil-bar">
-  <span className="profil-name">{user?.user_metadata?.prenom} {user?.user_metadata?.nom}</span>
-  <LogoutButton />
-</div>
+          <div className="profil-bar">
+            <span className="profil-name">
+              {user?.user_metadata?.prenom} {user?.user_metadata?.nom}
+            </span>
+            <LogoutButton />
+          </div>
+
           <main className="main-content">
             <button
               className="btn-create-mission"
@@ -67,17 +61,17 @@ const handleCreated = () => {
 
             <section className="missions-list">
               <h2>Liste des missions</h2>
-              <MissionsList key={refresh} />
+              <MissionsList refreshFlag={refreshFlag} /> {/* ✅ prop ajoutée */}
             </section>
           </main>
 
-         {showCreate && (
-  <div className="modal-overlay" onClick={() => setShowCreate(false)}>
-    <div className="modal-content" onClick={e => e.stopPropagation()}>
-      <button className="modal-close" onClick={() => setShowCreate(false)}>×</button>
-      <CreateMissionForm onCreated={handleCreated} />
-    </div>
-  </div>
+          {showCreate && (
+            <div className="modal-overlay" onClick={() => setShowCreate(false)}>
+              <div className="modal-content" onClick={e => e.stopPropagation()}>
+                <button className="modal-close" onClick={() => setShowCreate(false)}>×</button>
+                <CreateMissionForm onCreated={handleCreated} />
+              </div>
+            </div>
           )}
         </>
       )}
