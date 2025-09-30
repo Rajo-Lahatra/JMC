@@ -3,16 +3,6 @@ import { supabase } from '../lib/supabaseClient'
 import type { ServiceLine, MissionStage } from '../types'
 import './CreateMissionForm.css'
 
-// Type simplifié pour collaborateurs
-type CollaboratorLite = {
-  id: string
-  first_name: string
-  last_name: string
-  grade: string
-  email: string
-  auth_id: string | null
-}
-
 export function EditMissionForm({
   missionId,
   onUpdated,
@@ -20,7 +10,6 @@ export function EditMissionForm({
   missionId: string
   onUpdated: () => void
 }) {
-  const [collabs, setCollabs] = useState<CollaboratorLite[]>([])
   const [currentUserGrade, setCurrentUserGrade] = useState<string | null>(null)
 
   // États mission
@@ -29,9 +18,7 @@ export function EditMissionForm({
   const [title, setTitle] = useState('')
   const [service, setService] = useState<ServiceLine>('TLS')
   const [partnerId, setPartnerId] = useState<string | null>(null)
-  const [creatorId, setCreatorId] = useState<string | null>(null)
   const [stage, setStage] = useState<MissionStage>('opportunite')
-  const [assignedIds, setAssignedIds] = useState<string[]>([])
   const [situationState, setSituationState] = useState('')
   const [situationActions, setSituationActions] = useState('')
   const [billable, setBillable] = useState(true)
@@ -43,17 +30,8 @@ export function EditMissionForm({
 
   const [editFinance, setEditFinance] = useState(false)
 
-  // Charger collaborateurs + grade utilisateur + mission
+  // Charger grade utilisateur + mission
   useEffect(() => {
-    supabase
-      .from('collaborators')
-      .select('id, first_name, last_name, grade, email, auth_id')
-      .order('last_name', { ascending: true })
-      .then(({ data, error }) => {
-        if (error) console.error('Erreur chargement collaborateurs:', error)
-        else if (data) setCollabs(data as CollaboratorLite[])
-      })
-
     supabase.auth.getUser().then(async ({ data, error }) => {
       if (error || !data?.user) return
       const { user } = data
@@ -80,7 +58,6 @@ export function EditMissionForm({
           setTitle(data.title || '')
           setService(data.service || 'TLS')
           setPartnerId(data.partner_id || null)
-          setCreatorId(data.created_by || null)
           setStage(data.stage || 'opportunite')
           setSituationState(data.situation_state || '')
           setSituationActions(data.situation_actions || '')
@@ -211,11 +188,7 @@ export function EditMissionForm({
 
             <div className="finance-row">
               <label>Honoraires prévus :</label>
-              <input
-                type="number"
-                value={feesAmount}
-                onChange={e => setFeesAmount(e.target.value)}
-              />
+              <input type="number" value={feesAmount} onChange={e => setFeesAmount(e.target.value)} />
               <div className="finance-info">
                 Affiché : <strong>{formatMoney(feesAmount)}</strong>
               </div>
@@ -223,43 +196,30 @@ export function EditMissionForm({
 
             <div className="finance-row">
               <label>Montant facturé :</label>
-              <input
-                type="number"
-                value={invoiceAmount}
-                onChange={e => setInvoiceAmount(e.target.value)}
-              />
+              <input type="number" value={invoiceAmount} onChange={e => setInvoiceAmount(e.target.value)} />
               <div className="finance-info">
                 Affiché : <strong>{formatMoney(invoiceAmount)}</strong>
               </div>
             </div>
 
             <div className="finance-info">
-              Montant restant à facturer :{" "}
-              <strong>
-                {remainingToInvoice !== null ? formatMoney(remainingToInvoice) : "—"}
-              </strong>
+              Montant restant à facturer :{' '}
+              <strong>{remainingToInvoice !== null ? formatMoney(remainingToInvoice) : '—'}</strong>
             </div>
 
             <div className="finance-row">
               <label>Montant recouvré :</label>
-              <input
-                type="number"
-                value={recoveryAmount}
-                onChange={e => setRecoveryAmount(e.target.value)}
-              />
+              <input type="number" value={recoveryAmount} onChange={e => setRecoveryAmount(e.target.value)} />
               <div className="finance-info">
                 Affiché : <strong>{formatMoney(recoveryAmount)}</strong>
               </div>
             </div>
 
             <div className="finance-info">
-              Montant restant à recouvrer :{" "}
-              <strong>
-                {remainingToRecover !== null ? formatMoney(remainingToRecover) : "—"}
-              </strong>
+              Montant restant à recouvrer :{' '}
+              <strong>{remainingToRecover !== null ? formatMoney(remainingToRecover) : '—'}</strong>
             </div>
           </fieldset>
-        </>
       )}
 
       <label>Date d’échéance</label>
