@@ -5,7 +5,7 @@ import type {
   ServiceLine,
   MissionStage,
 } from '../types'
-import './CreateMissionForm.css'   // ✅ import du CSS
+import './CreateMissionForm.css'
 
 export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
   const [collabs, setCollabs] = useState<Collaborator[]>([])
@@ -23,6 +23,7 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
   const [feesAmount, setFeesAmount] = useState('')
   const [invoiceAmount, setInvoiceAmount] = useState('')
   const [recoveryAmount, setRecoveryAmount] = useState('')
+  const [currency, setCurrency] = useState<'GNF' | 'USD' | 'EUR'>('GNF')
   const [dueDate, setDueDate] = useState<string>('')
 
   useEffect(() => {
@@ -38,8 +39,6 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('✅ Soumission du formulaire')
-
     if (!creatorId) {
       console.error('❌ Aucun créateur sélectionné')
       return
@@ -60,6 +59,7 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
         fees_amount: feesAmount || null,
         invoice_amount: billable ? invoiceAmount || null : null,
         recovery_amount: billable ? recoveryAmount || null : null,
+        currency,
         due_date: dueDate || null,
         partner_id: partnerId,
         created_by: creatorId,
@@ -72,7 +72,6 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
     }
 
     const missionId = missions[0].id
-    console.log('✅ Mission créée avec ID :', missionId)
 
     if (assignedIds.length) {
       const links = assignedIds.map(id => ({
@@ -83,14 +82,12 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
         .from('mission_collaborators')
         .insert(links)
       if (linkError) console.error('❌ Erreur liaison collaborateurs:', linkError)
-      else console.log('✅ Collaborateurs liés à la mission')
     }
 
-    console.log('✅ Fermeture du formulaire et rafraîchissement')
     onCreated()
   }
 
-  // ✅ Calculs automatiques
+  // Calculs automatiques
   const remainingToInvoice =
     feesAmount && invoiceAmount
       ? Number(feesAmount) - Number(invoiceAmount)
@@ -100,6 +97,18 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
     invoiceAmount && recoveryAmount
       ? Number(invoiceAmount) - Number(recoveryAmount)
       : null
+
+  // Formatage monétaire
+  const formatMoney = (value: string | number | null) => {
+    if (value === null || value === '' || isNaN(Number(value))) return '—'
+    return new Intl.NumberFormat('fr-FR', {
+      style: 'currency',
+      currency,
+      currencyDisplay: 'code',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(Number(value))
+  }
 
   return (
     <form onSubmit={handleSubmit} className="create-mission-form">
@@ -219,12 +228,27 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
         <legend>Détails financiers</legend>
 
         <div className="finance-row">
+          <label>Devise :</label>
+          <select
+            value={currency}
+            onChange={e => setCurrency(e.target.value as 'GNF' | 'USD' | 'EUR')}
+          >
+            <option value="GNF">GNF</option>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+          </select>
+        </div>
+
+        <div className="finance-row">
           <label>Honoraires prévus :</label>
           <input
             type="number"
             value={feesAmount}
             onChange={e => setFeesAmount(e.target.value)}
           />
+          <div className="finance-info">
+            Affiché: <strong>{formatMoney(feesAmount)}</strong>
+          </div>
         </div>
 
         <div className="finance-row">
@@ -234,10 +258,16 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
             value={invoiceAmount}
             onChange={e => setInvoiceAmount(e.target.value)}
           />
+          <div className="finance-info">
+            Affiché: <strong>{formatMoney(invoiceAmount)}</strong>
+          </div>
         </div>
+
         <div className="finance-info">
-          Montant restant à facturer :{" "}
-          <strong>{remainingToInvoice !== null ? remainingToInvoice : "—"}</strong>
+          Montant restant à facturer:{" "}
+          <strong>
+            {remainingToInvoice !== null ? formatMoney(remainingToInvoice) : "—"}
+          </strong>
         </div>
 
         <div className="finance-row">
@@ -247,10 +277,16 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
             value={recoveryAmount}
             onChange={e => setRecoveryAmount(e.target.value)}
           />
+          <div className="finance-info">
+            Affiché: <strong>{formatMoney(recoveryAmount)}</strong>
+          </div>
         </div>
+
         <div className="finance-info">
-          Montant restant à recouvrer :{" "}
-          <strong>{remainingToRecover !== null ? remainingToRecover : "—"}</strong>
+          Montant restant à recouvrer:{" "}
+          <strong>
+            {remainingToRecover !== null ? formatMoney(remainingToRecover) : "—"}
+          </strong>
         </div>
       </fieldset>
 
