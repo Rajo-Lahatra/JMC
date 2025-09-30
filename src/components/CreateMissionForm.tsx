@@ -10,6 +10,7 @@ import './CreateMissionForm.css'
 export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
   const [collabs, setCollabs] = useState<Collaborator[]>([])
   const [currentUserGrade, setCurrentUserGrade] = useState<string | null>(null)
+
   const [dossierNumber, setDossierNumber] = useState('')
   const [clientName, setClientName] = useState('')
   const [title, setTitle] = useState('')
@@ -27,11 +28,14 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
   const [currency, setCurrency] = useState<'GNF' | 'USD' | 'EUR'>('GNF')
   const [dueDate, setDueDate] = useState<string>('')
 
+  // ✅ état pour activer/désactiver l’édition manuelle
+  const [editFinance, setEditFinance] = useState(false)
+
   useEffect(() => {
-    // Charger tous les collaborateurs (utile pour les sélecteurs)
+    // Charger tous les collaborateurs
     supabase
       .from('collaborators')
-      .select('id, first_name, last_name, grade, email')
+      .select('id, first_name, last_name, grade, email, auth_id')
       .order('last_name', { ascending: true })
       .then(({ data, error }) => {
         if (error) console.error('Erreur chargement collaborateurs:', error)
@@ -45,7 +49,7 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
       const { data: profile, error: profErr } = await supabase
         .from('collaborators')
         .select('grade')
-        .eq('auth_id', user.id)
+        .eq('auth_id', user.id) // ⚠️ utiliser auth_id
         .single()
       if (profErr) console.error('Erreur récupération grade:', profErr)
       else if (profile) setCurrentUserGrade(profile.grade)
@@ -127,6 +131,13 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
 
   // ✅ Déterminer les droits financiers
   const canEditFinance = ['Manager', 'Senior Manager', 'Partner'].includes(currentUserGrade ?? '')
+
+  // ✅ Si c’est un Manager+ qui crée la mission → édition activée par défaut
+  useEffect(() => {
+    if (canEditFinance) {
+      setEditFinance(true)
+    }
+  }, [canEditFinance])
 
   return (
     <form onSubmit={handleSubmit} className="create-mission-form">
@@ -233,7 +244,7 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
         onChange={e => setSituationActions(e.target.value)}
       />
 
-          <label>
+      <label>
         <input
           type="checkbox"
           checked={billable}
@@ -242,73 +253,85 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
         Mission facturable
       </label>
 
-      {/* ✅ Section financière visible seulement si autorisé */}
+      {/* ✅ Section financière visible seulement pour Manager / Senior Manager / Partner */}
       {canEditFinance && (
-        <fieldset disabled={!billable} style={{ opacity: billable ? 1 : 0.5 }}>
-          <legend>Détails financiers</legend>
-
-          <div className="finance-row">
-            <label>Devise :</label>
-            <select
-              value={currency}
-              onChange={e => setCurrency(e.target.value as 'GNF' | 'USD' | 'EUR')}
+        <>
+          {/* Bouton pour basculer en mode édition (lecture seule par défaut si non Manager+) */}
+          <div className="finance-toggle">
+            <button
+              type="button"
+              onClick={() => setEditFinance(prev => !prev)}
             >
-              <option value="GNF">GNF</option>
-              <option value="USD">USD</option>
-              <option value="EUR">EUR</option>
-            </select>
+              {editFinance ? '🔒 Terminer modification' : '✏️ Modifier'}
+            </button>
           </div>
 
-          <div className="finance-row">
-            <label>Honoraires prévus :</label>
-            <input
-              type="number"
-              value={feesAmount}
-              onChange={e => setFeesAmount(e.target.value)}
-            />
-            <div className="finance-info">
-              Affiché: <strong>{formatMoney(feesAmount)}</strong>
+          <fieldset disabled={!billable || !editFinance} style={{ opacity: billable ? 1 : 0.5 }}>
+            <legend>Détails financiers</legend>
+
+            <div className="finance-row">
+              <label>Devise :</label>
+              <select
+                value={currency}
+                onChange={e => setCurrency(e.target.value as 'GNF' | 'USD' | 'EUR')}
+              >
+                <option value="GNF">GNF</option>
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+              </select>
             </div>
-          </div>
 
-          <div className="finance-row">
-            <label>Montant facturé :</label>
-            <input
-              type="number"
-              value={invoiceAmount}
-              onChange={e => setInvoiceAmount(e.target.value)}
-            />
-            <div className="finance-info">
-              Affiché: <strong>{formatMoney(invoiceAmount)}</strong>
+            <div className="finance-row">
+              <label>Honoraires prévus :</label>
+              <input
+                type="number"
+                value={feesAmount}
+                onChange={e => setFeesAmount(e.target.value)}
+              />
+              <div className="finance-info">
+                Affiché : <strong>{formatMoney(feesAmount)}</strong>
+              </div>
             </div>
-          </div>
 
-          <div className="finance-info">
-            Montant restant à facturer:{" "}
-            <strong>
-              {remainingToInvoice !== null ? formatMoney(remainingToInvoice) : "—"}
-            </strong>
-          </div>
-
-          <div className="finance-row">
-            <label>Montant recouvré :</label>
-            <input
-              type="number"
-              value={recoveryAmount}
-              onChange={e => setRecoveryAmount(e.target.value)}
-            />
-            <div className="finance-info">
-              Affiché: <strong>{formatMoney(recoveryAmount)}</strong>
+            <div className="finance-row">
+              <label>Montant facturé :</label>
+              <input
+                type="number"
+                value={invoiceAmount}
+                onChange={e => setInvoiceAmount(e.target.value)}
+              />
+              <div className="finance-info">
+                Affiché : <strong>{formatMoney(invoiceAmount)}</strong>
+              </div>
             </div>
-          </div>
 
-          <div className="finance-info">
-            Montant restant à recouvrer:{" "}
-            <strong>
-              {remainingToRecover !== null ? formatMoney(remainingToRecover) : "—"}
-            </strong>
-          </div>
-        </fieldset>
+            <div className="finance-info">
+              Montant restant à facturer :{' '}
+              <strong>
+                {remainingToInvoice !== null ? formatMoney(remainingToInvoice) : '—'}
+              </strong>
+            </div>
+
+            <div className="finance-row">
+              <label>Montant recouvré :</label>
+              <input
+                type="number"
+                value={recoveryAmount}
+                onChange={e => setRecoveryAmount(e.target.value)}
+              />
+              <div className="finance-info">
+                Affiché : <strong>{formatMoney(recoveryAmount)}</strong>
+              </div>
+            </div>
+
+            <div className="finance-info">
+              Montant restant à recouvrer :{' '}
+              <strong>
+                {remainingToRecover !== null ? formatMoney(remainingToRecover) : '—'}
+              </strong>
+            </div>
+          </fieldset>
+        </>
       )}
 
       <label>Date d’échéance</label>
