@@ -168,4 +168,33 @@ body {
 .btn-logout:hover {
   background-color: #c0392b;
 }
+.mission-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.5rem;
+}
+
+.mission-form label {
+  display: flex;
+  flex-direction: column;
+  font-weight: bold;
+}
+
+.checkbox-label {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+fieldset {
+  border: 1px solid #ccc;
+  padding: 1rem;
+  border-radius: 6px;
+}
+
+.disabled-section {
+  opacity: 0.5;
+  pointer-events: none;
+}
 

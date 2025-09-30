@@ -1,12 +1,9 @@
-// src/components/CreateMissionForm.tsx
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import type {
   Collaborator,
   ServiceLine,
   MissionStage,
-  FinancialInvoiceStage,
-  FinancialRecoveryStage,
 } from '../types'
 
 export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
@@ -21,8 +18,9 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
   const [situationState, setSituationState] = useState('')
   const [situationActions, setSituationActions] = useState('')
   const [billable, setBillable] = useState(true)
-  const [invoiceStage, setInvoiceStage] = useState<FinancialInvoiceStage>('none')
-  const [recoveryStage, setRecoveryStage] = useState<FinancialRecoveryStage>('none')
+  const [feesAmount, setFeesAmount] = useState('')
+  const [invoiceAmount, setInvoiceAmount] = useState('')
+  const [recoveryAmount, setRecoveryAmount] = useState('')
   const [dueDate, setDueDate] = useState<string>('')
   const [loading, setLoading] = useState(false)
 
@@ -37,7 +35,6 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
       })
   }, [])
 
-  // Garde uniquement les "Partner" pour l'associé responsable
   const partners = collabs.filter(c => c.grade === 'Partner')
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -56,8 +53,9 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
         situation_state: situationState || null,
         situation_actions: situationActions || null,
         billable,
-        invoice_stage: invoiceStage,
-        recovery_stage: recoveryStage,
+        fees_amount: feesAmount || null,
+        invoice_amount: billable ? invoiceAmount || null : null,
+        recovery_amount: billable ? recoveryAmount || null : null,
         due_date: dueDate || null,
         partner_id: partnerId,
       }])
@@ -190,26 +188,33 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
         Mission facturable
       </label>
 
-      <label>Facturation</label>
-      <select
-        value={invoiceStage}
-        onChange={e => setInvoiceStage(e.target.value as FinancialInvoiceStage)}
-      >
-        <option value="none">Aucune</option>
-        <option value="acompte">Acompte</option>
-        <option value="totale">Totale</option>
-        <option value="solde">Solde</option>
-      </select>
+      <fieldset disabled={!billable} style={{ opacity: billable ? 1 : 0.5 }}>
+        <legend>Détails financiers</legend>
 
-      <label>Recouvrement</label>
-      <select
-        value={recoveryStage}
-        onChange={e => setRecoveryStage(e.target.value as FinancialRecoveryStage)}
-      >
-        <option value="none">Aucun</option>
-        <option value="partiel">Partiel</option>
-        <option value="total">Total</option>
-      </select>
+        <label>Honoraires prévus</label>
+        <input
+          type="number"
+          value={feesAmount}
+          onChange={e => setFeesAmount(e.target.value)}
+          placeholder="Ex : 1 000 000"
+        />
+
+        <label>Montant facturé</label>
+        <input
+          type="number"
+          value={invoiceAmount}
+          onChange={e => setInvoiceAmount(e.target.value)}
+          placeholder="Ex : 800 000"
+        />
+
+        <label>Montant recouvré</label>
+        <input
+          type="number"
+          value={recoveryAmount}
+          onChange={e => setRecoveryAmount(e.target.value)}
+          placeholder="Ex : 500 000"
+        />
+      </fieldset>
 
       <label>Date d’échéance</label>
       <input
