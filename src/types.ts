@@ -55,6 +55,7 @@ export interface Mission {
   status: MissionStatus;
   due_date: string | null;
   partner_id: string | null;
+  created_by?: string // ✅ nouvelle propriété
   created_at: string;
   updated_at: string;
 }
