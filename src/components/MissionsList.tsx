@@ -14,14 +14,18 @@ const stageLabels: Record<string, string> = {
   simple_suivi: 'Suivi simple',
 }
 
-export function MissionsList({ refreshFlag }: { refreshFlag: number }) {
+type MissionsListProps = {
+  refreshFlag: number
+  onEdit?: (id: string) => void
+}
+
+export function MissionsList({ refreshFlag, onEdit }: MissionsListProps) {
   const [missions, setMissions] = useState<Mission[]>([])
   const [collabs, setCollabs] = useState<Collaborator[]>([])
   const [loading, setLoading] = useState<boolean>(false)
   const [selected, setSelected] = useState<Mission | null>(null)
   const [emailMission, setEmailMission] = useState<Mission | null>(null)
   const [selectedRecipients, setSelectedRecipients] = useState<string[]>([])
-
 
   useEffect(() => {
     setLoading(true)
@@ -70,33 +74,28 @@ ${m.situation_actions || '—'}
 Bien cordialement,`
   }
 
-const copyToClipboard = async () => {
-  const f = document.getElementById('mailFrm') as HTMLFormElement
-  const subject = (f.elements.namedItem('subject') as HTMLInputElement).value
-  const body = (f.elements.namedItem('body') as HTMLTextAreaElement).value
-  const txt = `Objet: ${subject}\n\n${body}`
-  try {
-    await navigator.clipboard.writeText(txt)
-    alert('📋 Copié dans le presse-papiers.')
-  } catch {
-    alert('❌ Échec de la copie.')
+  const copyToClipboard = async () => {
+    const f = document.getElementById('mailFrm') as HTMLFormElement
+    const subject = (f.elements.namedItem('subject') as HTMLInputElement).value
+    const body = (f.elements.namedItem('body') as HTMLTextAreaElement).value
+    const txt = `Objet: ${subject}\n\n${body}`
+    try {
+      await navigator.clipboard.writeText(txt)
+      alert('📋 Copié dans le presse-papiers.')
+    } catch {
+      alert('❌ Échec de la copie.')
+    }
   }
-}
 
-const openMail = () => {
-  const f = document.getElementById('mailFrm') as HTMLFormElement
-  const to = encodeURIComponent((f.elements.namedItem('to') as HTMLInputElement).value.trim())
-  const cc = encodeURIComponent((f.elements.namedItem('cc') as HTMLInputElement).value.trim())
-  const subject = encodeURIComponent((f.elements.namedItem('subject') as HTMLInputElement).value)
-  const body = encodeURIComponent((f.elements.namedItem('body') as HTMLTextAreaElement).value)
-  const mailto = `mailto:${to}?subject=${subject}${cc ? `&cc=${cc}` : ''}&body=${body}`
-  window.location.href = mailto
-}
-const [editingMissionId, setEditingMissionId] = useState<string | null>(null)
-
-const handleEdit = (id: string) => {
-  setEditingMissionId(id)
-}
+  const openMail = () => {
+    const f = document.getElementById('mailFrm') as HTMLFormElement
+    const to = encodeURIComponent((f.elements.namedItem('to') as HTMLInputElement).value.trim())
+    const cc = encodeURIComponent((f.elements.namedItem('cc') as HTMLInputElement).value.trim())
+    const subject = encodeURIComponent((f.elements.namedItem('subject') as HTMLInputElement).value)
+    const body = encodeURIComponent((f.elements.namedItem('body') as HTMLTextAreaElement).value)
+    const mailto = `mailto:${to}?subject=${subject}${cc ? `&cc=${cc}` : ''}&body=${body}`
+    window.location.href = mailto
+  }
 
   return (
     <>
@@ -134,7 +133,9 @@ const handleEdit = (id: string) => {
                   <button onClick={() => setSelected(m)}>Voir</button>
                   <button onClick={() => handleDelete(m.id)}>Supprimer</button>
                   <button onClick={() => setEmailMission(m)}>Envoyer situation</button>
-                  <button onClick={() => onEdit(mission.id)}>✏️ Éditer</button>
+                  {onEdit && (
+                    <button onClick={() => onEdit(m.id)}>✏️ Éditer</button>
+                  )}
                 </td>
               </tr>
             ))
@@ -164,95 +165,95 @@ const handleEdit = (id: string) => {
         </div>
       )}
 
- {emailMission && (
-  <div className="modal-overlay" onClick={() => setEmailMission(null)}>
-    <div className="modal-content" onClick={e => e.stopPropagation()}>
-      <button className="modal-close" onClick={() => setEmailMission(null)}>×</button>
-      <h3>📧 Situation du dossier</h3>
+      {emailMission && (
+        <div className="modal-overlay" onClick={() => setEmailMission(null)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setEmailMission(null)}>×</button>
+            <h3>📧 Situation du dossier</h3>
 
-      {/* ✅ Sélecteur multi-choix */}
-      <div className="recipient-selector">
-        <p><strong>Choisir les destinataires :</strong></p>
-        <div className="recipient-list">
-          {collabs.map(c => (
-            <label key={c.id} className="recipient-item">
-              <input
-                type="checkbox"
-                checked={selectedRecipients.includes(c.email)}
-                onChange={e => {
-                  if (e.target.checked) {
-                    setSelectedRecipients(prev => [...prev, c.email])
-                  } else {
-                    setSelectedRecipients(prev => prev.filter(mail => mail !== c.email))
+            {/* ✅ Sélecteur multi-choix */}
+            <div className="recipient-selector">
+              <p><strong>Choisir les destinataires :</strong></p>
+              <div className="recipient-list">
+                {collabs.map(c => (
+                  <label key={c.id} className="recipient-item">
+                    <input
+                      type="checkbox"
+                      checked={selectedRecipients.includes(c.email)}
+                      onChange={e => {
+                        if (e.target.checked) {
+                          setSelectedRecipients(prev => [...prev, c.email])
+                        } else {
+                                                    setSelectedRecipients(prev => prev.filter(mail => mail !== c.email))
+                        }
+                      }}
+                    />
+                    {c.first_name} {c.last_name} ({c.grade}) — {c.email}
+                  </label>
+                ))}
+              </div>
+
+              {/* Boutons rapides */}
+              <div className="recipient-actions">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setSelectedRecipients(collabs.filter(c => c.grade === 'Partner').map(c => c.email))
                   }
-                }}
+                >
+                  📨 Tous les associés
+                </button>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setSelectedRecipients(collabs.filter(c => c.grade === 'Manager' || c.grade === 'Senior Manager').map(c => c.email))
+                  }
+                >
+                  📨 Tous les managers
+                </button>
+                <button type="button" onClick={() => setSelectedRecipients([])}>❌ Vider</button>
+              </div>
+            </div>
+
+            <form id="mailFrm" onSubmit={e => e.preventDefault()}>
+              <label>À :</label>
+              <input
+                name="to"
+                value={selectedRecipients.join('; ')}
+                readOnly
+                style={{ width: '100%', fontSize: '1rem', padding: '0.6rem' }}
               />
-              {c.first_name} {c.last_name} ({c.grade}) — {c.email}
-            </label>
-          ))}
+
+              <label>CC :</label>
+              <input
+                name="cc"
+                defaultValue=""
+                style={{ width: '100%', fontSize: '1rem', padding: '0.6rem' }}
+              />
+
+              <label>Objet :</label>
+              <input
+                name="subject"
+                defaultValue={`[J&M] Situation du dossier ${emailMission.dossier_number} — ${emailMission.client_name}`}
+                style={{ width: '100%', fontSize: '1rem', padding: '0.6rem' }}
+              />
+
+              <label>Message :</label>
+              <textarea
+                name="body"
+                rows={16}
+                style={{ width: '100%', fontSize: '1rem', padding: '0.8rem' }}
+                defaultValue={composeSituation(emailMission)}
+              />
+
+              <div className="email-actions">
+                <button type="button" onClick={copyToClipboard}>📋 Copier</button>
+                <button type="button" onClick={openMail}>📤 Ouvrir dans le client mail</button>
+                <button type="button" onClick={() => setEmailMission(null)}>✖ Fermer</button>
+              </div>
+            </form>
+          </div>
         </div>
-
-        {/* Boutons rapides */}
-        <div className="recipient-actions">
-          <button
-            type="button"
-            onClick={() =>
-              setSelectedRecipients(collabs.filter(c => c.grade === 'Partner').map(c => c.email))
-            }
-          >
-            📨 Tous les associés
-          </button>
-          <button
-            type="button"
-            onClick={() =>
-              setSelectedRecipients(collabs.filter(c => c.grade === 'Manager').map(c => c.email))
-            }
-          >
-            📨 Tous les managers
-          </button>
-          <button type="button" onClick={() => setSelectedRecipients([])}>❌ Vider</button>
-        </div>
-      </div>
-
-      <form id="mailFrm" onSubmit={e => e.preventDefault()}>
-        <label>À :</label>
-        <input
-          name="to"
-          value={selectedRecipients.join('; ')}
-          readOnly
-          style={{ width: '100%', fontSize: '1rem', padding: '0.6rem' }}
-        />
-
-        <label>CC :</label>
-        <input
-          name="cc"
-          defaultValue=""
-          style={{ width: '100%', fontSize: '1rem', padding: '0.6rem' }}
-        />
-
-        <label>Objet :</label>
-        <input
-          name="subject"
-          defaultValue={`[J&M] Situation du dossier ${emailMission.dossier_number} — ${emailMission.client_name}`}
-          style={{ width: '100%', fontSize: '1rem', padding: '0.6rem' }}
-        />
-
-        <label>Message :</label>
-        <textarea
-          name="body"
-          rows={16}
-          style={{ width: '100%', fontSize: '1rem', padding: '0.8rem' }}
-          defaultValue={composeSituation(emailMission)}
-        />
-
-        <div className="email-actions">
-          <button type="button" onClick={copyToClipboard}>📋 Copier</button>
-          <button type="button" onClick={openMail}>📤 Ouvrir dans le client mail</button>
-          <button type="button" onClick={() => setEmailMission(null)}>✖ Fermer</button>
-        </div>
-      </form>
-    </div>
-  </div>
       )}
     </>
   )
