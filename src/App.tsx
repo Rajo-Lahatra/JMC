@@ -18,11 +18,19 @@ function App() {
     setRefreshFlag(prev => prev + 1)
   }
 
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      setUser(data?.user)
-    })
-  }, [])
+ useEffect(() => {
+  // Vérifie la session actuelle
+  supabase.auth.getSession().then(({ data }) => {
+    setUser(data.session?.user ?? null)
+  })
+
+  // Écoute les changements de session (connexion / déconnexion)
+  const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    setUser(session?.user ?? null)
+  })
+
+  return () => subscription.unsubscribe()
+}, [])
 
   return (
     <div className="App">
