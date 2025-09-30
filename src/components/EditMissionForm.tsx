@@ -43,7 +43,6 @@ export function EditMissionForm({
       if (profile) setCurrentUserGrade(profile.grade)
     })
 
-    // Charger mission existante
     supabase
       .from('missions')
       .select('*')
@@ -71,7 +70,6 @@ export function EditMissionForm({
       })
   }, [missionId])
 
-  // Calculs automatiques
   const remainingToInvoice =
     feesAmount && invoiceAmount
       ? Number(feesAmount) - Number(invoiceAmount)
@@ -201,7 +199,6 @@ export function EditMissionForm({
                 Affiché : <strong>{formatMoney(invoiceAmount)}</strong>
               </div>
             </div>
-
             <div className="finance-info">
               Montant restant à facturer :{' '}
               <strong>{remainingToInvoice !== null ? formatMoney(remainingToInvoice) : '—'}</strong>
@@ -209,7 +206,11 @@ export function EditMissionForm({
 
             <div className="finance-row">
               <label>Montant recouvré :</label>
-              <input type="number" value={recoveryAmount} onChange={e => setRecoveryAmount(e.target.value)} />
+              <input
+                type="number"
+                value={recoveryAmount}
+                onChange={e => setRecoveryAmount(e.target.value)}
+              />
               <div className="finance-info">
                 Affiché : <strong>{formatMoney(recoveryAmount)}</strong>
               </div>
@@ -220,6 +221,7 @@ export function EditMissionForm({
               <strong>{remainingToRecover !== null ? formatMoney(remainingToRecover) : '—'}</strong>
             </div>
           </fieldset>
+        </>
       )}
 
       <label>Date d’échéance</label>
