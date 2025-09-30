@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react'
 import './App.css'
 import { CreateMissionForm } from './components/CreateMissionForm'
 import { MissionsList } from './components/MissionsList'
-import { MonProfil } from './components/MonProfil'
 import { LoginForm } from './components/LoginForm'
 import { LogoutButton } from './components/LogoutButton' // ✅ nouvel import
 import { supabase } from './lib/supabaseClient'
