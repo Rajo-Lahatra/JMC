@@ -10,7 +10,6 @@ import './CreateMissionForm.css'
 export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
   const [collabs, setCollabs] = useState<Collaborator[]>([])
   const [currentUserGrade, setCurrentUserGrade] = useState<string | null>(null)
-
   const [dossierNumber, setDossierNumber] = useState('')
   const [clientName, setClientName] = useState('')
   const [title, setTitle] = useState('')
@@ -46,7 +45,7 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
       const { data: profile, error: profErr } = await supabase
         .from('collaborators')
         .select('grade')
-        .eq('id', user.id)
+        .eq('auth_id', user.id)
         .single()
       if (profErr) console.error('Erreur récupération grade:', profErr)
       else if (profile) setCurrentUserGrade(profile.grade)
