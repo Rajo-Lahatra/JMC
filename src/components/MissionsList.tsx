@@ -19,6 +19,7 @@ export function MissionsList({ refreshFlag }: { refreshFlag: number }) {
   const [collabs, setCollabs] = useState<Collaborator[]>([])
   const [loading, setLoading] = useState<boolean>(false)
   const [selected, setSelected] = useState<Mission | null>(null)
+  const [emailMission, setEmailMission] = useState<Mission | null>(null)
 
   useEffect(() => {
     setLoading(true)
@@ -35,11 +36,16 @@ export function MissionsList({ refreshFlag }: { refreshFlag: number }) {
 
       setLoading(false)
     })()
-  }, [refreshFlag]) // ✅ déclenche le rechargement
+  }, [refreshFlag])
 
   const getName = (id: string) => {
     const c = collabs.find(c => c.id === id)
     return c ? `${c.first_name} ${c.last_name}` : id
+  }
+
+  const getEmail = (id: string | null) => {
+    const c = collabs.find(c => c.id === id)
+    return c?.email || ''
   }
 
   const handleDelete = async (id: string) => {
@@ -47,6 +53,47 @@ export function MissionsList({ refreshFlag }: { refreshFlag: number }) {
     const { error } = await supabase.from('missions').delete().eq('id', id)
     if (error) console.error('Delete mission error:', error)
     else setMissions(prev => prev.filter(m => m.id !== id))
+  }
+
+  const composeSituation = (m: Mission) => {
+    return `Client : ${m.client_name}
+Dossier : ${m.dossier_number}
+Mission : ${m.title}
+Service : ${m.service}
+Étape : ${stageLabels[m.stage] || m.stage}
+Associé : ${getName(m.partner_id!)}
+Échéance : ${m.due_date ? new Date(m.due_date).toLocaleDateString() : '–'}
+
+Situation actuelle :
+${m.situation_state || '—'}
+
+Actions à prendre :
+${m.situation_actions || '—'}
+
+Bien cordialement,`
+  }
+
+  const copyToClipboard = async () => {
+    const f = document.getElementById('mailFrm') as HTMLFormElement
+    const subject = f.elements['subject'].value
+    const body = f.elements['body'].value
+    const txt = `Objet: ${subject}\n\n${body}`
+    try {
+      await navigator.clipboard.writeText(txt)
+      alert('📋 Copié dans le presse-papiers.')
+    } catch {
+      alert('❌ Échec de la copie.')
+    }
+  }
+
+  const openMail = () => {
+    const f = document.getElementById('mailFrm') as HTMLFormElement
+    const to = encodeURIComponent(f.elements['to'].value.trim())
+    const cc = encodeURIComponent(f.elements['cc'].value.trim())
+    const subject = encodeURIComponent(f.elements['subject'].value)
+    const body = encodeURIComponent(f.elements['body'].value)
+    const mailto = `mailto:${to}?subject=${subject}${cc ? `&cc=${cc}` : ''}&body=${body}`
+    window.location.href = mailto
   }
 
   return (
@@ -84,6 +131,7 @@ export function MissionsList({ refreshFlag }: { refreshFlag: number }) {
                 <td>
                   <button onClick={() => setSelected(m)}>Voir</button>
                   <button onClick={() => handleDelete(m.id)}>Supprimer</button>
+                  <button onClick={() => setEmailMission(m)}>Envoyer situation</button>
                 </td>
               </tr>
             ))
@@ -109,6 +157,41 @@ export function MissionsList({ refreshFlag }: { refreshFlag: number }) {
               <li><strong>Situation :</strong> {selected.situation_state || '–'}</li>
               <li><strong>Actions :</strong> {selected.situation_actions || '–'}</li>
             </ul>
+          </div>
+        </div>
+      )}
+
+      {emailMission && (
+        <div className="modal-overlay" onClick={() => setEmailMission(null)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setEmailMission(null)}>×</button>
+            <h3>📧 Situation du dossier</h3>
+            <form id="mailFrm" onSubmit={e => e.preventDefault()}>
+              <label>À :</label>
+              <input name="to" defaultValue={getEmail(emailMission.partner_id)} />
+
+              <label>CC :</label>
+              <input name="cc" defaultValue="" />
+
+              <label>Objet :</label>
+              <input
+                name="subject"
+                defaultValue={`[J&M] Situation du dossier ${emailMission.dossier_number} — ${emailMission.client_name}`}
+              />
+
+              <label>Message :</label>
+              <textarea
+                name="body"
+                rows={12}
+                defaultValue={composeSituation(emailMission)}
+              />
+
+              <div className="email-actions">
+                <button type="button" onClick={copyToClipboard}>📋 Copier</button>
+                <button type="button" onClick={openMail}>📤 Ouvrir dans le client mail</button>
+                <button type="button" onClick={() => setEmailMission(null)}>✖ Fermer</button>
+                           </div>
+            </form>
           </div>
         </div>
       )}
