@@ -9,6 +9,8 @@ import './CreateMissionForm.css'
 
 export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
   const [collabs, setCollabs] = useState<Collaborator[]>([])
+  const [currentUserGrade, setCurrentUserGrade] = useState<string | null>(null)
+
   const [dossierNumber, setDossierNumber] = useState('')
   const [clientName, setClientName] = useState('')
   const [title, setTitle] = useState('')
@@ -27,14 +29,28 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
   const [dueDate, setDueDate] = useState<string>('')
 
   useEffect(() => {
+    // Charger tous les collaborateurs (utile pour les sélecteurs)
     supabase
       .from('collaborators')
-      .select('id, first_name, last_name, grade')
+      .select('id, first_name, last_name, grade, email')
       .order('last_name', { ascending: true })
       .then(({ data, error }) => {
         if (error) console.error('Erreur chargement collaborateurs:', error)
         else if (data) setCollabs(data as Collaborator[])
       })
+
+    // ✅ Identifier l’utilisateur connecté et récupérer son grade
+    supabase.auth.getUser().then(async ({ data, error }) => {
+      if (error || !data?.user) return
+      const { user } = data
+      const { data: profile, error: profErr } = await supabase
+        .from('collaborators')
+        .select('grade')
+        .eq('id', user.id)
+        .single()
+      if (profErr) console.error('Erreur récupération grade:', profErr)
+      else if (profile) setCurrentUserGrade(profile.grade)
+    })
   }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -109,6 +125,9 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
       maximumFractionDigits: 0,
     }).format(Number(value))
   }
+
+  // ✅ Déterminer les droits financiers
+  const canEditFinance = ['Manager', 'Senior Manager', 'Partner'].includes(currentUserGrade ?? '')
 
   return (
     <form onSubmit={handleSubmit} className="create-mission-form">
@@ -215,7 +234,7 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
         onChange={e => setSituationActions(e.target.value)}
       />
 
-      <label>
+          <label>
         <input
           type="checkbox"
           checked={billable}
@@ -224,71 +243,74 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
         Mission facturable
       </label>
 
-      <fieldset disabled={!billable} style={{ opacity: billable ? 1 : 0.5 }}>
-        <legend>Détails financiers</legend>
+      {/* ✅ Section financière visible seulement si autorisé */}
+      {canEditFinance && (
+        <fieldset disabled={!billable} style={{ opacity: billable ? 1 : 0.5 }}>
+          <legend>Détails financiers</legend>
 
-        <div className="finance-row">
-          <label>Devise :</label>
-          <select
-            value={currency}
-            onChange={e => setCurrency(e.target.value as 'GNF' | 'USD' | 'EUR')}
-          >
-            <option value="GNF">GNF</option>
-            <option value="USD">USD</option>
-            <option value="EUR">EUR</option>
-          </select>
-        </div>
-
-        <div className="finance-row">
-          <label>Honoraires prévus :</label>
-          <input
-            type="number"
-            value={feesAmount}
-            onChange={e => setFeesAmount(e.target.value)}
-          />
-          <div className="finance-info">
-            Affiché: <strong>{formatMoney(feesAmount)}</strong>
+          <div className="finance-row">
+            <label>Devise :</label>
+            <select
+              value={currency}
+              onChange={e => setCurrency(e.target.value as 'GNF' | 'USD' | 'EUR')}
+            >
+              <option value="GNF">GNF</option>
+              <option value="USD">USD</option>
+              <option value="EUR">EUR</option>
+            </select>
           </div>
-        </div>
 
-        <div className="finance-row">
-          <label>Montant facturé :</label>
-          <input
-            type="number"
-            value={invoiceAmount}
-            onChange={e => setInvoiceAmount(e.target.value)}
-          />
-          <div className="finance-info">
-            Affiché: <strong>{formatMoney(invoiceAmount)}</strong>
+          <div className="finance-row">
+            <label>Honoraires prévus :</label>
+            <input
+              type="number"
+              value={feesAmount}
+              onChange={e => setFeesAmount(e.target.value)}
+            />
+            <div className="finance-info">
+              Affiché: <strong>{formatMoney(feesAmount)}</strong>
+            </div>
           </div>
-        </div>
 
-        <div className="finance-info">
-          Montant restant à facturer:{" "}
-          <strong>
-            {remainingToInvoice !== null ? formatMoney(remainingToInvoice) : "—"}
-          </strong>
-        </div>
-
-        <div className="finance-row">
-          <label>Montant recouvré :</label>
-          <input
-            type="number"
-            value={recoveryAmount}
-            onChange={e => setRecoveryAmount(e.target.value)}
-          />
-          <div className="finance-info">
-            Affiché: <strong>{formatMoney(recoveryAmount)}</strong>
+          <div className="finance-row">
+            <label>Montant facturé :</label>
+            <input
+              type="number"
+              value={invoiceAmount}
+              onChange={e => setInvoiceAmount(e.target.value)}
+            />
+            <div className="finance-info">
+              Affiché: <strong>{formatMoney(invoiceAmount)}</strong>
+            </div>
           </div>
-        </div>
 
-        <div className="finance-info">
-          Montant restant à recouvrer:{" "}
-          <strong>
-            {remainingToRecover !== null ? formatMoney(remainingToRecover) : "—"}
-          </strong>
-        </div>
-      </fieldset>
+          <div className="finance-info">
+            Montant restant à facturer:{" "}
+            <strong>
+              {remainingToInvoice !== null ? formatMoney(remainingToInvoice) : "—"}
+            </strong>
+          </div>
+
+          <div className="finance-row">
+            <label>Montant recouvré :</label>
+            <input
+              type="number"
+              value={recoveryAmount}
+              onChange={e => setRecoveryAmount(e.target.value)}
+            />
+            <div className="finance-info">
+              Affiché: <strong>{formatMoney(recoveryAmount)}</strong>
+            </div>
+          </div>
+
+          <div className="finance-info">
+            Montant restant à recouvrer:{" "}
+            <strong>
+              {remainingToRecover !== null ? formatMoney(remainingToRecover) : "—"}
+            </strong>
+          </div>
+        </fieldset>
+      )}
 
       <label>Date d’échéance</label>
       <input
