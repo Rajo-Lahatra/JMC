@@ -5,6 +5,7 @@ import type {
   ServiceLine,
   MissionStage,
 } from '../types'
+import './CreateMissionForm.css'   // ✅ import du CSS
 
 export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
   const [collabs, setCollabs] = useState<Collaborator[]>([])
@@ -13,7 +14,7 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
   const [title, setTitle] = useState('')
   const [service, setService] = useState<ServiceLine>('TLS')
   const [partnerId, setPartnerId] = useState<string | null>(null)
-  const [creatorId, setCreatorId] = useState<string | null>(null) // ✅ nouveau champ
+  const [creatorId, setCreatorId] = useState<string | null>(null)
   const [stage, setStage] = useState<MissionStage>('opportunite')
   const [assignedIds, setAssignedIds] = useState<string[]>([])
   const [situationState, setSituationState] = useState('')
@@ -61,7 +62,7 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
         recovery_amount: billable ? recoveryAmount || null : null,
         due_date: dueDate || null,
         partner_id: partnerId,
-        created_by: creatorId, // ✅ sélectionné manuellement
+        created_by: creatorId,
       }])
       .select('id')
 
@@ -88,6 +89,17 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
     console.log('✅ Fermeture du formulaire et rafraîchissement')
     onCreated()
   }
+
+  // ✅ Calculs automatiques
+  const remainingToInvoice =
+    feesAmount && invoiceAmount
+      ? Number(feesAmount) - Number(invoiceAmount)
+      : null
+
+  const remainingToRecover =
+    invoiceAmount && recoveryAmount
+      ? Number(invoiceAmount) - Number(recoveryAmount)
+      : null
 
   return (
     <form onSubmit={handleSubmit} className="create-mission-form">
@@ -206,26 +218,40 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
       <fieldset disabled={!billable} style={{ opacity: billable ? 1 : 0.5 }}>
         <legend>Détails financiers</legend>
 
-        <label>Honoraires prévus</label>
-        <input
-          type="number"
-          value={feesAmount}
-          onChange={e => setFeesAmount(e.target.value)}
-        />
+        <div className="finance-row">
+          <label>Honoraires prévus :</label>
+          <input
+            type="number"
+            value={feesAmount}
+            onChange={e => setFeesAmount(e.target.value)}
+          />
+        </div>
 
-        <label>Montant facturé</label>
-        <input
-          type="number"
-          value={invoiceAmount}
-          onChange={e => setInvoiceAmount(e.target.value)}
-        />
+        <div className="finance-row">
+          <label>Montant facturé :</label>
+          <input
+            type="number"
+            value={invoiceAmount}
+            onChange={e => setInvoiceAmount(e.target.value)}
+          />
+        </div>
+        <div className="finance-info">
+          Montant restant à facturer :{" "}
+          <strong>{remainingToInvoice !== null ? remainingToInvoice : "—"}</strong>
+        </div>
 
-        <label>Montant recouvré</label>
-        <input
-          type="number"
-          value={recoveryAmount}
-          onChange={e => setRecoveryAmount(e.target.value)}
-        />
+        <div className="finance-row">
+          <label>Montant recouvré :</label>
+          <input
+            type="number"
+            value={recoveryAmount}
+            onChange={e => setRecoveryAmount(e.target.value)}
+          />
+        </div>
+        <div className="finance-info">
+          Montant restant à recouvrer :{" "}
+          <strong>{remainingToRecover !== null ? remainingToRecover : "—"}</strong>
+        </div>
       </fieldset>
 
       <label>Date d’échéance</label>

@@ -1,0 +1,47 @@
+.create-mission-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.create-mission-form label {
+  font-weight: 500;
+  margin-top: 0.5rem;
+}
+
+.create-mission-form input,
+.create-mission-form textarea,
+.create-mission-form select {
+  font-size: 1rem;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.create-mission-form button {
+  margin-top: 1.5rem;
+  padding: 0.8rem 1rem;
+  font-size: 1.1rem;
+  background: #0078d4;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.create-mission-form button:hover {
+  background: #005a9e;
+}
+
+/* Partie financière */
+.finance-info {
+  margin: 0.3rem 0 1rem 0;
+  font-size: 0.95rem;
+  color: #444;
+}
+
+.finance-info strong {
+  color: #0078d4;
+}
