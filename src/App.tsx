@@ -46,10 +46,10 @@ function App() {
         </section>
       ) : (
         <>
-          <section className="profil-section">
-            <MonProfil />
-            <LogoutButton /> {/* ✅ bouton déconnexion */}
-          </section>
+         <div className="profil-floating">
+  <MonProfil />
+  <LogoutButton />
+</div>
 
           <main className="main-content">
             <button

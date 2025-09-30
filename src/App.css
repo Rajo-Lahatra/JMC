@@ -255,4 +255,32 @@ fieldset {
   min-height: 120px;
   resize: vertical;
 }
+.profil-floating {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1rem;
+  width: 250px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+}
+
+.profil-floating h2 {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.profil-floating ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.profil-floating li {
+  font-size: 0.9rem;
+  margin-bottom: 0.3rem;
+}
 
