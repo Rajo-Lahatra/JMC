@@ -73,28 +73,29 @@ ${m.situation_actions || '—'}
 Bien cordialement,`
   }
 
-  const copyToClipboard = async () => {
-    const f = document.getElementById('mailFrm') as HTMLFormElement
-    const subject = f.elements['subject'].value
-    const body = f.elements['body'].value
-    const txt = `Objet: ${subject}\n\n${body}`
-    try {
-      await navigator.clipboard.writeText(txt)
-      alert('📋 Copié dans le presse-papiers.')
-    } catch {
-      alert('❌ Échec de la copie.')
-    }
+const copyToClipboard = async () => {
+  const f = document.getElementById('mailFrm') as HTMLFormElement
+  const subject = (f.elements.namedItem('subject') as HTMLInputElement).value
+  const body = (f.elements.namedItem('body') as HTMLTextAreaElement).value
+  const txt = `Objet: ${subject}\n\n${body}`
+  try {
+    await navigator.clipboard.writeText(txt)
+    alert('📋 Copié dans le presse-papiers.')
+  } catch {
+    alert('❌ Échec de la copie.')
   }
+}
 
-  const openMail = () => {
-    const f = document.getElementById('mailFrm') as HTMLFormElement
-    const to = encodeURIComponent(f.elements['to'].value.trim())
-    const cc = encodeURIComponent(f.elements['cc'].value.trim())
-    const subject = encodeURIComponent(f.elements['subject'].value)
-    const body = encodeURIComponent(f.elements['body'].value)
-    const mailto = `mailto:${to}?subject=${subject}${cc ? `&cc=${cc}` : ''}&body=${body}`
-    window.location.href = mailto
-  }
+const openMail = () => {
+  const f = document.getElementById('mailFrm') as HTMLFormElement
+  const to = encodeURIComponent((f.elements.namedItem('to') as HTMLInputElement).value.trim())
+  const cc = encodeURIComponent((f.elements.namedItem('cc') as HTMLInputElement).value.trim())
+  const subject = encodeURIComponent((f.elements.namedItem('subject') as HTMLInputElement).value)
+  const body = encodeURIComponent((f.elements.namedItem('body') as HTMLTextAreaElement).value)
+  const mailto = `mailto:${to}?subject=${subject}${cc ? `&cc=${cc}` : ''}&body=${body}`
+  window.location.href = mailto
+}
+
 
   return (
     <>
