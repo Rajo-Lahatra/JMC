@@ -98,6 +98,7 @@ export function TimeManagerModal({ onClose }: { onClose: () => void }) {
                     <th>Heures</th>
                     <th>Taux</th>
                     <th>Valeur</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -113,6 +114,9 @@ export function TimeManagerModal({ onClose }: { onClose: () => void }) {
                         <td>{t.hours_worked}</td>
                         <td>{rate} EUR</td>
                         <td>{value.toFixed(2)} EUR</td>
+                          <td>
+    <button onClick={() => handleDelete(t.id)}>🗑 Supprimer</button>
+  </td>
                       </tr>
                     )
                   })}

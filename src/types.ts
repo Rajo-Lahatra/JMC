@@ -61,4 +61,12 @@ export interface Mission {
   created_at: string;
   updated_at: string;
 }
+export type TimesheetEntry = {
+  id: string
+  mission_id: string
+  collaborator_id: string
+  date_worked: string
+  hours_worked: number
+  valorized?: boolean
+}
 
