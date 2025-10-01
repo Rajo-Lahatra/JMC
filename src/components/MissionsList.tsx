@@ -139,13 +139,13 @@ const filteredMissions = missions.filter(m => {
     onChange={e => setSearchTerm(e.target.value)}
   />
 
-  <select value={filterService} onChange={e => setFilterService(e.target.value)}>
-    <option value="">Toutes les lignes</option>
-    <option value="TLS">TLS</option>
-    <option value="TAX">TAX</option>
-    <option value="LEGAL">LEGAL</option>
-    <option value="ADVISORY">ADVISORY</option>
-  </select>
+<select value={filterService} onChange={e => setFilterService(e.target.value)}>
+  <option value="">Toutes les lignes</option>
+  <option value="TLS">TLS (Tax & Legal Services)</option>
+  <option value="GCS">GCS (Global Compliance Services)</option>
+  <option value="LTS">LTS (Litigation Services)</option>
+  <option value="Advisory">Advisory</option>
+</select>
 
   <select value={filterCreator} onChange={e => setFilterCreator(e.target.value)}>
     <option value="">Tous les créateurs</option>
