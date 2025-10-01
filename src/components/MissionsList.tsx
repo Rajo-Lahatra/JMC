@@ -26,6 +26,12 @@ export function MissionsList({ refreshFlag, onEdit }: MissionsListProps) {
   const [selected, setSelected] = useState<Mission | null>(null)
   const [emailMission, setEmailMission] = useState<Mission | null>(null)
   const [selectedRecipients, setSelectedRecipients] = useState<string[]>([])
+const [searchTerm, setSearchTerm] = useState('')
+const [filterService, setFilterService] = useState('')
+const [filterCreator, setFilterCreator] = useState('')
+const [filterPartner, setFilterPartner] = useState('')
+const [filterStage, setFilterStage] = useState('')
+const [filterBillable, setFilterBillable] = useState('')
 
   useEffect(() => {
     setLoading(true)
@@ -96,9 +102,87 @@ Bien cordialement,`
     const mailto = `mailto:${to}?subject=${subject}${cc ? `&cc=${cc}` : ''}&body=${body}`
     window.location.href = mailto
   }
+const filteredMissions = missions.filter(m => {
+  const matchesSearch =
+    m.client_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    m.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    m.dossier_number?.toLowerCase().includes(searchTerm.toLowerCase())
+
+  const matchesService = filterService ? m.service === filterService : true
+  const matchesCreator = filterCreator ? m.created_by === filterCreator : true
+  const matchesPartner = filterPartner ? m.partner_id === filterPartner : true
+  const matchesStage = filterStage ? m.stage === filterStage : true
+  const matchesBillable =
+    filterBillable === ''
+      ? true
+      : filterBillable === 'true'
+      ? m.billable === true
+      : m.billable === false
 
   return (
+    matchesSearch &&
+    matchesService &&
+    matchesCreator &&
+    matchesPartner &&
+    matchesStage &&
+    matchesBillable
+  )
+})
+  return (
     <>
+
+    <div className="filters-bar">
+  <input
+    type="text"
+    placeholder="🔍 Rechercher..."
+    value={searchTerm}
+    onChange={e => setSearchTerm(e.target.value)}
+  />
+
+  <select value={filterService} onChange={e => setFilterService(e.target.value)}>
+    <option value="">Toutes les lignes</option>
+    <option value="TLS">TLS</option>
+    <option value="TAX">TAX</option>
+    <option value="LEGAL">LEGAL</option>
+    <option value="ADVISORY">ADVISORY</option>
+  </select>
+
+  <select value={filterCreator} onChange={e => setFilterCreator(e.target.value)}>
+    <option value="">Tous les créateurs</option>
+    {collabs.map(c => (
+      <option key={c.id} value={c.id}>
+        {c.first_name} {c.last_name}
+      </option>
+    ))}
+  </select>
+
+  <select value={filterPartner} onChange={e => setFilterPartner(e.target.value)}>
+    <option value="">Tous les associés</option>
+    {collabs
+      .filter(c => c.grade === 'Partner')
+      .map(c => (
+        <option key={c.id} value={c.id}>
+          {c.first_name} {c.last_name}
+        </option>
+      ))}
+  </select>
+
+  <select value={filterStage} onChange={e => setFilterStage(e.target.value)}>
+    <option value="">Toutes les étapes</option>
+    {Object.entries(stageLabels).map(([key, label]) => (
+      <option key={key} value={key}>
+        {label}
+      </option>
+    ))}
+  </select>
+
+  <select value={filterBillable} onChange={e => setFilterBillable(e.target.value)}>
+    <option value="">Toutes les missions</option>
+    <option value="true">Facturables</option>
+    <option value="false">Non facturables</option>
+  </select>
+</div>
+
       <table className="missions-table">
         <thead>
           <tr>
@@ -118,7 +202,7 @@ Bien cordialement,`
           {loading ? (
             <tr><td colSpan={10}>Chargement…</td></tr>
           ) : (
-            missions.map(m => (
+            filteredMissions.map(m => (
               <tr key={m.id}>
                 <td>{getName(m.created_by!)}</td>
                 <td>{m.dossier_number}</td>

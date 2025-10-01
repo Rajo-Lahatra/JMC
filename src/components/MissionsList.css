@@ -106,3 +106,16 @@ button:hover {
   background: #005a9e;
 }
 
+.filters-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.filters-bar input,
+.filters-bar select {
+  padding: 0.5rem;
+  font-size: 1rem;
+  min-width: 180px;
+}
