@@ -61,6 +61,8 @@
 
 .timesheet-table th {
   background: #eee;
+  color: #ff6600; /* ✅ orange vif comme ton bouton */
+  font-weight: bold;
 }
 
 .add-timesheet-row {
