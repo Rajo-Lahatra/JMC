@@ -8,6 +8,7 @@ import { LoginForm } from './components/LoginForm'
 import { LogoutButton } from './components/LogoutButton'
 import { supabase } from './lib/supabaseClient'
 import { TimeManagerModal } from './components/TimeManagerModal'
+import { ImportMissionForm } from './components/ImportMissionForm'
 
 function App() {
   const [showCreate, setShowCreate] = useState(false)
@@ -15,6 +16,7 @@ function App() {
   const [user, setUser] = useState<User | null>(null)
   const [refreshFlag, setRefreshFlag] = useState(0)
   const [showTimeManager, setShowTimeManager] = useState(false)
+const [showImport, setShowImport] = useState(false)
 
   const handleCreated = () => {
     setShowCreate(false)
@@ -78,6 +80,12 @@ function App() {
             >
               Créer une mission
             </button>
+<button
+  className="btn-import-mission"
+  onClick={() => setShowImport(true)}
+>
+  📥 Importer des missions
+</button>
 
             <button onClick={() => setShowTimeManager(true)}>🕒 Gestion des temps passés</button>
 
@@ -95,6 +103,17 @@ function App() {
               </div>
             </div>
           )}
+{showImport && (
+  <div className="modal-overlay" onClick={() => setShowImport(false)}>
+    <div className="modal-content" onClick={e => e.stopPropagation()}>
+      <button className="modal-close" onClick={() => setShowImport(false)}>×</button>
+      <ImportMissionForm onImported={() => {
+        setShowImport(false)
+        setRefreshFlag(prev => prev + 1)
+      }} />
+    </div>
+  </div>
+)}
 
           {editingMissionId && (
             <div className="modal-overlay" onClick={() => setEditingMissionId(null)}>
