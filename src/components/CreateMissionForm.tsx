@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import type { ServiceLine, MissionStage } from '../types'
 import './CreateMissionForm.css'
+import { missionCatalog } from '../missionCatalog' 
 
 // ✅ Nouveau type adapté à ta sélection
 type CollaboratorLite = {
@@ -16,7 +17,6 @@ type CollaboratorLite = {
 export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
   const [collabs, setCollabs] = useState<CollaboratorLite[]>([])
   const [currentUserGrade, setCurrentUserGrade] = useState<string | null>(null)
-
   const [dossierNumber, setDossierNumber] = useState('')
   const [clientName, setClientName] = useState('')
   const [title, setTitle] = useState('')
@@ -33,6 +33,8 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
   const [recoveryAmount, setRecoveryAmount] = useState('')
   const [currency, setCurrency] = useState<'GNF' | 'USD' | 'EUR'>('GNF')
   const [dueDate, setDueDate] = useState<string>('')
+const [selectedCategory, setSelectedCategory] = useState('')
+const [selectedPrestation, setSelectedPrestation] = useState('')
 
   // ✅ état pour activer/désactiver l’édition manuelle
   const [editFinance, setEditFinance] = useState(false)
@@ -74,6 +76,8 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
       .insert([{
         dossier_number: dossierNumber,
         service,
+        category_code: selectedCategory,
+  prestation_code: selectedPrestation,
         title,
         client_name: clientName,
         description: null,
@@ -159,6 +163,33 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
         onChange={e => setClientName(e.target.value)}
         required
       />
+<div className="form-row">
+  <label>Catégorie de Mission</label>
+  <select value={selectedCategory} onChange={e => {
+    setSelectedCategory(e.target.value)
+    setSelectedPrestation('') // reset prestation
+  }}>
+    <option value="">Sélectionner une catégorie</option>
+    {Object.entries(missionCatalog).map(([code, cat]) => (
+      <option key={code} value={code}>{code} – {cat.label}</option>
+    ))}
+  </select>
+</div>
+
+
+
+{selectedCategory && (
+  <div className="form-row">
+    <label>Prestation</label>
+    <select value={selectedPrestation} onChange={e => setSelectedPrestation(e.target.value)}>
+      <option value="">Sélectionner une prestation</option>
+      {Object.entries(missionCatalog[selectedCategory as keyof typeof missionCatalog].prestations).map(([code, label]) => (
+  <option key={code} value={code}>{code} – {label}</option>
+))}
+
+    </select>
+  </div>
+)}
 
       <label>Titre de la mission</label>
       <input
