@@ -31,7 +31,7 @@ export function TimeManagerModal({ onClose }: { onClose: () => void }) {
 
   const fetchTimesheetData = async () => {
     const { data, error } = await supabase
-      .from('timesheet_entries')
+      .from('mission_timesheets')
       .select('*')
 
     if (error) {
