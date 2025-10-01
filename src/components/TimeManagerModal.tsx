@@ -55,7 +55,7 @@ export function TimeManagerModal({ onClose }: { onClose: () => void }) {
     if (!confirm) return
 
     const { error } = await supabase
-      .from('timesheet_entries')
+      .from('mission_timesheets')
       .delete()
       .eq('id', entryId)
 
@@ -151,7 +151,7 @@ export function TimeManagerModal({ onClose }: { onClose: () => void }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {timesheetEntries.map(t => {
+                  {timesheets.map(t => {
                     const collab = collaborators.find(c => c.id === t.collaborator_id)
                     const rate = getRateByGrade(collab?.grade)
                     const value = t.hours_worked * rate
