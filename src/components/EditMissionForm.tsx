@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import type { ServiceLine, MissionStage } from '../types'
+import type { Collaborator } from '../types'
 import './CreateMissionForm.css'
 
 export function EditMissionForm({
@@ -116,12 +117,21 @@ const handleAddTime = async () => {
   }
 
   setNewTime({ collaborator_id: '', date_worked: '', hours_worked: '' })
-  setRefreshFlag(prev => prev + 1) // si tu veux recharger
+
   supabase
     .from('mission_timesheets')
     .select('*')
     .eq('mission_id', missionId)
     .then(({ data }) => setTimesheets(data ?? []))
+}
+
+const hourlyRates: Record<string, number> = {
+  Junior: 100,
+  Senior: 140,
+  Manager: 200,
+  'Senior Manager': 250,
+  Director: 300,
+  Partner: 400,
 }
 
   const remainingToInvoice =
