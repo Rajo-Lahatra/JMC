@@ -1,4 +1,3 @@
-// src/App.tsx
 import type { User } from '@supabase/supabase-js'
 import { useEffect, useState } from 'react'
 import './App.css'
@@ -14,8 +13,8 @@ function App() {
   const [showCreate, setShowCreate] = useState(false)
   const [editingMissionId, setEditingMissionId] = useState<string | null>(null)
   const [user, setUser] = useState<User | null>(null)
-  const [refreshFlag, setRefreshFlag] = useState(0) // ✅ utilisé pour recharger MissionsList
-const [showTimeManager, setShowTimeManager] = useState(false)
+  const [refreshFlag, setRefreshFlag] = useState(0)
+  const [showTimeManager, setShowTimeManager] = useState(false)
 
   const handleCreated = () => {
     setShowCreate(false)
@@ -57,11 +56,7 @@ const [showTimeManager, setShowTimeManager] = useState(false)
           Joe-Adams &amp; Madison Consulting Guinée –  
           Outil de suivi des dossiers, du temps passé, de la facturation et du recouvrement.
         </h1>
-         <button onClick={() => setShowTimeManager(true)}>🕒 Gestion des temps passés</button>
       </header>
-{showTimeManager && (
-  <TimeManagerModal onClose={() => setShowTimeManager(false)} />
-)}
 
       {!user ? (
         <section className="login-section">
@@ -84,14 +79,14 @@ const [showTimeManager, setShowTimeManager] = useState(false)
               Créer une mission
             </button>
 
+            <button onClick={() => setShowTimeManager(true)}>🕒 Gestion des temps passés</button>
+
             <section className="missions-list">
               <h2>Liste des missions</h2>
-              {/* ✅ on passe handleEdit à MissionsList */}
               <MissionsList refreshFlag={refreshFlag} onEdit={handleEdit} />
             </section>
           </main>
 
-          {/* ✅ Modale création */}
           {showCreate && (
             <div className="modal-overlay" onClick={() => setShowCreate(false)}>
               <div className="modal-content" onClick={e => e.stopPropagation()}>
@@ -101,7 +96,6 @@ const [showTimeManager, setShowTimeManager] = useState(false)
             </div>
           )}
 
-          {/* ✅ Modale édition */}
           {editingMissionId && (
             <div className="modal-overlay" onClick={() => setEditingMissionId(null)}>
               <div className="modal-content" onClick={e => e.stopPropagation()}>
@@ -109,7 +103,10 @@ const [showTimeManager, setShowTimeManager] = useState(false)
                 <EditMissionForm missionId={editingMissionId} onUpdated={handleUpdated} />
               </div>
             </div>
-            
+          )}
+
+          {showTimeManager && (
+            <TimeManagerModal onClose={() => setShowTimeManager(false)} />
           )}
         </>
       )}
