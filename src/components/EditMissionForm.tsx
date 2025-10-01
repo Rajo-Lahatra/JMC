@@ -133,7 +133,6 @@ const hourlyRates: Record<string, number> = {
   Director: 300,
   Partner: 400,
 }
-
   const remainingToInvoice =
     feesAmount && invoiceAmount
       ? Number(feesAmount) - Number(invoiceAmount)
@@ -210,10 +209,10 @@ const hourlyRates: Record<string, number> = {
       <label>Étape du dossier</label>
       <select value={stage} onChange={e => setStage(e.target.value as MissionStage)}>
         <option value="opportunite">Opportunité</option>
-        <option value="lettre_envoyee">Lettre envoyée</option>
-        <option value="lettre_signee">Lettre signée</option>
-        <option value="staff_traitement">Traitement interne</option>
-        <option value="revue_manager">Revue manager</option>
+        <option value="lettre_envoyee">Lettre de mission envoyée</option>
+        <option value="lettre_signee">Lettre de mission signée</option>
+        <option value="staff_traitement">Traitement en interne par le staff</option>
+        <option value="revue_manager">Revue au niveau du manager</option>
         <option value="revue_associes">Revue des associés</option>
         <option value="livrable_envoye">Livrable envoyé</option>
         <option value="simple_suivi">Suivi simple</option>
@@ -298,7 +297,7 @@ const hourlyRates: Record<string, number> = {
       <button type="submit">Mettre à jour la mission</button>
 
       <h4>⏱ Temps passé par collaborateur</h4>
-
+<pre>{JSON.stringify(timesheets, null, 2)}</pre>
 <table className="timesheet-table">
   <thead>
     <tr>

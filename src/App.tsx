@@ -8,12 +8,14 @@ import { MissionsList } from './components/MissionsList'
 import { LoginForm } from './components/LoginForm'
 import { LogoutButton } from './components/LogoutButton'
 import { supabase } from './lib/supabaseClient'
+import { TimeManagerModal } from './components/TimeManagerModal'
 
 function App() {
   const [showCreate, setShowCreate] = useState(false)
   const [editingMissionId, setEditingMissionId] = useState<string | null>(null)
   const [user, setUser] = useState<User | null>(null)
   const [refreshFlag, setRefreshFlag] = useState(0) // ✅ utilisé pour recharger MissionsList
+const [showTimeManager, setShowTimeManager] = useState(false)
 
   const handleCreated = () => {
     setShowCreate(false)
@@ -51,11 +53,15 @@ function App() {
           alt="Logo Joe-Adams & Madison Consulting Guinée"
           className="App-logo"
         />
+        <button onClick={() => setShowTimeManager(true)}>🕒 Gestion des temps passés</button>
         <h1>
           Joe-Adams &amp; Madison Consulting Guinée –  
           État de suivi des dossiers en cours
         </h1>
       </header>
+{showTimeManager && (
+  <TimeManagerModal onClose={() => setShowTimeManager(false)} />
+)}
 
       {!user ? (
         <section className="login-section">
@@ -103,6 +109,7 @@ function App() {
                 <EditMissionForm missionId={editingMissionId} onUpdated={handleUpdated} />
               </div>
             </div>
+            
           )}
         </>
       )}
