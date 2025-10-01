@@ -27,8 +27,14 @@ export function EditMissionForm({
   const [recoveryAmount, setRecoveryAmount] = useState('')
   const [currency, setCurrency] = useState<'GNF' | 'USD' | 'EUR'>('GNF')
   const [dueDate, setDueDate] = useState<string>('')
-
   const [editFinance, setEditFinance] = useState(false)
+const [timesheets, setTimesheets] = useState<any[]>([])
+const [collabs, setCollabs] = useState<Collaborator[]>([])
+const [newTime, setNewTime] = useState({
+  collaborator_id: '',
+  date_worked: '',
+  hours_worked: '',
+})
 
   // Charger grade utilisateur + mission
   useEffect(() => {
@@ -69,6 +75,54 @@ export function EditMissionForm({
         }
       })
   }, [missionId])
+
+useEffect(() => {
+  if (!missionId) return
+
+  supabase
+    .from('mission_timesheets')
+    .select('*')
+    .eq('mission_id', missionId)
+    .then(({ data, error }) => {
+      if (error) console.error('Erreur chargement temps:', error)
+      else if (data) setTimesheets(data)
+    })
+
+  supabase
+    .from('collaborators')
+    .select('*')
+    .then(({ data, error }) => {
+      if (error) console.error('Erreur chargement collaborateurs:', error)
+      else if (data) setCollabs(data)
+    })
+}, [missionId])
+
+const handleAddTime = async () => {
+  const { collaborator_id, date_worked, hours_worked } = newTime
+  if (!collaborator_id || !date_worked || !hours_worked) return
+
+  const { error } = await supabase.from('mission_timesheets').insert([
+    {
+      mission_id: missionId,
+      collaborator_id,
+      date_worked,
+      hours_worked: Number(hours_worked),
+    },
+  ])
+
+  if (error) {
+    console.error('Erreur ajout temps:', error)
+    return
+  }
+
+  setNewTime({ collaborator_id: '', date_worked: '', hours_worked: '' })
+  setRefreshFlag(prev => prev + 1) // si tu veux recharger
+  supabase
+    .from('mission_timesheets')
+    .select('*')
+    .eq('mission_id', missionId)
+    .then(({ data }) => setTimesheets(data ?? []))
+}
 
   const remainingToInvoice =
     feesAmount && invoiceAmount
@@ -232,6 +286,68 @@ export function EditMissionForm({
       />
 
       <button type="submit">Mettre à jour la mission</button>
+
+      <h4>⏱ Temps passé par collaborateur</h4>
+
+<table className="timesheet-table">
+  <thead>
+    <tr>
+      <th>Collaborateur</th>
+      <th>Date</th>
+      <th>Heures</th>
+      <th>Taux</th>
+      <th>Valeur</th>
+    </tr>
+  </thead>
+  <tbody>
+    {timesheets.map(t => {
+      const collab = collabs.find(c => c.id === t.collaborator_id)
+      const grade = collab?.grade ?? ''
+      const rate = hourlyRates[grade] ?? 0
+      const value = rate * t.hours_worked
+
+      return (
+        <tr key={t.id}>
+          <td>{collab ? `${collab.first_name} ${collab.last_name}` : t.collaborator_id}</td>
+          <td>{t.date_worked}</td>
+          <td>{t.hours_worked}</td>
+          <td>{rate} EUR</td>
+          <td>{value.toFixed(2)} EUR</td>
+        </tr>
+      )
+    })}
+  </tbody>
+</table>
+
+<div className="add-timesheet-row">
+  <select
+    value={newTime.collaborator_id}
+    onChange={e => setNewTime(prev => ({ ...prev, collaborator_id: e.target.value }))}
+  >
+    <option value="">Choisir collaborateur</option>
+    {collabs.map(c => (
+      <option key={c.id} value={c.id}>
+        {c.first_name} {c.last_name} ({c.grade})
+      </option>
+    ))}
+  </select>
+
+  <input
+    type="date"
+    value={newTime.date_worked}
+    onChange={e => setNewTime(prev => ({ ...prev, date_worked: e.target.value }))}
+  />
+
+  <input
+    type="number"
+    placeholder="Heures"
+    value={newTime.hours_worked}
+    onChange={e => setNewTime(prev => ({ ...prev, hours_worked: e.target.value }))}
+  />
+
+  <button type="button" onClick={handleAddTime}>➕ Ajouter</button>
+</div>
+
     </form>
   )
 }
