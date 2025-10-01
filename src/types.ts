@@ -40,10 +40,10 @@ export interface Collaborator {
 
 export interface Mission {
   id: string;
-  dossier_number: string;         // nouveau numéro de dossier
+  dossier_number: string;
   service: ServiceLine;
-  title: string;                  // titre de la mission
-  client_name: string;            // nom du client ou prospect
+  title: string;
+  client_name: string;
   description: string | null;
   stage: MissionStage;
   situation_state: string | null;
@@ -52,10 +52,13 @@ export interface Mission {
   invoice_stage: FinancialInvoiceStage;
   recovery_stage: FinancialRecoveryStage;
   honoraires: number;
+  invoice_amount?: number;   // ✅ ajouté
+  recovery_amount?: number;  // ✅ ajouté
   status: MissionStatus;
   due_date: string | null;
   partner_id: string | null;
-  created_by?: string // ✅ nouvelle propriété
+  created_by?: string;
   created_at: string;
   updated_at: string;
 }
+
