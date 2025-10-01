@@ -53,11 +53,11 @@ const [showTimeManager, setShowTimeManager] = useState(false)
           alt="Logo Joe-Adams & Madison Consulting Guinée"
           className="App-logo"
         />
-        <button onClick={() => setShowTimeManager(true)}>🕒 Gestion des temps passés</button>
         <h1>
           Joe-Adams &amp; Madison Consulting Guinée –  
-          État de suivi des dossiers en cours
+          Outil de suivi des dossiers, du temps passé, de la facturation et du recouvrement.
         </h1>
+         <button onClick={() => setShowTimeManager(true)}>🕒 Gestion des temps passés</button>
       </header>
 {showTimeManager && (
   <TimeManagerModal onClose={() => setShowTimeManager(false)} />
