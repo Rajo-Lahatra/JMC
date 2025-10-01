@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
-import type { Collaborator, Mission, TimesheetEntry } from '../types'
+import type { Collaborator, Mission } from '../types'
 import './TimeManagerModal.css'
 
 export function TimeManagerModal({ onClose }: { onClose: () => void }) {
@@ -8,7 +8,6 @@ export function TimeManagerModal({ onClose }: { onClose: () => void }) {
   const [timesheets, setTimesheets] = useState<any[]>([])
   const [collabs, setCollabs] = useState<Collaborator[]>([])
   const [collaborators, setCollaborators] = useState<Collaborator[]>([])
-  const [timesheetEntries, setTimesheetEntries] = useState<TimesheetEntry[]>([])
   const [newTime, setNewTime] = useState({
     mission_id: '',
     collaborator_id: '',
@@ -27,18 +26,6 @@ export function TimeManagerModal({ onClose }: { onClose: () => void }) {
 
   const getRateByGrade = (grade?: string): number => {
     return hourlyRates[grade ?? ''] ?? 0
-  }
-
-  const fetchTimesheetData = async () => {
-    const { data, error } = await supabase
-      .from('mission_timesheets')
-      .select('*')
-
-    if (error) {
-      console.error('Erreur chargement des temps:', error)
-    } else {
-      setTimesheetEntries(data)
-    }
   }
 
   const fetchCollaborators = async () => {
@@ -64,7 +51,8 @@ export function TimeManagerModal({ onClose }: { onClose: () => void }) {
       alert('❌ Échec de la suppression')
     } else {
       alert('✅ Entrée supprimée')
-      fetchTimesheetData()
+      const { data } = await supabase.from('mission_timesheets').select('*')
+      if (data) setTimesheets(data)
     }
   }
 
@@ -104,7 +92,6 @@ export function TimeManagerModal({ onClose }: { onClose: () => void }) {
   }
 
   useEffect(() => {
-    fetchTimesheetData()
     fetchCollaborators()
 
     supabase.from('missions').select('*').then(({ data }) => {
@@ -130,6 +117,7 @@ export function TimeManagerModal({ onClose }: { onClose: () => void }) {
           const valorisation = getValorisation(m.id)
           const facture = Number(m.invoice_amount ?? 0)
           const ecart = valorisation - facture
+          const entries = getMissionTimes(m.id)
 
           return (
             <div key={m.id} className="mission-block">
@@ -151,7 +139,7 @@ export function TimeManagerModal({ onClose }: { onClose: () => void }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {timesheets.map(t => {
+                  {entries.map(t => {
                     const collab = collaborators.find(c => c.id === t.collaborator_id)
                     const rate = getRateByGrade(collab?.grade)
                     const value = t.hours_worked * rate
