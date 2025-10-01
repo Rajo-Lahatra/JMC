@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import type { Collaborator, Mission } from '../types'
 import './TimeManagerModal.css'
+import type { TimesheetEntry } from '../types'; // si ce n’est pas déjà importé
+ 
+const [timesheetEntries, setTimesheetEntries] = useState<TimesheetEntry[]>([])
 
 export function TimeManagerModal({ onClose }: { onClose: () => void }) {
   const [missions, setMissions] = useState<Mission[]>([])
@@ -22,6 +25,13 @@ export function TimeManagerModal({ onClose }: { onClose: () => void }) {
     Director: 300,
     Partner: 400,
   }
+useEffect(() => {
+  fetchTimesheetData()
+}, [])
+useEffect(() => {
+  fetchTimesheetData()
+  fetchCollaborators()
+}, [])
 
   useEffect(() => {
     supabase.from('missions').select('*').then(({ data }) => {
@@ -36,6 +46,21 @@ export function TimeManagerModal({ onClose }: { onClose: () => void }) {
       if (data) setCollabs(data)
     })
   }, [])
+const handleDelete = async (entryId: string) => Promise<void>
+
+  const { error } = await supabase
+    .from('timesheet_entries')
+    .delete()
+    .eq('id', entryId)
+
+  if (error) {
+    console.error('Erreur suppression:', error)
+    alert('❌ Échec de la suppression')
+  } else {
+    alert('✅ Entrée supprimée')
+    fetchTimesheetData()
+  }
+}
 
   const handleAddTime = async () => {
     const { mission_id, collaborator_id, date_worked, hours_worked } = newTime
@@ -63,6 +88,44 @@ export function TimeManagerModal({ onClose }: { onClose: () => void }) {
   const getCollaborator = (id: string) =>
     collabs.find(c => c.id === id)
 
+const fetchTimesheetData = async () => {
+  const { data, error } = await supabase
+    .from('timesheet_entries')
+    .select('*')
+
+  if (error) {
+    console.error('Erreur chargement des temps:', error)
+  } else {
+    setTimesheetEntries(data)
+  }
+}
+const handleDelete = async (entryId: string) => {
+  const confirm = window.confirm('Confirmer la suppression de cette entrée ?')
+  if (!confirm) return
+
+  const { error } = await supabase
+    .from('timesheet_entries')
+    .delete()
+    .eq('id', entryId)
+
+  if (error) {
+    console.error('Erreur suppression:', error)
+    alert('❌ Échec de la suppression')
+  } else {
+    alert('✅ Entrée supprimée')
+    fetchTimesheetData()
+  }
+}
+const [collaborators, setCollaborators] = useState<Collaborator[]>([])
+
+const fetchCollaborators = async () => {
+  const { data, error } = await supabase.from('collaborators').select('*')
+  if (error) {
+    console.error('Erreur chargement collaborateurs:', error)
+  } else {
+    setCollaborators(data)
+  }
+}
   const getValorisation = (missionId: string) => {
     const entries = getMissionTimes(missionId)
     return entries.reduce((sum, t) => {
@@ -102,24 +165,25 @@ export function TimeManagerModal({ onClose }: { onClose: () => void }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {getMissionTimes(m.id).map(t => {
-                    const collab = getCollaborator(t.collaborator_id)
-                    const rate = hourlyRates[collab?.grade ?? ''] ?? 0
-                    const value = rate * t.hours_worked
+                  {timesheetEntries.map(t => {
+  const collab = collaborators.find(c => c.id === t.collaborator_id)
+  const rate = getRateByGrade(collab?.grade)
+  const value = t.hours_worked * rate
 
-                    return (
-                      <tr key={t.id}>
-                        <td>{collab ? `${collab.first_name} ${collab.last_name}` : t.collaborator_id}</td>
-                        <td>{t.date_worked}</td>
-                        <td>{t.hours_worked}</td>
-                        <td>{rate} EUR</td>
-                        <td>{value.toFixed(2)} EUR</td>
-                          <td>
-    <button onClick={() => handleDelete(t.id)}>🗑 Supprimer</button>
-  </td>
-                      </tr>
-                    )
-                  })}
+  return (
+    <tr key={t.id}>
+      <td>{collab ? `${collab.first_name} ${collab.last_name}` : t.collaborator_id}</td>
+      <td>{t.date_worked}</td>
+      <td>{t.hours_worked}</td>
+      <td>{rate} EUR</td>
+      <td>{value.toFixed(2)} EUR</td>
+      <td>
+        <button onClick={() => handleDelete(t.id)}>🗑 Supprimer</button>
+      </td>
+    </tr>
+  )
+})}
+
                 </tbody>
               </table>
             </div>
