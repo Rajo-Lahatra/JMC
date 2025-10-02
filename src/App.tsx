@@ -11,19 +11,21 @@ import { TimeManagerModal } from './components/TimeManagerModal'
 import { ImportMissionForm } from './components/ImportMissionForm'
 import { ClientStats } from './components/ClientStats'
 import { CollaboratorStats } from './components/CollaboratorStats'
-import { LoginLogs } from './components/LoginLogs' // ✅ nouveau composant
+import { LoginLogs } from './components/LoginLogs'
+
+const AUTO_LOGOUT_MINUTES = 30
 
 function App() {
   const [showCreate, setShowCreate] = useState(false)
   const [editingMissionId, setEditingMissionId] = useState<string | null>(null)
   const [user, setUser] = useState<User | null>(null)
-  const [userGrade, setUserGrade] = useState<string | null>(null) // ✅ grade utilisateur
+  const [userGrade, setUserGrade] = useState<string | null>(null)
   const [refreshFlag, setRefreshFlag] = useState(0)
   const [showTimeManager, setShowTimeManager] = useState(false)
   const [showImport, setShowImport] = useState(false)
   const [showStats, setShowStats] = useState(false)
   const [showCollaboratorStats, setShowCollaboratorStats] = useState(false)
-  const [showLoginLogs, setShowLoginLogs] = useState(false) // ✅ état journal
+  const [showLoginLogs, setShowLoginLogs] = useState(false)
 
   const handleCreated = () => {
     setShowCreate(false)
@@ -40,37 +42,47 @@ function App() {
   }
 
   useEffect(() => {
+    let inactivityTimer: ReturnType<typeof setTimeout>
+
+    const resetInactivityTimer = () => {
+      clearTimeout(inactivityTimer)
+      inactivityTimer = setTimeout(() => {
+        supabase.auth.signOut()
+        window.location.href = '/login'
+      }, AUTO_LOGOUT_MINUTES * 60 * 1000)
+    }
+
+    const events = ['mousemove', 'keydown', 'click', 'scroll']
+    events.forEach(event => window.addEventListener(event, resetInactivityTimer))
+    resetInactivityTimer()
+
     supabase.auth.getSession().then(({ data }) => {
       const currentUser = data.session?.user ?? null
       setUser(currentUser)
 
       if (currentUser) {
         supabase
-          supabase
-  .from('login_logs')
-  .insert([
-    {
-      user_id: currentUser.id,
-      login_time: new Date().toISOString(),
-      user_agent: navigator.userAgent,
-    }
-  ])
-  .then(({ error }) => {
-    if (error) console.error('❌ Erreur insertion login_logs:', error)
-  })
+          .from('login_logs')
+          .insert([
+            {
+              user_id: currentUser.id,
+              login_time: new Date().toISOString(),
+              user_agent: navigator.userAgent,
+            }
+          ])
+          .then(({ error }) => {
+            if (error) console.error('❌ Erreur insertion login_logs:', error)
+          })
 
-
-        // ✅ récupérer le grade
         supabase
           .from('collaborators')
           .select('grade')
           .eq('auth_id', currentUser.id)
           .single()
           .then(({ data, error }) => {
-  if (error) console.error('Erreur récupération grade:', error)
-  if (data) setUserGrade(data.grade)
-})
-
+            if (error) console.error('Erreur récupération grade:', error)
+            if (data) setUserGrade(data.grade)
+          })
       }
     })
 
@@ -93,17 +105,20 @@ function App() {
           .eq('auth_id', currentUser.id)
           .single()
           .then(({ data, error }) => {
-  if (error) console.error('Erreur récupération grade:', error)
-  if (data) setUserGrade(data.grade)
-})
-
+            if (error) console.error('Erreur récupération grade:', error)
+            if (data) setUserGrade(data.grade)
+          })
       }
     })
 
-    return () => subscription.unsubscribe()
+    return () => {
+      subscription.unsubscribe()
+      clearTimeout(inactivityTimer)
+      events.forEach(event => window.removeEventListener(event, resetInactivityTimer))
+    }
   }, [])
 
-  const authorizedGrades = ['Senior Manager'] // ✅ grades autorisés
+  const authorizedGrades = ['Senior Manager']
 
   return (
     <div className="App">
@@ -167,19 +182,18 @@ function App() {
 
             {authorizedGrades.includes(userGrade ?? '') && (
               <button
-  onClick={() => setShowLoginLogs(prev => !prev)}
-  style={{
-    background: 'none',
-    border: 'none',
-    cursor: 'pointer',
-    fontSize: '1.2rem',
-    marginLeft: '0.5rem',
-  }}
-  title="Journal des connexions"
->
-  🛡️
-</button>
-
+                onClick={() => setShowLoginLogs(prev => !prev)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: '1.2rem',
+                  marginLeft: '0.5rem',
+                }}
+                title="Journal des connexions"
+              >
+                🛡️
+              </button>
             )}
 
             {authorizedGrades.includes(userGrade ?? '') && showLoginLogs && (
