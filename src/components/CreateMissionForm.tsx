@@ -35,6 +35,10 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
   const [dueDate, setDueDate] = useState<string>('')
 const [selectedCategory, setSelectedCategory] = useState('')
 const [selectedPrestation, setSelectedPrestation] = useState('')
+const [clients, setClients] = useState<any[]>([])
+const [selectedClientId, setSelectedClientId] = useState('')
+const [newClientName, setNewClientName] = useState('')
+
 
   // ✅ état pour activer/désactiver l’édition manuelle
   const [editFinance, setEditFinance] = useState(false)
@@ -62,6 +66,9 @@ const [selectedPrestation, setSelectedPrestation] = useState('')
       if (profErr) console.error('Erreur récupération grade:', profErr)
       else if (profile) setCurrentUserGrade(profile.grade)
     })
+  supabase.from('clients').select('*').then(({ data }) => {
+    if (data) setClients(data)
+  })
   }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -71,50 +78,78 @@ const [selectedPrestation, setSelectedPrestation] = useState('')
       return
     }
 
-    const { data: missions, error: missionError } = await supabase
-      .from('missions')
-      .insert([{
-        dossier_number: dossierNumber,
-        service,
-        category_code: selectedCategory,
-  prestation_code: selectedPrestation,
-        title,
-        client_name: clientName,
-        description: null,
-        stage,
-        situation_state: situationState || null,
-        situation_actions: situationActions || null,
-        billable,
-        fees_amount: feesAmount || null,
-        invoice_amount: billable ? invoiceAmount || null : null,
-        recovery_amount: billable ? recoveryAmount || null : null,
-        currency,
-        due_date: dueDate || null,
-        partner_id: partnerId,
-        created_by: creatorId,
-      }])
-      .select('id')
+   const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault()
 
-    if (missionError || !missions?.length) {
-      console.error('❌ Erreur insertion mission:', missionError)
+  if (!creatorId) {
+    console.error('❌ Aucun créateur sélectionné')
+    return
+  }
+
+  let clientId = selectedClientId
+
+  // Si "Nouveau client" est sélectionné
+  if (selectedClientId === '__new__' && newClientName.trim()) {
+    const { data: newClient, error: clientError } = await supabase
+      .from('clients')
+      .insert({ name: newClientName.trim() })
+      .select()
+      .single()
+
+    if (clientError || !newClient) {
+      alert('❌ Échec de la création du client')
       return
     }
 
-    const missionId = missions[0].id
-
-    if (assignedIds.length) {
-      const links = assignedIds.map(id => ({
-        mission_id: missionId,
-        collaborator_id: id,
-      }))
-      const { error: linkError } = await supabase
-        .from('mission_collaborators')
-        .insert(links)
-      if (linkError) console.error('❌ Erreur liaison collaborateurs:', linkError)
-    }
-
-    onCreated()
+    clientId = newClient.id
   }
+
+  const { data: missions, error: missionError } = await supabase
+    .from('missions')
+    .insert([{
+      dossier_number: dossierNumber,
+      service,
+      category_code: selectedCategory,
+      prestation_code: selectedPrestation,
+      title,
+      client_id: clientId,
+      description: null,
+      stage,
+      situation_state: situationState || null,
+      situation_actions: situationActions || null,
+      billable,
+      fees_amount: feesAmount || null,
+      invoice_amount: billable ? invoiceAmount || null : null,
+      recovery_amount: billable ? recoveryAmount || null : null,
+      currency,
+      due_date: dueDate || null,
+      partner_id: partnerId,
+      created_by: creatorId,
+    }])
+    .select('id')
+
+  if (missionError || !missions || missions.length === 0) {
+    alert('❌ Échec de la création de la mission')
+    return
+  }
+
+  const missionId = missions[0].id
+
+  if (assignedIds.length) {
+    const links = assignedIds.map(id => ({
+      mission_id: missionId,
+      collaborator_id: id,
+    }))
+    const { error: linkError } = await supabase
+      .from('mission_collaborators')
+      .insert(links)
+    if (linkError) console.error('❌ Erreur liaison collaborateurs:', linkError)
+  }
+
+  alert('✅ Mission créée avec succès')
+  onCreated()
+}
+
   // Calculs automatiques
   const remainingToInvoice =
     feesAmount && invoiceAmount
@@ -176,6 +211,25 @@ const [selectedPrestation, setSelectedPrestation] = useState('')
   </select>
 </div>
 
+<div className="form-row">
+  <label>Client</label>
+  <select value={selectedClientId} onChange={e => setSelectedClientId(e.target.value)}>
+    <option value="">Sélectionner un client</option>
+    {clients.map(c => (
+      <option key={c.id} value={c.id}>{c.name}</option>
+    ))}
+    <option value="__new__">➕ Nouveau client</option>
+  </select>
+</div>
+
+{selectedClientId === '__new__' && (
+  <input
+    type="text"
+    placeholder="Nom du nouveau client"
+    value={newClientName}
+    onChange={e => setNewClientName(e.target.value)}
+  />
+)}
 
 
 {selectedCategory && (
