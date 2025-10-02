@@ -78,9 +78,6 @@ const [newClientName, setNewClientName] = useState('')
       return
     }
 
-   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault()
-
   if (!creatorId) {
     console.error('❌ Aucun créateur sélectionné')
     return
