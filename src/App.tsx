@@ -9,6 +9,8 @@ import { LogoutButton } from './components/LogoutButton'
 import { supabase } from './lib/supabaseClient'
 import { TimeManagerModal } from './components/TimeManagerModal'
 import { ImportMissionForm } from './components/ImportMissionForm'
+import { ClientStats } from './components/ClientStats'
+
 
 function App() {
   const [showCreate, setShowCreate] = useState(false)
@@ -59,7 +61,10 @@ const [showImport, setShowImport] = useState(false)
           Outil de suivi des dossiers, du temps passé, de la facturation et du recouvrement.
         </h1>
       </header>
-
+    <div>
+      <h1>Bienvenue sur JMC Stat Tool</h1>
+      <ClientStats />
+    </div>
       {!user ? (
         <section className="login-section">
           <LoginForm />
