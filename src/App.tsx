@@ -46,12 +46,19 @@ function App() {
 
       if (currentUser) {
         supabase
-          .from('login_logs')
-          .insert({
-            user_id: currentUser.id,
-            login_time: new Date().toISOString(),
-            user_agent: navigator.userAgent,
-          })
+          supabase
+  .from('login_logs')
+  .insert([
+    {
+      user_id: currentUser.id,
+      login_time: new Date().toISOString(),
+      user_agent: navigator.userAgent,
+    }
+  ])
+  .then(({ error }) => {
+    if (error) console.error('❌ Erreur insertion login_logs:', error)
+  })
+
 
         // ✅ récupérer le grade
         supabase
@@ -159,9 +166,20 @@ function App() {
             )}
 
             {authorizedGrades.includes(userGrade ?? '') && (
-              <button onClick={() => setShowLoginLogs(prev => !prev)}>
-                {showLoginLogs ? '❌ Masquer journal des connexions' : '🛡️ Voir journal des connexions'}
-              </button>
+              <button
+  onClick={() => setShowLoginLogs(prev => !prev)}
+  style={{
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    fontSize: '1.2rem',
+    marginLeft: '0.5rem',
+  }}
+  title="Journal des connexions"
+>
+  🛡️
+</button>
+
             )}
 
             {authorizedGrades.includes(userGrade ?? '') && showLoginLogs && (
