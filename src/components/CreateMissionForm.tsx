@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import type { ServiceLine, MissionStage } from '../types'
 import './CreateMissionForm.css'
-import { missionCatalog } from '../missionCatalog' 
+import { missionCatalog } from '../lib/missionCatalog' 
 
 // ✅ Nouveau type adapté à ta sélection
 type CollaboratorLite = {
