@@ -103,7 +103,7 @@ function App() {
     return () => subscription.unsubscribe()
   }, [])
 
-  const authorizedGrades = ['Manager', 'Senior Manager', 'Partner'] // ✅ grades autorisés
+  const authorizedGrades = ['Senior Manager'] // ✅ grades autorisés
 
   return (
     <div className="App">
