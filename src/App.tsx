@@ -11,14 +11,14 @@ import { TimeManagerModal } from './components/TimeManagerModal'
 import { ImportMissionForm } from './components/ImportMissionForm'
 import { ClientStats } from './components/ClientStats'
 
-
 function App() {
   const [showCreate, setShowCreate] = useState(false)
   const [editingMissionId, setEditingMissionId] = useState<string | null>(null)
   const [user, setUser] = useState<User | null>(null)
   const [refreshFlag, setRefreshFlag] = useState(0)
   const [showTimeManager, setShowTimeManager] = useState(false)
-const [showImport, setShowImport] = useState(false)
+  const [showImport, setShowImport] = useState(false)
+  const [showStats, setShowStats] = useState(false) // ✅ nouveau état
 
   const handleCreated = () => {
     setShowCreate(false)
@@ -35,12 +35,10 @@ const [showImport, setShowImport] = useState(false)
   }
 
   useEffect(() => {
-    // Vérifie la session actuelle
     supabase.auth.getSession().then(({ data }) => {
       setUser(data.session?.user ?? null)
     })
 
-    // Écoute les changements de session (connexion / déconnexion)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
     })
@@ -61,10 +59,7 @@ const [showImport, setShowImport] = useState(false)
           Outil de suivi des dossiers, du temps passé, de la facturation et du recouvrement.
         </h1>
       </header>
-    <div>
-      <h1>Bienvenue sur JMC Stat Tool</h1>
-      <ClientStats />
-    </div>
+
       {!user ? (
         <section className="login-section">
           <LoginForm />
@@ -79,21 +74,27 @@ const [showImport, setShowImport] = useState(false)
           </div>
 
           <main className="main-content">
-            <button
-              className="btn-create-mission"
-              onClick={() => setShowCreate(true)}
-            >
+            <button className="btn-create-mission" onClick={() => setShowCreate(true)}>
               Créer une mission
             </button>
-            
-<button
-  className="btn-import-mission"
-  onClick={() => setShowImport(true)}
->
-  📥 Importer des missions
-</button>
 
-            <button onClick={() => setShowTimeManager(true)}>🕒 Gestion des temps passés</button>
+            <button className="btn-import-mission" onClick={() => setShowImport(true)}>
+              📥 Importer des missions
+            </button>
+
+            <button onClick={() => setShowTimeManager(true)}>
+              🕒 Gestion des temps passés
+            </button>
+
+            <button onClick={() => setShowStats(prev => !prev)}>
+              {showStats ? '❌ Masquer les statistiques' : '📊 Voir les statistiques'}
+            </button>
+
+            {showStats && (
+              <section className="stats-section">
+                <ClientStats />
+              </section>
+            )}
 
             <section className="missions-list">
               <h2>Liste des missions</h2>
@@ -109,17 +110,18 @@ const [showImport, setShowImport] = useState(false)
               </div>
             </div>
           )}
-{showImport && (
-  <div className="modal-overlay" onClick={() => setShowImport(false)}>
-    <div className="modal-content" onClick={e => e.stopPropagation()}>
-      <button className="modal-close" onClick={() => setShowImport(false)}>×</button>
-      <ImportMissionForm onImported={() => {
-        setShowImport(false)
-        setRefreshFlag(prev => prev + 1)
-      }} />
-    </div>
-  </div>
-)}
+
+          {showImport && (
+            <div className="modal-overlay" onClick={() => setShowImport(false)}>
+              <div className="modal-content" onClick={e => e.stopPropagation()}>
+                <button className="modal-close" onClick={() => setShowImport(false)}>×</button>
+                <ImportMissionForm onImported={() => {
+                  setShowImport(false)
+                  setRefreshFlag(prev => prev + 1)
+                }} />
+              </div>
+            </div>
+          )}
 
           {editingMissionId && (
             <div className="modal-overlay" onClick={() => setEditingMissionId(null)}>
