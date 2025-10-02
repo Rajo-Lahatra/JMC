@@ -188,13 +188,17 @@ const [newClientName, setNewClientName] = useState('')
         onChange={e => setDossierNumber(e.target.value)}
         required
       />
+<div className="form-row">
+  <label>Client</label>
+  <select value={selectedClientId} onChange={e => setSelectedClientId(e.target.value)}>
+    <option value="">Sélectionner un client</option>
+    {clients.map(c => (
+      <option key={c.id} value={c.id}>{c.name}</option>
+    ))}
+    <option value="__new__">➕ Nouveau client</option>
+  </select>
+</div>
 
-      <label>Nom du client / prospect</label>
-      <input
-        value={clientName}
-        onChange={e => setClientName(e.target.value)}
-        required
-      />
 <div className="form-row">
   <label>Catégorie de Mission</label>
   <select value={selectedCategory} onChange={e => {
@@ -208,16 +212,6 @@ const [newClientName, setNewClientName] = useState('')
   </select>
 </div>
 
-<div className="form-row">
-  <label>Client</label>
-  <select value={selectedClientId} onChange={e => setSelectedClientId(e.target.value)}>
-    <option value="">Sélectionner un client</option>
-    {clients.map(c => (
-      <option key={c.id} value={c.id}>{c.name}</option>
-    ))}
-    <option value="__new__">➕ Nouveau client</option>
-  </select>
-</div>
 
 {selectedClientId === '__new__' && (
   <input
