@@ -18,7 +18,6 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
   const [collabs, setCollabs] = useState<CollaboratorLite[]>([])
   const [currentUserGrade, setCurrentUserGrade] = useState<string | null>(null)
   const [dossierNumber, setDossierNumber] = useState('')
-  const [clientName, setClientName] = useState('')
   const [title, setTitle] = useState('')
   const [service, setService] = useState<ServiceLine>('TLS')
   const [partnerId, setPartnerId] = useState<string | null>(null)
