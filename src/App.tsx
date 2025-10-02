@@ -10,6 +10,7 @@ import { supabase } from './lib/supabaseClient'
 import { TimeManagerModal } from './components/TimeManagerModal'
 import { ImportMissionForm } from './components/ImportMissionForm'
 import { ClientStats } from './components/ClientStats'
+import { CollaboratorStats } from './components/CollaboratorStats'
 
 function App() {
   const [showCreate, setShowCreate] = useState(false)
@@ -19,7 +20,7 @@ function App() {
   const [showTimeManager, setShowTimeManager] = useState(false)
   const [showImport, setShowImport] = useState(false)
   const [showStats, setShowStats] = useState(false) // ✅ nouveau état
-
+const [showCollaboratorStats, setShowCollaboratorStats] = useState(false)
   const handleCreated = () => {
     setShowCreate(false)
     setRefreshFlag(prev => prev + 1)
@@ -87,7 +88,7 @@ function App() {
             </button>
 
             <button onClick={() => setShowStats(prev => !prev)}>
-              {showStats ? '❌ Masquer les statistiques' : '📊 Voir les statistiques'}
+              {showStats ? '❌ Masquer stats missions' : '📊 Stats par mission'}
             </button>
 
             {showStats && (
@@ -95,7 +96,14 @@ function App() {
                 <ClientStats />
               </section>
             )}
-
+<button onClick={() => setShowCollaboratorStats(prev => !prev)}>
+  {showCollaboratorStats ? '❌ Masquer stats collaborateurs' : '👥 Stats par collaborateur'}
+</button>
+{showCollaboratorStats && (
+  <section className="stats-section">
+    <CollaboratorStats />
+  </section>
+)}
             <section className="missions-list">
               <h2>Liste des missions</h2>
               <MissionsList refreshFlag={refreshFlag} onEdit={handleEdit} />
