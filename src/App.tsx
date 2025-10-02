@@ -60,8 +60,10 @@ function App() {
           .eq('auth_id', currentUser.id)
           .single()
           .then(({ data, error }) => {
-            if (data) setUserGrade(data.grade)
-          })
+  if (error) console.error('Erreur récupération grade:', error)
+  if (data) setUserGrade(data.grade)
+})
+
       }
     })
 
@@ -84,8 +86,10 @@ function App() {
           .eq('auth_id', currentUser.id)
           .single()
           .then(({ data, error }) => {
-            if (data) setUserGrade(data.grade)
-          })
+  if (error) console.error('Erreur récupération grade:', error)
+  if (data) setUserGrade(data.grade)
+})
+
       }
     })
 
