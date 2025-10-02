@@ -11,16 +11,20 @@ import { TimeManagerModal } from './components/TimeManagerModal'
 import { ImportMissionForm } from './components/ImportMissionForm'
 import { ClientStats } from './components/ClientStats'
 import { CollaboratorStats } from './components/CollaboratorStats'
+import { LoginLogs } from './components/LoginLogs' // ✅ nouveau composant
 
 function App() {
   const [showCreate, setShowCreate] = useState(false)
   const [editingMissionId, setEditingMissionId] = useState<string | null>(null)
   const [user, setUser] = useState<User | null>(null)
+  const [userGrade, setUserGrade] = useState<string | null>(null) // ✅ grade utilisateur
   const [refreshFlag, setRefreshFlag] = useState(0)
   const [showTimeManager, setShowTimeManager] = useState(false)
   const [showImport, setShowImport] = useState(false)
-  const [showStats, setShowStats] = useState(false) // ✅ nouveau état
-const [showCollaboratorStats, setShowCollaboratorStats] = useState(false)
+  const [showStats, setShowStats] = useState(false)
+  const [showCollaboratorStats, setShowCollaboratorStats] = useState(false)
+  const [showLoginLogs, setShowLoginLogs] = useState(false) // ✅ état journal
+
   const handleCreated = () => {
     setShowCreate(false)
     setRefreshFlag(prev => prev + 1)
@@ -37,15 +41,58 @@ const [showCollaboratorStats, setShowCollaboratorStats] = useState(false)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      setUser(data.session?.user ?? null)
+      const currentUser = data.session?.user ?? null
+      setUser(currentUser)
+
+      if (currentUser) {
+        supabase
+          .from('login_logs')
+          .insert({
+            user_id: currentUser.id,
+            login_time: new Date().toISOString(),
+            user_agent: navigator.userAgent,
+          })
+
+        // ✅ récupérer le grade
+        supabase
+          .from('collaborators')
+          .select('grade')
+          .eq('auth_id', currentUser.id)
+          .single()
+          .then(({ data, error }) => {
+            if (data) setUserGrade(data.grade)
+          })
+      }
     })
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      const currentUser = session?.user ?? null
+      setUser(currentUser)
+
+      if (event === 'SIGNED_IN' && currentUser) {
+        supabase
+          .from('login_logs')
+          .insert({
+            user_id: currentUser.id,
+            login_time: new Date().toISOString(),
+            user_agent: navigator.userAgent,
+          })
+
+        supabase
+          .from('collaborators')
+          .select('grade')
+          .eq('auth_id', currentUser.id)
+          .single()
+          .then(({ data, error }) => {
+            if (data) setUserGrade(data.grade)
+          })
+      }
     })
 
     return () => subscription.unsubscribe()
   }, [])
+
+  const authorizedGrades = ['Manager', 'Senior Manager', 'Partner'] // ✅ grades autorisés
 
   return (
     <div className="App">
@@ -88,7 +135,7 @@ const [showCollaboratorStats, setShowCollaboratorStats] = useState(false)
             </button>
 
             <button onClick={() => setShowStats(prev => !prev)}>
-              {showStats ? '❌ Masquer stats missions' : '📊 Stats par mission'}
+              {showStats ? '❌ Masquer les statistiques' : '📊 Voir les statistiques'}
             </button>
 
             {showStats && (
@@ -96,14 +143,29 @@ const [showCollaboratorStats, setShowCollaboratorStats] = useState(false)
                 <ClientStats />
               </section>
             )}
-<button onClick={() => setShowCollaboratorStats(prev => !prev)}>
-  {showCollaboratorStats ? '❌ Masquer stats collaborateurs' : '👥 Stats par collaborateur'}
-</button>
-{showCollaboratorStats && (
-  <section className="stats-section">
-    <CollaboratorStats />
-  </section>
-)}
+
+            <button onClick={() => setShowCollaboratorStats(prev => !prev)}>
+              {showCollaboratorStats ? '❌ Masquer stats collaborateurs' : '👥 Stats par collaborateur'}
+            </button>
+
+            {showCollaboratorStats && (
+              <section className="stats-section">
+                <CollaboratorStats />
+              </section>
+            )}
+
+            {authorizedGrades.includes(userGrade ?? '') && (
+              <button onClick={() => setShowLoginLogs(prev => !prev)}>
+                {showLoginLogs ? '❌ Masquer journal des connexions' : '🛡️ Voir journal des connexions'}
+              </button>
+            )}
+
+            {authorizedGrades.includes(userGrade ?? '') && showLoginLogs && (
+              <section className="logs-section">
+                <LoginLogs />
+              </section>
+            )}
+
             <section className="missions-list">
               <h2>Liste des missions</h2>
               <MissionsList refreshFlag={refreshFlag} onEdit={handleEdit} />
