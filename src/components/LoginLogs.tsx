@@ -26,16 +26,16 @@ export function LoginLogs() {
             <th>Appareil</th>
           </tr>
         </thead>
-        <tbody>
-          {logs.map((log, i) => (
-            <tr key={i}>
-              <td>{log.users?.email || log.user_id}</td>
-              <td>{new Date(log.login_time).toLocaleString()}</td>
-              <td>{log.user_agent}</td>
-              <td>{log.user_id}</td>
-            </tr>
-          ))}
-        </tbody>
+<tbody>
+  {logs.map((log, i) => (
+    <tr key={i}>
+      <td>{log.profiles?.email || log.user_id}</td>
+      <td>{new Date(log.login_time).toLocaleString()}</td>
+      <td>{log.user_agent}</td>
+    </tr>
+  ))}
+</tbody>
+
       </table>
     </div>
   )
