@@ -13,6 +13,7 @@ type CollaboratorLite = {
   email: string
   auth_id: string | null
 }
+type MissionCatalogType = typeof missionCatalog
 
 export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
   const [collabs, setCollabs] = useState<CollaboratorLite[]>([])
@@ -37,7 +38,6 @@ const [selectedPrestation, setSelectedPrestation] = useState('')
 const [clients, setClients] = useState<any[]>([])
 const [selectedClientId, setSelectedClientId] = useState('')
 const [newClientName, setNewClientName] = useState('')
-
 
   // ✅ état pour activer/désactiver l’édition manuelle
   const [editFinance, setEditFinance] = useState(false)
@@ -205,11 +205,12 @@ const [newClientName, setNewClientName] = useState('')
     setSelectedPrestation('') // reset prestation
   }}>
     <option value="">Sélectionner une catégorie</option>
-    {Object.entries(missionCatalog).map(([code, cat]) => (
-      <option key={code} value={code}>{code} – {cat.label}</option>
+    {Object.entries(missionCatalog).map(([code, category]) => (
+      <option key={code} value={code}>{code} – {category.label}</option>
     ))}
   </select>
 </div>
+
 
 
 {selectedClientId === '__new__' && (
@@ -227,10 +228,11 @@ const [newClientName, setNewClientName] = useState('')
     <label>Prestation</label>
     <select value={selectedPrestation} onChange={e => setSelectedPrestation(e.target.value)}>
       <option value="">Sélectionner une prestation</option>
-      {Object.entries(missionCatalog[selectedCategory as keyof typeof missionCatalog].prestations).map(([code, label]) => (
-  <option key={code} value={code}>{code} – {label}</option>
-))}
-
+      {Object.entries(
+        missionCatalog[selectedCategory as keyof MissionCatalogType].prestations
+      ).map(([code, prestation]) => (
+        <option key={code} value={code}>{code} – {prestation.label}</option>
+      ))}
     </select>
   </div>
 )}

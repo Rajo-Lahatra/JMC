@@ -7,7 +7,7 @@ export function LoginLogs() {
   useEffect(() => {
     supabase
       .from('login_logs')
-      .select('login_time, user_agent, user_id, users(email)')
+      .select('login_time, user_agent, user_id, profiles(email)')
       .order('login_time', { ascending: false })
       .then(({ data, error }) => {
         if (error) console.error('❌ Erreur chargement logs:', error)
@@ -32,6 +32,7 @@ export function LoginLogs() {
               <td>{log.users?.email || log.user_id}</td>
               <td>{new Date(log.login_time).toLocaleString()}</td>
               <td>{log.user_agent}</td>
+              <td>{log.user_id}</td>
             </tr>
           ))}
         </tbody>
