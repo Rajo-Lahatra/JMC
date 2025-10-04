@@ -23,7 +23,6 @@ export function LoginLogs() {
           <tr>
             <th>Utilisateur</th>
             <th>Date de connexion</th>
-            <th>Appareil</th>
           </tr>
         </thead>
 <tbody>
