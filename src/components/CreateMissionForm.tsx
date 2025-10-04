@@ -13,16 +13,14 @@ type CollaboratorLite = {
   auth_id: string | null
 }
 
-type MissionCatalogType = typeof missionCatalog
-
 export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
   const [collabs, setCollabs] = useState<CollaboratorLite[]>([])
   const [currentUserGrade, setCurrentUserGrade] = useState<string | null>(null)
   const [dossierNumber, setDossierNumber] = useState('')
   const [title, setTitle] = useState('')
   const [service, setService] = useState<ServiceLine>('TLS')
-  const [partnerId, setPartnerId] = useState<string | null>(null)
-  const [creatorId, setCreatorId] = useState<string | null>(null)
+const [partnerId, _setPartnerId] = useState<string | null>(null)
+const [creatorId, _setCreatorId] = useState<string | null>(null)
   const [stage, setStage] = useState<MissionStage>('opportunite')
   const [assignedIds, setAssignedIds] = useState<string[]>([])
   const [situationState, setSituationState] = useState('')
@@ -139,17 +137,17 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
     onCreated()
   }
 
-  const remainingToInvoice =
+  const _remainingToInvoice =
     feesAmount && invoiceAmount
       ? Number(feesAmount) - Number(invoiceAmount)
       : null
 
-  const remainingToRecover =
+  const _remainingToRecover =
     invoiceAmount && recoveryAmount
       ? Number(invoiceAmount) - Number(recoveryAmount)
       : null
 
-  const formatMoney = (value: string | number | null) => {
+  const _formatMoney = (value: string | number | null) => {
     if (value === null || value === '' || isNaN(Number(value))) return '—'
     return new Intl.NumberFormat('fr-FR', {
       style: 'currency',
