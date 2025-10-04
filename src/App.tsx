@@ -41,14 +41,27 @@ function App() {
     setEditingMissionId(id)
   }
 
+  const logoutUser = async () => {
+    if (user) {
+      await supabase
+        .from('login_logs')
+        .update({ logout_time: new Date().toISOString() })
+        .eq('user_id', user.id)
+        .order('login_time', { ascending: false })
+        .limit(1)
+
+      await supabase.auth.signOut()
+      window.location.href = '/login'
+    }
+  }
+
   useEffect(() => {
     let inactivityTimer: ReturnType<typeof setTimeout>
 
     const resetInactivityTimer = () => {
       clearTimeout(inactivityTimer)
       inactivityTimer = setTimeout(() => {
-        supabase.auth.signOut()
-        window.location.href = '/login'
+        logoutUser()
       }, AUTO_LOGOUT_MINUTES * 60 * 1000)
     }
 
@@ -108,6 +121,15 @@ function App() {
             if (error) console.error('Erreur récupération grade:', error)
             if (data) setUserGrade(data.grade)
           })
+      }
+
+      if (event === 'SIGNED_OUT' && currentUser) {
+        supabase
+          .from('login_logs')
+          .update({ logout_time: new Date().toISOString() })
+          .eq('user_id', currentUser.id)
+          .order('login_time', { ascending: false })
+          .limit(1)
       }
     })
 
@@ -227,8 +249,7 @@ function App() {
                 }} />
               </div>
             </div>
-          )}
-
+             )}
           {editingMissionId && (
             <div className="modal-overlay" onClick={() => setEditingMissionId(null)}>
               <div className="modal-content" onClick={e => e.stopPropagation()}>
