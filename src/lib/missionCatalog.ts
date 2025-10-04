@@ -1,4 +1,10 @@
-export const missionCatalog = {
+export const missionCatalog:  Record<string, {
+  label: string
+  prestations: Record<string, {
+    label: string
+    description: string
+  }>
+}> = {
   A: {
     label: 'Droit des Affaires & Corporate',
     prestations: {
@@ -152,6 +158,41 @@ Travaux de secrétariat juridique (tenue des registres légaux)`
       },
     },
   },
+
+G: {
+    label: 'INTERNE – Non Facturable',
+    prestations: {
+      G1: {
+        label: 'Développement Commercial',
+        description: `Stratégie commerciale, analyse de marché, définition des offres, participation à des salons, prospection, rendez-vous, networking, newsletters, pitchs et propositions commerciales.`
+      },
+      G2: {
+        label: 'Gestion RH (Recrutement, Formation)',
+        description: `Fiches de poste, analyse de CV, entretiens, intégration, formation interne, gestion des congés et absences, évaluations annuelles, gestion des conflits.`
+      },
+      G3: {
+        label: 'Gestion Administrative & Financière',
+        description: `Facturation, relances, trésorerie, paie, fournisseurs, budget, déclarations fiscales, clôture comptable, travail avec l’expert-comptable.`
+      },
+      G4: {
+        label: 'Veille & Formation',
+        description: `Formations internes/externes, veille juridique et fiscale, rédaction de guides et supports, production de connaissances.`
+      },
+      G5: {
+        label: 'Réunions de Direction & Management',
+        description: `Comité de direction, réunions stratégiques, planification des missions, brief/débrief d’équipe, contrôle qualité interne.`
+      },
+      G6: {
+        label: 'Congés / Absences',
+        description: `Pauses, congés, maladie, temps d’inactivité non imputable à un client.`
+      },
+      G7: {
+        label: 'Divers',
+        description: `Tâches personnelles, gestion d’e-mails non liés à un dossier client.`
+      }
+    }
+  }
+
 }
 export type MissionCatalogType = {
   [categoryCode: string]: {

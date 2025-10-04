@@ -2,9 +2,8 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import type { ServiceLine, MissionStage } from '../types'
 import './CreateMissionForm.css'
-import { missionCatalog } from '../lib/missionCatalog' 
+import { missionCatalog } from '../lib/missionCatalog'
 
-// ✅ Nouveau type adapté à ta sélection
 type CollaboratorLite = {
   id: string
   first_name: string
@@ -13,6 +12,7 @@ type CollaboratorLite = {
   email: string
   auth_id: string | null
 }
+
 type MissionCatalogType = typeof missionCatalog
 
 export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
@@ -33,17 +33,16 @@ export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
   const [recoveryAmount, setRecoveryAmount] = useState('')
   const [currency, setCurrency] = useState<'GNF' | 'USD' | 'EUR'>('GNF')
   const [dueDate, setDueDate] = useState<string>('')
-const [selectedCategory, setSelectedCategory] = useState('')
-const [selectedPrestation, setSelectedPrestation] = useState('')
-const [clients, setClients] = useState<any[]>([])
-const [selectedClientId, setSelectedClientId] = useState('')
-const [newClientName, setNewClientName] = useState('')
-
-  // ✅ état pour activer/désactiver l’édition manuelle
+  const [selectedCategory, setSelectedCategory] = useState('')
+  const [selectedPrestation, setSelectedPrestation] = useState('')
+  const [clients, setClients] = useState<any[]>([])
+  const [selectedClientId, setSelectedClientId] = useState('')
+  const [newClientName, setNewClientName] = useState('')
   const [editFinance, setEditFinance] = useState(false)
 
+  const isInternal = selectedCategory === 'G'
+
   useEffect(() => {
-    // Charger tous les collaborateurs
     supabase
       .from('collaborators')
       .select('id, first_name, last_name, grade, email, auth_id')
@@ -53,21 +52,21 @@ const [newClientName, setNewClientName] = useState('')
         else if (data) setCollabs(data as CollaboratorLite[])
       })
 
-    // ✅ Identifier l’utilisateur connecté et récupérer son grade
     supabase.auth.getUser().then(async ({ data, error }) => {
       if (error || !data?.user) return
       const { user } = data
       const { data: profile, error: profErr } = await supabase
         .from('collaborators')
         .select('grade')
-        .eq('auth_id', user.id) // ⚠️ utiliser auth_id
+        .eq('auth_id', user.id)
         .single()
       if (profErr) console.error('Erreur récupération grade:', profErr)
       else if (profile) setCurrentUserGrade(profile.grade)
     })
-  supabase.from('clients').select('*').then(({ data }) => {
-    if (data) setClients(data)
-  })
+
+    supabase.from('clients').select('*').then(({ data }) => {
+      if (data) setClients(data)
+    })
   }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -77,76 +76,69 @@ const [newClientName, setNewClientName] = useState('')
       return
     }
 
-  if (!creatorId) {
-    console.error('❌ Aucun créateur sélectionné')
-    return
-  }
+    let clientId = selectedClientId
 
-  let clientId = selectedClientId
+    if (!isInternal && selectedClientId === '__new__' && newClientName.trim()) {
+      const { data: newClient, error: clientError } = await supabase
+        .from('clients')
+        .insert({ name: newClientName.trim() })
+        .select()
+        .single()
 
-  // Si "Nouveau client" est sélectionné
-  if (selectedClientId === '__new__' && newClientName.trim()) {
-    const { data: newClient, error: clientError } = await supabase
-      .from('clients')
-      .insert({ name: newClientName.trim() })
-      .select()
-      .single()
+      if (clientError || !newClient) {
+        alert('❌ Échec de la création du client')
+        return
+      }
 
-    if (clientError || !newClient) {
-      alert('❌ Échec de la création du client')
+      clientId = newClient.id
+    }
+
+    const { data: missions, error: missionError } = await supabase
+      .from('missions')
+      .insert([{
+        dossier_number: dossierNumber,
+        service,
+        category_code: selectedCategory,
+        prestation_code: selectedPrestation,
+        title,
+        client_id: isInternal ? null : clientId,
+        description: null,
+        stage,
+        situation_state: situationState || null,
+        situation_actions: situationActions || null,
+        billable: isInternal ? false : billable,
+        fees_amount: feesAmount || null,
+        invoice_amount: isInternal ? null : (billable ? invoiceAmount || null : null),
+        recovery_amount: isInternal ? null : (billable ? recoveryAmount || null : null),
+        currency,
+        due_date: dueDate || null,
+        partner_id: partnerId,
+        created_by: creatorId,
+      }])
+      .select('id')
+
+    if (missionError || !missions || missions.length === 0) {
+      alert('❌ Échec de la création de la mission')
       return
     }
 
-    clientId = newClient.id
+    const missionId = missions[0].id
+
+    if (assignedIds.length) {
+      const links = assignedIds.map(id => ({
+        mission_id: missionId,
+        collaborator_id: id,
+      }))
+      const { error: linkError } = await supabase
+        .from('mission_collaborators')
+        .insert(links)
+      if (linkError) console.error('❌ Erreur liaison collaborateurs:', linkError)
+    }
+
+    alert('✅ Mission créée avec succès')
+    onCreated()
   }
 
-  const { data: missions, error: missionError } = await supabase
-    .from('missions')
-    .insert([{
-      dossier_number: dossierNumber,
-      service,
-      category_code: selectedCategory,
-      prestation_code: selectedPrestation,
-      title,
-      client_id: clientId,
-      description: null,
-      stage,
-      situation_state: situationState || null,
-      situation_actions: situationActions || null,
-      billable,
-      fees_amount: feesAmount || null,
-      invoice_amount: billable ? invoiceAmount || null : null,
-      recovery_amount: billable ? recoveryAmount || null : null,
-      currency,
-      due_date: dueDate || null,
-      partner_id: partnerId,
-      created_by: creatorId,
-    }])
-    .select('id')
-
-  if (missionError || !missions || missions.length === 0) {
-    alert('❌ Échec de la création de la mission')
-    return
-  }
-
-  const missionId = missions[0].id
-
-  if (assignedIds.length) {
-    const links = assignedIds.map(id => ({
-      mission_id: missionId,
-      collaborator_id: id,
-    }))
-    const { error: linkError } = await supabase
-      .from('mission_collaborators')
-      .insert(links)
-    if (linkError) console.error('❌ Erreur liaison collaborateurs:', linkError)
-  }
-
-  alert('✅ Mission créée avec succès')
-  onCreated()
-}
-
-  // Calculs automatiques
   const remainingToInvoice =
     feesAmount && invoiceAmount
       ? Number(feesAmount) - Number(invoiceAmount)
@@ -157,7 +149,6 @@ const [newClientName, setNewClientName] = useState('')
       ? Number(invoiceAmount) - Number(recoveryAmount)
       : null
 
-  // Formatage monétaire
   const formatMoney = (value: string | number | null) => {
     if (value === null || value === '' || isNaN(Number(value))) return '—'
     return new Intl.NumberFormat('fr-FR', {
@@ -169,10 +160,8 @@ const [newClientName, setNewClientName] = useState('')
     }).format(Number(value))
   }
 
-  // ✅ Déterminer les droits financiers
   const canEditFinance = ['Manager', 'Senior Manager', 'Partner'].includes(currentUserGrade ?? '')
 
-  // ✅ Si c’est un Manager+ qui crée la mission → édition activée par défaut
   useEffect(() => {
     if (canEditFinance) {
       setEditFinance(true)
@@ -187,55 +176,72 @@ const [newClientName, setNewClientName] = useState('')
         onChange={e => setDossierNumber(e.target.value)}
         required
       />
-<div className="form-row">
-  <label>Client</label>
-  <select value={selectedClientId} onChange={e => setSelectedClientId(e.target.value)}>
-    <option value="">Sélectionner un client</option>
-    {clients.map(c => (
-      <option key={c.id} value={c.id}>{c.name}</option>
-    ))}
-    <option value="__new__">➕ Nouveau client</option>
-  </select>
-</div>
 
-<div className="form-row">
-  <label>Catégorie de Mission</label>
-  <select value={selectedCategory} onChange={e => {
-    setSelectedCategory(e.target.value)
-    setSelectedPrestation('') // reset prestation
-  }}>
-    <option value="">Sélectionner une catégorie</option>
-    {Object.entries(missionCatalog).map(([code, category]) => (
-      <option key={code} value={code}>{code} – {category.label}</option>
-    ))}
-  </select>
-</div>
+      {!isInternal && (
+        <div className="form-row">
+          <label>Client</label>
+          <select value={selectedClientId} onChange={e => setSelectedClientId(e.target.value)}>
+            <option value="">Sélectionner un client</option>
+            {clients.map(c => (
+              <option key={c.id} value={c.id}>{c.name}</option>
+            ))}
+            <option value="__new__">➕ Nouveau client</option>
+          </select>
+        </div>
+      )}
 
+      {!isInternal && selectedClientId === '__new__' && (
+        <input
+          type="text"
+          placeholder="Nom du nouveau client"
+          value={newClientName}
+          onChange={e => setNewClientName(e.target.value)}
+        />
+      )}
 
+      <div className="form-row">
+        <label>Catégorie de Mission</label>
+        <select value={selectedCategory} onChange={e => {
+          setSelectedCategory(e.target.value)
+          setSelectedPrestation('')
+        }}>
+          <option value="">Sélectionner une catégorie</option>
+          {Object.entries(missionCatalog).map(([code, category]) => (
+            <option key={code} value={code}>{code} – {category.label}</option>
+          ))}
+        </select>
+      </div>
 
-{selectedClientId === '__new__' && (
-  <input
-    type="text"
-    placeholder="Nom du nouveau client"
-    value={newClientName}
-    onChange={e => setNewClientName(e.target.value)}
-  />
-)}
+      {isInternal && (
+        <div className="non-billable-tag">
+          ⛔ Cette mission est interne et non facturable.
+        </div>
+      )}
+      <div className="form-row">
+        <label>Prestation</label>
+        <select
+          value={selectedPrestation}
+          onChange={e => setSelectedPrestation(e.target.value)}
+          required
+        >
+          <option value="">Sélectionner une prestation</option>
+          {selectedCategory &&
+            Object.entries(missionCatalog[selectedCategory]?.prestations ?? {}).map(
+              ([code, prestation]) => (
+                <option key={code} value={code}>
+                  {code} – {prestation.label}
+                </option>
+              )
+            )}
+        </select>
+      </div>
 
-
-{selectedCategory && (
-  <div className="form-row">
-    <label>Prestation</label>
-    <select value={selectedPrestation} onChange={e => setSelectedPrestation(e.target.value)}>
-      <option value="">Sélectionner une prestation</option>
-      {Object.entries(
-        missionCatalog[selectedCategory as keyof MissionCatalogType].prestations
-      ).map(([code, prestation]) => (
-        <option key={code} value={code}>{code} – {prestation.label}</option>
-      ))}
-    </select>
-  </div>
-)}
+      {selectedPrestation && (
+        <div className="prestation-description">
+          <strong>Description :</strong>
+          <p>{missionCatalog[selectedCategory]?.prestations[selectedPrestation]?.description}</p>
+        </div>
+      )}
 
       <label>Titre de la mission</label>
       <input
@@ -244,67 +250,27 @@ const [newClientName, setNewClientName] = useState('')
         required
       />
 
-      <label>Ligne de service</label>
-      <select
-        value={service}
-        onChange={e => setService(e.target.value as ServiceLine)}
-      >
+      <label>Service concerné</label>
+      <select value={service} onChange={e => setService(e.target.value as ServiceLine)}>
         <option value="TLS">TLS</option>
-        <option value="GCS">GCS</option>
-        <option value="LT">LT</option>
-        <option value="Advisory">Advisory</option>
+        <option value="TAX">TAX</option>
+        <option value="LEGAL">LEGAL</option>
+        <option value="ADVISORY">ADVISORY</option>
       </select>
 
-      <label>Associé responsable</label>
-      <select
-        value={partnerId ?? ''}
-        onChange={e => setPartnerId(e.target.value || null)}
-      >
-        <option value="">— Sélectionner —</option>
-        {collabs
-          .filter(c => c.grade === 'Partner')
-          .map(c => (
-            <option key={c.id} value={c.id}>
-              {c.first_name} {c.last_name}
-            </option>
-          ))}
-      </select>
-
-      <label>Collaborateur créateur</label>
-      <select
-        value={creatorId ?? ''}
-        onChange={e => setCreatorId(e.target.value || null)}
-        required
-      >
-        <option value="">— Sélectionner —</option>
-        {collabs.map(c => (
-          <option key={c.id} value={c.id}>
-            {c.first_name} {c.last_name} ({c.grade})
-          </option>
-        ))}
-      </select>
-
-      <label>Étape du dossier</label>
-      <select
-        value={stage}
-        onChange={e => setStage(e.target.value as MissionStage)}
-      >
+      <label>Stade de la mission</label>
+      <select value={stage} onChange={e => setStage(e.target.value as MissionStage)}>
         <option value="opportunite">Opportunité</option>
-        <option value="lettre_envoyee">Lettre envoyée</option>
-        <option value="lettre_signee">Lettre signée</option>
-        <option value="staff_traitement">Traitement interne</option>
-        <option value="revue_manager">Revue manager</option>
-        <option value="revue_associes">Revue des associés</option>
-        <option value="livrable_envoye">Livrable envoyé</option>
-        <option value="simple_suivi">Suivi simple</option>
+        <option value="en_cours">En cours</option>
+        <option value="terminee">Terminée</option>
       </select>
 
-      <label>Collaborateurs en charge</label>
+      <label>Collaborateurs assignés</label>
       <select
         multiple
         value={assignedIds}
         onChange={e =>
-          setAssignedIds(Array.from(e.target.selectedOptions, opt => opt.value))
+          setAssignedIds(Array.from(e.target.selectedOptions, option => option.value))
         }
       >
         {collabs.map(c => (
@@ -318,112 +284,67 @@ const [newClientName, setNewClientName] = useState('')
       <textarea
         value={situationState}
         onChange={e => setSituationState(e.target.value)}
+        rows={2}
       />
 
-      <label>Actions à prendre</label>
+      <label>Actions à mener</label>
       <textarea
         value={situationActions}
         onChange={e => setSituationActions(e.target.value)}
+        rows={2}
       />
 
-      <label>
-        <input
-          type="checkbox"
-          checked={billable}
-          onChange={e => setBillable(e.target.checked)}
-        />
-        Mission facturable
-      </label>
-
-      {/* ✅ Section financière visible seulement pour Manager / Senior Manager / Partner */}
-      {canEditFinance && (
+      {!isInternal && (
         <>
-          {/* Bouton pour basculer en mode édition (lecture seule par défaut si Junior/Senior) */}
-          <div className="finance-toggle">
-            <button
-              type="button"
-              onClick={() => setEditFinance(prev => !prev)}
-            >
-              {editFinance ? '🔒 Terminer modification' : '✏️ Modifier'}
-            </button>
-          </div>
+          <label>Mission facturable ?</label>
+          <input
+            type="checkbox"
+            checked={billable}
+            onChange={e => setBillable(e.target.checked)}
+          />
 
-          <fieldset disabled={!billable || !editFinance} style={{ opacity: billable ? 1 : 0.5 }}>
-            <legend>Détails financiers</legend>
-
-            <div className="finance-row">
-              <label>Devise :</label>
-              <select
-                value={currency}
-                onChange={e => setCurrency(e.target.value as 'GNF' | 'USD' | 'EUR')}
-              >
-                <option value="GNF">GNF</option>
-                <option value="USD">USD</option>
-                <option value="EUR">EUR</option>
-              </select>
-            </div>
-
-            <div className="finance-row">
-              <label>Honoraires prévus :</label>
+          {editFinance && (
+            <>
+              <label>Honoraires prévus</label>
               <input
                 type="number"
                 value={feesAmount}
                 onChange={e => setFeesAmount(e.target.value)}
               />
-              <div className="finance-info">
-                Affiché : <strong>{formatMoney(feesAmount)}</strong>
-              </div>
-            </div>
 
-            <div className="finance-row">
-              <label>Montant facturé :</label>
+              <label>Montant facturé</label>
               <input
                 type="number"
                 value={invoiceAmount}
                 onChange={e => setInvoiceAmount(e.target.value)}
               />
-              <div className="finance-info">
-                Affiché : <strong>{formatMoney(invoiceAmount)}</strong>
-              </div>
-            </div>
 
-            <div className="finance-info">
-              Montant restant à facturer :{' '}
-              <strong>
-                {remainingToInvoice !== null ? formatMoney(remainingToInvoice) : '—'}
-              </strong>
-            </div>
-
-            <div className="finance-row">
-              <label>Montant recouvré :</label>
+              <label>Montant recouvré</label>
               <input
                 type="number"
                 value={recoveryAmount}
                 onChange={e => setRecoveryAmount(e.target.value)}
               />
-              <div className="finance-info">
-                Affiché : <strong>{formatMoney(recoveryAmount)}</strong>
-              </div>
-            </div>
 
-            <div className="finance-info">
-              Montant restant à recouvrer :{' '}
-              <strong>
-                {remainingToRecover !== null ? formatMoney(remainingToRecover) : '—'}
-              </strong>
-            </div>
-          </fieldset>
+              <label>Devise</label>
+              <select value={currency} onChange={e => setCurrency(e.target.value as any)}>
+                <option value="GNF">GNF</option>
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+              </select>
+
+              <label>Échéance</label>
+              <input
+                type="date"
+                value={dueDate}
+                onChange={e => setDueDate(e.target.value)}
+              />
+            </>
+          )}
         </>
       )}
 
-      <label>Date d’échéance</label>
-      <input
-        type="date"
-        value={dueDate}
-        onChange={e => setDueDate(e.target.value)}
-      />
-
-      <button type="submit">Créer mission</button>
+      <button type="submit">✅ Créer la mission</button>
     </form>
   )
 }
