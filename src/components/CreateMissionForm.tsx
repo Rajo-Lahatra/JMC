@@ -1,348 +1,540 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabaseClient'
-import type { ServiceLine, MissionStage } from '../types'
+import { missionCatalog, type MissionCatalogType } from '../lib/missionCatalog'
+import type { Client, Collaborator, Mission } from '../types'
 import './CreateMissionForm.css'
-import { missionCatalog } from '../lib/missionCatalog'
 
-type CollaboratorLite = {
-  id: string
-  first_name: string
-  last_name: string
-  grade: string
-  email: string
-  auth_id: string | null
+interface CreateMissionFormProps {
+  onSuccess: () => void
+  onCancel: () => void
+  initialData?: Partial<Mission>
 }
 
-export function CreateMissionForm({ onCreated }: { onCreated: () => void }) {
-  const [collabs, setCollabs] = useState<CollaboratorLite[]>([])
-  const [currentUserGrade, setCurrentUserGrade] = useState<string | null>(null)
-  const [dossierNumber, setDossierNumber] = useState('')
-  const [title, setTitle] = useState('')
-  const [service, setService] = useState<ServiceLine>('TLS')
-const [partnerId, _setPartnerId] = useState<string | null>(null)
-const [creatorId, _setCreatorId] = useState<string | null>(null)
-  const [stage, setStage] = useState<MissionStage>('opportunite')
-  const [assignedIds, setAssignedIds] = useState<string[]>([])
-  const [situationState, setSituationState] = useState('')
-  const [situationActions, setSituationActions] = useState('')
-  const [billable, setBillable] = useState(true)
-  const [feesAmount, setFeesAmount] = useState('')
-  const [invoiceAmount, setInvoiceAmount] = useState('')
-  const [recoveryAmount, setRecoveryAmount] = useState('')
-  const [currency, setCurrency] = useState<'GNF' | 'USD' | 'EUR'>('GNF')
-  const [dueDate, setDueDate] = useState<string>('')
+// Type pour le formulaire qui gère les conversions null -> string
+interface MissionFormData {
+  dossier_number: string
+  client_id: string
+  client_name: string
+  title: string
+  service: string
+  category_code: string
+  prestation_code: string
+  description: string
+  stage: string
+  situation_state: string
+  situation_actions: string
+  due_date: string
+  partner_id: string
+  billable: boolean
+  currency: string
+  fees_amount: number
+  invoice_amount: number
+  recovery_amount: number
+}
+
+// Fonction utilitaire pour convertir les données Mission en données formulaire
+const convertMissionToFormData = (mission: Partial<Mission>): Partial<MissionFormData> => {
+  return {
+    dossier_number: mission.dossier_number || '',
+    client_id: mission.client_id || '',
+    client_name: mission.client_name || '',
+    title: mission.title || '',
+    service: mission.service || '',
+    category_code: (mission as any).category_code || '', // Cast temporaire si category_code n'est pas dans Mission
+    prestation_code: (mission as any).prestation_code || '', // Cast temporaire si prestation_code n'est pas dans Mission
+    description: mission.description || '',
+    stage: mission.stage || 'opportunite',
+    situation_state: mission.situation_state || '',
+    situation_actions: mission.situation_actions || '',
+    due_date: mission.due_date ? new Date(mission.due_date).toISOString().split('T')[0] : '',
+    partner_id: mission.partner_id || '',
+    billable: mission.billable ?? true,
+    currency: mission.currency || 'USD',
+    fees_amount: mission.fees_amount || 0,
+    invoice_amount: mission.invoice_amount || 0,
+    recovery_amount: mission.recovery_amount || 0,
+  }
+}
+
+export function CreateMissionForm({ onSuccess, onCancel, initialData }: CreateMissionFormProps) {
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [clients, setClients] = useState<Client[]>([])
+  const [collaborators, setCollaborators] = useState<Collaborator[]>([])
+  
+  // États du formulaire avec le type correct
+  const [formData, setFormData] = useState<MissionFormData>({
+    dossier_number: '',
+    client_id: '',
+    client_name: '',
+    title: '',
+    service: '',
+    category_code: '',
+    prestation_code: '',
+    description: '',
+    stage: 'opportunite',
+    situation_state: '',
+    situation_actions: '',
+    due_date: '',
+    partner_id: '',
+    billable: true,
+    currency: 'USD',
+    fees_amount: 0,
+    invoice_amount: 0,
+    recovery_amount: 0
+  })
+
+  // États dérivés pour le catalogue
   const [selectedCategory, setSelectedCategory] = useState('')
   const [selectedPrestation, setSelectedPrestation] = useState('')
-  const [clients, setClients] = useState<any[]>([])
-  const [selectedClientId, setSelectedClientId] = useState('')
-  const [newClientName, setNewClientName] = useState('')
-  const [editFinance, setEditFinance] = useState(false)
 
-  const isInternal = selectedCategory === 'G'
-
+  // Chargement des données initiales
   useEffect(() => {
-    supabase
-      .from('collaborators')
-      .select('id, first_name, last_name, grade, email, auth_id')
-      .order('last_name', { ascending: true })
-      .then(({ data, error }) => {
-        if (error) console.error('Erreur chargement collaborateurs:', error)
-        else if (data) setCollabs(data as CollaboratorLite[])
-      })
+    const fetchInitialData = async () => {
+      try {
+        const [clientsResponse, collaboratorsResponse] = await Promise.all([
+          supabase.from('clients').select('*').order('name'),
+          supabase.from('collaborators').select('*').order('first_name')
+        ])
 
-    supabase.auth.getUser().then(async ({ data, error }) => {
-      if (error || !data?.user) return
-      const { user } = data
-      const { data: profile, error: profErr } = await supabase
-        .from('collaborators')
-        .select('grade')
-        .eq('auth_id', user.id)
-        .single()
-      if (profErr) console.error('Erreur récupération grade:', profErr)
-      else if (profile) setCurrentUserGrade(profile.grade)
-    })
+        if (clientsResponse.error) throw new Error(`Clients: ${clientsResponse.error.message}`)
+        if (collaboratorsResponse.error) throw new Error(`Collaborateurs: ${collaboratorsResponse.error.message}`)
 
-    supabase.from('clients').select('*').then(({ data }) => {
-      if (data) setClients(data)
-    })
+        setClients(clientsResponse.data || [])
+        setCollaborators(collaboratorsResponse.data || [])
+      } catch (err) {
+        setError('Erreur lors du chargement des données')
+        console.error('Fetch error:', err)
+      }
+    }
+
+    fetchInitialData()
   }, [])
 
+  // Initialisation avec les données existantes (CORRIGÉ)
+  useEffect(() => {
+    if (initialData) {
+      const convertedData = convertMissionToFormData(initialData)
+      setFormData(prev => ({
+        ...prev,
+        ...convertedData
+      }))
+      
+      // Utiliser le cast temporaire pour category_code et prestation_code
+      const categoryCode = (initialData as any).category_code
+      const prestationCode = (initialData as any).prestation_code
+      
+      if (categoryCode) {
+        setSelectedCategory(categoryCode)
+      }
+      if (prestationCode) {
+        setSelectedPrestation(prestationCode)
+      }
+    }
+  }, [initialData])
+
+  // Gestion des changements de catégorie
+  useEffect(() => {
+    if (selectedCategory && missionCatalog[selectedCategory]) {
+      const category = missionCatalog[selectedCategory]
+      setFormData(prev => ({
+        ...prev,
+        category_code: selectedCategory,
+        service: category.label
+      }))
+      
+      // Réinitialiser la prestation si la catégorie change
+      if (!missionCatalog[selectedCategory].prestations[selectedPrestation]) {
+        setSelectedPrestation('')
+        setFormData(prev => ({ 
+          ...prev, 
+          prestation_code: '', 
+          title: '', 
+          description: '' 
+        }))
+      }
+    }
+  }, [selectedCategory, selectedPrestation])
+
+  // Gestion des changements de prestation
+  useEffect(() => {
+    if (selectedCategory && selectedPrestation && missionCatalog[selectedCategory]?.prestations[selectedPrestation]) {
+      const prestation = missionCatalog[selectedCategory].prestations[selectedPrestation]
+      setFormData(prev => ({
+        ...prev,
+        prestation_code: selectedPrestation,
+        title: prestation.label,
+        description: prestation.description
+      }))
+    }
+  }, [selectedPrestation, selectedCategory])
+
+  // Gestion des changements de client
+  const handleClientChange = (clientId: string) => {
+    const client = clients.find(c => c.id === clientId)
+    setFormData(prev => ({
+      ...prev,
+      client_id: clientId,
+      client_name: client?.name || ''
+    }))
+  }
+
+  // Validation du formulaire
+  const validateForm = (): boolean => {
+    if (!formData.dossier_number.trim()) {
+      setError('Le numéro de dossier est obligatoire')
+      return false
+    }
+    if (!formData.client_id) {
+      setError('Veuillez sélectionner un client')
+      return false
+    }
+    if (!formData.title.trim()) {
+      setError('Le titre de la mission est obligatoire')
+      return false
+    }
+    if (!formData.partner_id) {
+      setError('Veuillez sélectionner un associé responsable')
+      return false
+    }
+    return true
+  }
+
+  // Soumission du formulaire
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!creatorId) {
-      console.error('❌ Aucun créateur sélectionné')
-      return
-    }
+    setError(null)
+    
+    if (!validateForm()) return
 
-    let clientId = selectedClientId
+    setLoading(true)
 
-    if (!isInternal && selectedClientId === '__new__' && newClientName.trim()) {
-      const { data: newClient, error: clientError } = await supabase
-        .from('clients')
-        .insert({ name: newClientName.trim() })
-        .select()
-        .single()
+    try {
+      const user = (await supabase.auth.getUser()).data.user
+      if (!user) throw new Error('Utilisateur non connecté')
 
-      if (clientError || !newClient) {
-        alert('❌ Échec de la création du client')
-        return
+      // Préparer les données pour l'insertion
+      const missionData = {
+        ...formData,
+        created_by: user.id,
+        due_date: formData.due_date || null,
+        fees_amount: formData.fees_amount || 0,
+        invoice_amount: formData.invoice_amount || 0,
+        recovery_amount: formData.recovery_amount || 0
       }
 
-      clientId = newClient.id
+      const { error: supabaseError } = await supabase
+        .from('missions')
+        .insert([missionData])
+        .select()
+
+      if (supabaseError) throw supabaseError
+
+      onSuccess()
+      
+    } catch (err: any) {
+      console.error('Erreur création mission:', err)
+      setError(err.message || 'Erreur lors de la création de la mission')
+    } finally {
+      setLoading(false)
     }
-
-    const { data: missions, error: missionError } = await supabase
-      .from('missions')
-      .insert([{
-        dossier_number: dossierNumber,
-        service,
-        category_code: selectedCategory,
-        prestation_code: selectedPrestation,
-        title,
-        client_id: isInternal ? null : clientId,
-        description: null,
-        stage,
-        situation_state: situationState || null,
-        situation_actions: situationActions || null,
-        billable: isInternal ? false : billable,
-        fees_amount: feesAmount || null,
-        invoice_amount: isInternal ? null : (billable ? invoiceAmount || null : null),
-        recovery_amount: isInternal ? null : (billable ? recoveryAmount || null : null),
-        currency,
-        due_date: dueDate || null,
-        partner_id: partnerId,
-        created_by: creatorId,
-      }])
-      .select('id')
-
-    if (missionError || !missions || missions.length === 0) {
-      alert('❌ Échec de la création de la mission')
-      return
-    }
-
-    const missionId = missions[0].id
-
-    if (assignedIds.length) {
-      const links = assignedIds.map(id => ({
-        mission_id: missionId,
-        collaborator_id: id,
-      }))
-      const { error: linkError } = await supabase
-        .from('mission_collaborators')
-        .insert(links)
-      if (linkError) console.error('❌ Erreur liaison collaborateurs:', linkError)
-    }
-
-    alert('✅ Mission créée avec succès')
-    onCreated()
   }
 
-  const _remainingToInvoice =
-    feesAmount && invoiceAmount
-      ? Number(feesAmount) - Number(invoiceAmount)
-      : null
-
-  const _remainingToRecover =
-    invoiceAmount && recoveryAmount
-      ? Number(invoiceAmount) - Number(recoveryAmount)
-      : null
-
-  const _formatMoney = (value: string | number | null) => {
-    if (value === null || value === '' || isNaN(Number(value))) return '—'
-    return new Intl.NumberFormat('fr-FR', {
-      style: 'currency',
-      currency,
-      currencyDisplay: 'code',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(Number(value))
+  // Rendu des options de catégories
+  const renderCategoryOptions = () => {
+    return Object.entries(missionCatalog).map(([code, category]) => (
+      <option key={code} value={code}>
+        {code} - {category.label}
+      </option>
+    ))
   }
 
-  const canEditFinance = ['Manager', 'Senior Manager', 'Partner'].includes(currentUserGrade ?? '')
-
-  useEffect(() => {
-    if (canEditFinance) {
-      setEditFinance(true)
+  // Rendu des options de prestations
+  const renderPrestationOptions = () => {
+    if (!selectedCategory || !missionCatalog[selectedCategory]) {
+      return <option value="">Sélectionnez d'abord une catégorie</option>
     }
-  }, [canEditFinance])
+
+    return Object.entries(missionCatalog[selectedCategory].prestations).map(([code, prestation]) => (
+      <option key={code} value={code}>
+        {code} - {prestation.label}
+      </option>
+    ))
+  }
 
   return (
-    <form onSubmit={handleSubmit} className="create-mission-form">
-      <label>Numéro de dossier</label>
-      <input
-        value={dossierNumber}
-        onChange={e => setDossierNumber(e.target.value)}
-        required
-      />
-
-      {!isInternal && (
-        <div className="form-row">
-          <label>Client</label>
-          <select value={selectedClientId} onChange={e => setSelectedClientId(e.target.value)}>
-            <option value="">Sélectionner un client</option>
-            {clients.map(c => (
-              <option key={c.id} value={c.id}>{c.name}</option>
-            ))}
-            <option value="__new__">➕ Nouveau client</option>
-          </select>
-        </div>
-      )}
-
-      {!isInternal && selectedClientId === '__new__' && (
-        <input
-          type="text"
-          placeholder="Nom du nouveau client"
-          value={newClientName}
-          onChange={e => setNewClientName(e.target.value)}
-        />
-      )}
-
-      <div className="form-row">
-        <label>Catégorie de Mission</label>
-        <select value={selectedCategory} onChange={e => {
-          setSelectedCategory(e.target.value)
-          setSelectedPrestation('')
-        }}>
-          <option value="">Sélectionner une catégorie</option>
-          {Object.entries(missionCatalog).map(([code, category]) => (
-            <option key={code} value={code}>{code} – {category.label}</option>
-          ))}
-        </select>
+    <div className="create-mission-form-container">
+      <div className="form-header">
+        <h2>{initialData ? 'Modifier la mission' : 'Nouvelle mission'}</h2>
+        <button type="button" className="close-button" onClick={onCancel}>×</button>
       </div>
 
-      {isInternal && (
-        <div className="non-billable-tag">
-          ⛔ Cette mission est interne et non facturable.
-        </div>
-      )}
-      <div className="form-row">
-        <label>Prestation</label>
-        <select
-          value={selectedPrestation}
-          onChange={e => setSelectedPrestation(e.target.value)}
-          required
-        >
-          <option value="">Sélectionner une prestation</option>
-          {selectedCategory &&
-            Object.entries(missionCatalog[selectedCategory]?.prestations ?? {}).map(
-              ([code, prestation]) => (
-                <option key={code} value={code}>
-                  {code} – {prestation.label}
-                </option>
-              )
-            )}
-        </select>
-      </div>
+      <form onSubmit={handleSubmit} className="mission-form">
+        {error && (
+          <div className="error-message">
+            ⚠️ {error}
+          </div>
+        )}
 
-      {selectedPrestation && (
-        <div className="prestation-description">
-          <strong>Description :</strong>
-          <p>{missionCatalog[selectedCategory]?.prestations[selectedPrestation]?.description}</p>
-        </div>
-      )}
-
-      <label>Titre de la mission</label>
-      <input
-        value={title}
-        onChange={e => setTitle(e.target.value)}
-        required
-      />
-
-      <label>Service concerné</label>
-      <select value={service} onChange={e => setService(e.target.value as ServiceLine)}>
-        <option value="TLS">TLS</option>
-        <option value="TAX">TAX</option>
-        <option value="LEGAL">LEGAL</option>
-        <option value="ADVISORY">ADVISORY</option>
-      </select>
-
-      <label>Stade de la mission</label>
-      <select value={stage} onChange={e => setStage(e.target.value as MissionStage)}>
-        <option value="opportunite">Opportunité</option>
-        <option value="en_cours">En cours</option>
-        <option value="terminee">Terminée</option>
-      </select>
-
-      <label>Collaborateurs assignés</label>
-      <select
-        multiple
-        value={assignedIds}
-        onChange={e =>
-          setAssignedIds(Array.from(e.target.selectedOptions, option => option.value))
-        }
-      >
-        {collabs.map(c => (
-          <option key={c.id} value={c.id}>
-            {c.first_name} {c.last_name} ({c.grade})
-          </option>
-        ))}
-      </select>
-
-      <label>Situation actuelle</label>
-      <textarea
-        value={situationState}
-        onChange={e => setSituationState(e.target.value)}
-        rows={2}
-      />
-
-      <label>Actions à mener</label>
-      <textarea
-        value={situationActions}
-        onChange={e => setSituationActions(e.target.value)}
-        rows={2}
-      />
-
-      {!isInternal && (
-        <>
-          <label>Mission facturable ?</label>
-          <input
-            type="checkbox"
-            checked={billable}
-            onChange={e => setBillable(e.target.checked)}
-          />
-
-          {editFinance && (
-            <>
-              <label>Honoraires prévus</label>
+        <div className="form-grid">
+          {/* Section identification */}
+          <div className="form-section">
+            <h3>Identification</h3>
+            
+            <div className="form-group">
+              <label htmlFor="dossier_number">Numéro de dossier *</label>
               <input
-                type="number"
-                value={feesAmount}
-                onChange={e => setFeesAmount(e.target.value)}
+                id="dossier_number"
+                type="text"
+                value={formData.dossier_number}
+                onChange={e => setFormData(prev => ({ ...prev, dossier_number: e.target.value }))}
+                required
+                disabled={loading}
+                placeholder="EX: 2024-CORP-001"
               />
+            </div>
 
-              <label>Montant facturé</label>
-              <input
-                type="number"
-                value={invoiceAmount}
-                onChange={e => setInvoiceAmount(e.target.value)}
-              />
-
-              <label>Montant recouvré</label>
-              <input
-                type="number"
-                value={recoveryAmount}
-                onChange={e => setRecoveryAmount(e.target.value)}
-              />
-
-              <label>Devise</label>
-              <select value={currency} onChange={e => setCurrency(e.target.value as any)}>
-                <option value="GNF">GNF</option>
-                <option value="USD">USD</option>
-                <option value="EUR">EUR</option>
+            <div className="form-group">
+              <label htmlFor="client_id">Client *</label>
+              <select
+                id="client_id"
+                value={formData.client_id}
+                onChange={e => handleClientChange(e.target.value)}
+                required
+                disabled={loading}
+              >
+                <option value="">Sélectionnez un client</option>
+                {clients.map(client => (
+                  <option key={client.id} value={client.id}>
+                    {client.name}
+                  </option>
+                ))}
               </select>
+            </div>
+          </div>
 
-              <label>Échéance</label>
+          {/* Section catalogue */}
+          <div className="form-section">
+            <h3>Catalogue des missions</h3>
+
+            <div className="form-group">
+              <label htmlFor="category_code">Catégorie *</label>
+              <select
+                id="category_code"
+                value={selectedCategory}
+                onChange={e => setSelectedCategory(e.target.value)}
+                required
+                disabled={loading}
+              >
+                <option value="">Sélectionnez une catégorie</option>
+                {renderCategoryOptions()}
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="prestation_code">Prestation *</label>
+              <select
+                id="prestation_code"
+                value={selectedPrestation}
+                onChange={e => setSelectedPrestation(e.target.value)}
+                required
+                disabled={loading || !selectedCategory}
+              >
+                <option value="">Sélectionnez une prestation</option>
+                {renderPrestationOptions()}
+              </select>
+            </div>
+
+            {selectedPrestation && missionCatalog[selectedCategory]?.prestations[selectedPrestation] && (
+              <div className="prestation-info">
+                <h4>Description de la prestation :</h4>
+                <p>{missionCatalog[selectedCategory].prestations[selectedPrestation].description}</p>
+              </div>
+            )}
+          </div>
+
+          {/* Section personnalisation */}
+          <div className="form-section">
+            <h3>Personnalisation</h3>
+
+            <div className="form-group">
+              <label htmlFor="title">Titre de la mission *</label>
               <input
-                type="date"
-                value={dueDate}
-                onChange={e => setDueDate(e.target.value)}
+                id="title"
+                type="text"
+                value={formData.title}
+                onChange={e => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                required
+                disabled={loading}
+                placeholder="Titre personnalisé (optionnel)"
               />
-            </>
-          )}
-        </>
-      )}
+            </div>
 
-      <button type="submit">✅ Créer la mission</button>
-    </form>
+            <div className="form-group">
+              <label htmlFor="description">Description détaillée</label>
+              <textarea
+                id="description"
+                value={formData.description}
+                onChange={e => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                rows={4}
+                disabled={loading}
+                placeholder="Description complémentaire..."
+              />
+            </div>
+          </div>
+
+          {/* Section gestion */}
+          <div className="form-section">
+            <h3>Gestion</h3>
+
+            <div className="form-group">
+              <label htmlFor="partner_id">Associé responsable *</label>
+              <select
+                id="partner_id"
+                value={formData.partner_id}
+                onChange={e => setFormData(prev => ({ ...prev, partner_id: e.target.value }))}
+                required
+                disabled={loading}
+              >
+                <option value="">Sélectionnez un associé</option>
+                {collaborators
+                  .filter(c => c.grade === 'Partner')
+                  .map(collab => (
+                    <option key={collab.id} value={collab.id}>
+                      {collab.first_name} {collab.last_name}
+                    </option>
+                  ))
+                }
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="stage">Étape</label>
+              <select
+                id="stage"
+                value={formData.stage}
+                onChange={e => setFormData(prev => ({ ...prev, stage: e.target.value }))}
+                disabled={loading}
+              >
+                <option value="opportunite">Opportunité</option>
+                <option value="lettre_envoyee">Lettre envoyée</option>
+                <option value="lettre_signee">Lettre signée</option>
+                <option value="staff_traitement">Traitement interne</option>
+                <option value="revue_manager">Revue manager</option>
+                <option value="revue_associes">Revue des associés</option>
+                <option value="livrable_envoye">Livrable envoyé</option>
+                <option value="simple_suivi">Suivi simple</option>
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="due_date">Échéance</label>
+              <input
+                id="due_date"
+                type="date"
+                value={formData.due_date}
+                onChange={e => setFormData(prev => ({ ...prev, due_date: e.target.value }))}
+                disabled={loading}
+              />
+            </div>
+          </div>
+
+          {/* Section financière */}
+          <div className="form-section">
+            <h3>Informations financières</h3>
+
+            <div className="form-group checkbox-group">
+              <label>
+                <input
+                  type="checkbox"
+                  checked={formData.billable}
+                  onChange={e => setFormData(prev => ({ ...prev, billable: e.target.checked }))}
+                  disabled={loading}
+                />
+                Mission facturable
+              </label>
+            </div>
+
+            {formData.billable && (
+              <>
+                <div className="form-group">
+                  <label htmlFor="currency">Devise</label>
+                  <select
+                    id="currency"
+                    value={formData.currency}
+                    onChange={e => setFormData(prev => ({ ...prev, currency: e.target.value }))}
+                    disabled={loading}
+                  >
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                    <option value="GNF">GNF</option>
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="fees_amount">Honoraires estimés</label>
+                  <input
+                    id="fees_amount"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={formData.fees_amount}
+                    onChange={e => setFormData(prev => ({ ...prev, fees_amount: parseFloat(e.target.value) || 0 }))}
+                    disabled={loading}
+                  />
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Section situation */}
+          <div className="form-section full-width">
+            <h3>Situation et actions</h3>
+
+            <div className="form-group">
+              <label htmlFor="situation_state">Situation actuelle</label>
+              <textarea
+                id="situation_state"
+                value={formData.situation_state}
+                onChange={e => setFormData(prev => ({ ...prev, situation_state: e.target.value }))}
+                rows={3}
+                disabled={loading}
+                placeholder="État d'avancement, difficultés rencontrées..."
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="situation_actions">Actions à entreprendre</label>
+              <textarea
+                id="situation_actions"
+                value={formData.situation_actions}
+                onChange={e => setFormData(prev => ({ ...prev, situation_actions: e.target.value }))}
+                rows={3}
+                disabled={loading}
+                placeholder="Prochaines étapes, délais, responsables..."
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="form-actions">
+          <button
+            type="button"
+            onClick={onCancel}
+            disabled={loading}
+            className="cancel-button"
+          >
+            Annuler
+          </button>
+          <button
+            type="submit"
+            disabled={loading}
+            className="submit-button"
+          >
+            {loading ? 'Création...' : (initialData ? 'Modifier' : 'Créer la mission')}
+          </button>
+        </div>
+      </form>
+    </div>
   )
 }
