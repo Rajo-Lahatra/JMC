@@ -1,301 +1,56 @@
-/* Styles pour le formulaire de création de mission */
-.create-mission-form-container {
-  animation: fadeIn 0.3s ease-out;
-  max-width: 1000px;
-  margin: 0 auto;
+/* App.css - Styles généraux */
+.App {
+  text-align: center;
 }
 
-.create-mission-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.create-mission-form label {
-  font-weight: 500;
-  margin-bottom: 0.3rem;
-  color: #2c3e50;
-  display: block;
-  font-size: 0.9rem;
-}
-
-.create-mission-form input,
-.create-mission-form textarea,
-.create-mission-form select {
-  font-size: 0.9rem;
-  padding: 0.5rem 0.7rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  width: 100%;
-  box-sizing: border-box;
-  background-color: #fafbfc;
-}
-
-.create-mission-form input:focus,
-.create-mission-form textarea:focus,
-.create-mission-form select:focus {
-  outline: none;
-  border-color: #0078d4;
-  background-color: #ffffff;
-}
-
-/* CHAMPS SPÉCIFIQUES ÉLARGIS */
-.create-mission-form #title {
-  min-height: 50px;
-  font-size: 1rem;
-  padding: 0.7rem;
-}
-
-.create-mission-form #description {
-  min-height: 100px;
-  font-size: 0.9rem;
-  padding: 0.7rem;
-  resize: vertical;
-}
-
-.create-mission-form #situation_state,
-.create-mission-form #situation_actions {
-  min-height: 80px;
-  font-size: 0.9rem;
-  padding: 0.7rem;
-  resize: vertical;
-}
-
-/* Grille pour organiser les sections du formulaire */
-.form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.form-section {
-  background: #ffffff;
+.App-header {
+  background-color: #282c34;
   padding: 1rem;
-  border-radius: 6px;
-  border: 1px solid #e1e8ed;
+  color: white;
 }
 
-.form-section h3 {
-  margin: 0 0 1rem 0;
-  color: #2c3e50;
-  font-size: 1rem;
-  font-weight: 600;
-  border-bottom: 1px solid #0078d4;
-  padding-bottom: 0.5rem;
+.App-logo {
+  height: 60px; /* Taille normale du logo */
+  pointer-events: none;
 }
 
-/* Section pleine largeur */
-.form-section.full-width {
-  grid-column: 1 / -1;
-}
-
-/* Groupes de formulaire */
-.form-group {
-  margin-bottom: 1rem;
-}
-
-.form-group:last-child {
-  margin-bottom: 0;
-}
-
-/* En-tête du formulaire */
-.form-header {
+.login-section {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  margin-bottom: 1rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #e1e8ed;
+  min-height: 60vh;
 }
 
-.form-header h2 {
-  margin: 0;
-  color: #2c3e50;
-  font-size: 1.3rem;
-  font-weight: 600;
+/* Styles pour les modales */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
 }
 
-.close-button {
+.modal-content {
+  background: white;
+  border-radius: 8px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: auto;
+  position: relative;
+}
+
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
   background: none;
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
   color: #6c757d;
-  padding: 0;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.close-button:hover {
-  color: #dc3545;
-  background: #f8d7da;
-  border-radius: 50%;
-}
-
-/* Actions du formulaire */
-.form-actions {
-  display: flex;
-  gap: 0.8rem;
-  justify-content: flex-end;
-  margin-top: 1.5rem;
-  padding-top: 1rem;
-  border-top: 1px solid #e1e8ed;
-}
-
-.cancel-button {
-  padding: 0.6rem 1.2rem;
-  border: 1px solid #6c757d;
-  background: white;
-  color: #6c757d;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9rem;
-}
-
-.cancel-button:hover:not(:disabled) {
-  background: #6c757d;
-  color: white;
-}
-
-.submit-button {
-  padding: 0.6rem 1.5rem;
-  border: 1px solid #0078d4;
-  background: #0078d4;
-  color: white;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  font-weight: 500;
-}
-
-.submit-button:hover:not(:disabled) {
-  background: #0056b3;
-  border-color: #0056b3;
-}
-
-.submit-button:disabled,
-.cancel-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* Message d'erreur */
-.error-message {
-  background: #f8d7da;
-  border: 1px solid #f5c6cb;
-  color: #721c24;
-  padding: 0.7rem;
-  border-radius: 4px;
-  margin-bottom: 1rem;
-  font-size: 0.9rem;
-}
-
-/* Informations de prestation */
-.prestation-info {
-  background: #e3f2fd;
-  padding: 1rem;
-  border-radius: 4px;
-  border-left: 4px solid #2196f3;
-  margin-top: 0.5rem;
-}
-
-.prestation-info h4 {
-  margin: 0 0 0.5rem 0;
-  color: #1976d2;
-  font-size: 0.9rem;
-  font-weight: 600;
-}
-
-.prestation-info p {
-  margin: 0;
-  color: #424242;
-  font-size: 0.85rem;
-  line-height: 1.4;
-  white-space: pre-line;
-}
-
-/* Checkbox group */
-.checkbox-group {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin: 0.8rem 0;
-}
-
-.checkbox-group input[type="checkbox"] {
-  width: auto;
-  margin: 0;
-}
-
-.checkbox-group label {
-  margin: 0;
-  font-weight: 500;
-  cursor: pointer;
-  font-size: 0.9rem;
-}
-
-/* Styles pour INTERNE */
-.internal-note {
-  background: #fff3e0;
-  padding: 0.7rem;
-  border-radius: 4px;
-  border-left: 4px solid #ff9800;
-  margin-bottom: 1rem;
-  font-size: 0.9rem;
-  color: #e65100;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .form-grid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-  
-  .create-mission-form-container {
-    padding: 0.5rem;
-  }
-  
-  .form-section {
-    padding: 0.8rem;
-  }
-  
-  .form-actions {
-    flex-direction: column;
-  }
-  
-  .cancel-button,
-  .submit-button {
-    width: 100%;
-  }
-  
-  /* Ajustement des champs texte sur mobile */
-  .create-mission-form #title {
-    min-height: 45px;
-  }
-  
-  .create-mission-form #description {
-    min-height: 80px;
-  }
-  
-  .create-mission-form #situation_state,
-  .create-mission-form #situation_actions {
-    min-height: 70px;
-  }
-}
-
-/* Animation d'apparition */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
