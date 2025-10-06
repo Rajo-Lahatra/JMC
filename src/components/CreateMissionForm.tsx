@@ -209,67 +209,82 @@ export function CreateMissionForm({ onSuccess, onCancel, initialData }: CreateMi
     }))
   }
 
-  // Création d'un nouveau client
-  const handleCreateClient = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setCreatingClient(true)
-    setError(null)
+  // Création d'un nouveau client - Version corrigée
+const handleCreateClient = async (e: React.FormEvent) => {
+  e.preventDefault()
+  setCreatingClient(true)
+  setError(null)
 
-    try {
-      if (!newClientForm.name.trim()) {
-        throw new Error('Le nom du client est obligatoire')
-      }
-
-      const user = (await supabase.auth.getUser()).data.user
-      if (!user) throw new Error('Utilisateur non connecté')
-
-      // Insertion du nouveau client avec seulement le nom
-      const { data: newClient, error: clientError } = await supabase
-        .from('clients')
-        .insert([
-          {
-            name: newClientForm.name,
-            created_by: user.id
-          }
-        ])
-        .select()
-        .single()
-
-      if (clientError) throw clientError
-
-      // Mettre à jour la liste des clients
-      setClients(prev => [...prev, newClient])
-
-      // Sélectionner automatiquement le nouveau client
-      setIsInternalClient(newClient.name === 'INTERNE')
-      setFormData(prev => ({
-        ...prev,
-        client_id: newClient.id,
-        client_name: newClient.name,
-        ...(newClient.name === 'INTERNE' && {
-          billable: false,
-          stage: 'simple_suivi',
-          partner_id: '',
-          due_date: '',
-          fees_amount: 0,
-          invoice_amount: 0,
-          recovery_amount: 0
-        })
-      }))
-
-      // Fermer le formulaire de création de client
-      setShowNewClientForm(false)
-      setNewClientForm({
-        name: ''
-      })
-
-    } catch (err: any) {
-      console.error('Erreur création client:', err)
-      setError(err.message || 'Erreur lors de la création du client')
-    } finally {
-      setCreatingClient(false)
+  try {
+    if (!newClientForm.name.trim()) {
+      throw new Error('Le nom du client est obligatoire')
     }
+
+    // Récupérer l'utilisateur connecté
+    const { data: { user }, error: userError } = await supabase.auth.getUser()
+    
+    if (userError) {
+      console.error('Erreur récupération utilisateur:', userError)
+      throw new Error('Erreur d\'authentification')
+    }
+
+    if (!user) {
+      throw new Error('Utilisateur non connecté')
+    }
+
+    // Préparer les données pour l'insertion
+    const clientData: any = {
+      name: newClientForm.name,
+      created_by: user.id // Utiliser l'ID de l'utilisateur connecté
+    }
+
+    console.log('Données client à insérer:', clientData)
+
+    // Insertion du nouveau client
+    const { data: newClient, error: clientError } = await supabase
+      .from('clients')
+      .insert([clientData])
+      .select()
+      .single()
+
+    if (clientError) {
+      console.error('Erreur détaillée Supabase:', clientError)
+      throw clientError
+    }
+
+    // Mettre à jour la liste des clients
+    setClients(prev => [...prev, newClient])
+
+    // Sélectionner automatiquement le nouveau client
+    setIsInternalClient(newClient.name === 'INTERNE')
+    setFormData(prev => ({
+      ...prev,
+      client_id: newClient.id,
+      client_name: newClient.name,
+      ...(newClient.name === 'INTERNE' && {
+        billable: false,
+        stage: 'simple_suivi',
+        partner_id: '',
+        due_date: '',
+        fees_amount: 0,
+        invoice_amount: 0,
+        recovery_amount: 0
+      })
+    }))
+
+    // Fermer le formulaire de création de client
+    setShowNewClientForm(false)
+    setNewClientForm({
+      name: ''
+    })
+
+  } catch (err: any) {
+    console.error('Erreur création client:', err)
+    setError(err.message || 'Erreur lors de la création du client')
+  } finally {
+    setCreatingClient(false)
   }
+}
 
   // Annuler la création de client
   const handleCancelClientCreation = () => {
