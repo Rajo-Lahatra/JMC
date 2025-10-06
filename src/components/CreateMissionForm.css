@@ -1,27 +1,4 @@
-/* App.css - Styles généraux */
-.App {
-  text-align: center;
-}
 
-.App-header {
-  background-color: #282c34;
-  padding: 1rem;
-  color: white;
-}
-
-.App-logo {
-  height: 60px; /* Taille normale du logo */
-  pointer-events: none;
-}
-
-.login-section {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 60vh;
-}
-
-/* Styles pour les modales */
 .modal-overlay {
   position: fixed;
   top: 0;
