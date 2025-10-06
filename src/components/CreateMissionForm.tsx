@@ -32,13 +32,9 @@ interface MissionFormData {
   recovery_amount: number
 }
 
-// Type pour le formulaire de création de client
+// Type simplifié pour le formulaire de création de client
 interface NewClientFormData {
   name: string
-  email: string
-  phone: string
-  address: string
-  contact_person: string
 }
 
 // Fonction utilitaire pour convertir les données Mission en données formulaire
@@ -76,11 +72,7 @@ export function CreateMissionForm({ onSuccess, onCancel, initialData }: CreateMi
   const [showNewClientForm, setShowNewClientForm] = useState(false)
   const [creatingClient, setCreatingClient] = useState(false)
   const [newClientForm, setNewClientForm] = useState<NewClientFormData>({
-    name: '',
-    email: '',
-    phone: '',
-    address: '',
-    contact_person: ''
+    name: ''
   })
   
   // États du formulaire avec le type correct
@@ -231,16 +223,12 @@ export function CreateMissionForm({ onSuccess, onCancel, initialData }: CreateMi
       const user = (await supabase.auth.getUser()).data.user
       if (!user) throw new Error('Utilisateur non connecté')
 
-      // Insertion du nouveau client
+      // Insertion du nouveau client avec seulement le nom
       const { data: newClient, error: clientError } = await supabase
         .from('clients')
         .insert([
           {
             name: newClientForm.name,
-            email: newClientForm.email || null,
-            phone: newClientForm.phone || null,
-            address: newClientForm.address || null,
-            contact_person: newClientForm.contact_person || null,
             created_by: user.id
           }
         ])
@@ -272,11 +260,7 @@ export function CreateMissionForm({ onSuccess, onCancel, initialData }: CreateMi
       // Fermer le formulaire de création de client
       setShowNewClientForm(false)
       setNewClientForm({
-        name: '',
-        email: '',
-        phone: '',
-        address: '',
-        contact_person: ''
+        name: ''
       })
 
     } catch (err: any) {
@@ -291,11 +275,7 @@ export function CreateMissionForm({ onSuccess, onCancel, initialData }: CreateMi
   const handleCancelClientCreation = () => {
     setShowNewClientForm(false)
     setNewClientForm({
-      name: '',
-      email: '',
-      phone: '',
-      address: '',
-      contact_person: ''
+      name: ''
     })
     setFormData(prev => ({ ...prev, client_id: '' }))
   }
@@ -670,7 +650,7 @@ export function CreateMissionForm({ onSuccess, onCancel, initialData }: CreateMi
         </div>
       </form>
 
-      {/* Modal de création de nouveau client */}
+      {/* Modal de création de nouveau client simplifié */}
       {showNewClientForm && (
         <div className="modal-overlay">
           <div className="modal-content">
@@ -703,54 +683,7 @@ export function CreateMissionForm({ onSuccess, onCancel, initialData }: CreateMi
                   required
                   disabled={creatingClient}
                   placeholder="Nom de l'entreprise ou du client"
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="client_email">Email</label>
-                <input
-                  id="client_email"
-                  type="email"
-                  value={newClientForm.email}
-                  onChange={e => setNewClientForm(prev => ({ ...prev, email: e.target.value }))}
-                  disabled={creatingClient}
-                  placeholder="email@exemple.com"
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="client_phone">Téléphone</label>
-                <input
-                  id="client_phone"
-                  type="tel"
-                  value={newClientForm.phone}
-                  onChange={e => setNewClientForm(prev => ({ ...prev, phone: e.target.value }))}
-                  disabled={creatingClient}
-                  placeholder="+33 1 23 45 67 89"
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="client_contact">Personne à contacter</label>
-                <input
-                  id="client_contact"
-                  type="text"
-                  value={newClientForm.contact_person}
-                  onChange={e => setNewClientForm(prev => ({ ...prev, contact_person: e.target.value }))}
-                  disabled={creatingClient}
-                  placeholder="Nom du contact principal"
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="client_address">Adresse</label>
-                <textarea
-                  id="client_address"
-                  value={newClientForm.address}
-                  onChange={e => setNewClientForm(prev => ({ ...prev, address: e.target.value }))}
-                  disabled={creatingClient}
-                  placeholder="Adresse complète"
-                  rows={3}
+                  autoFocus
                 />
               </div>
 
