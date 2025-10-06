@@ -234,7 +234,11 @@ function App() {
             <div className="modal-overlay" onClick={() => setShowCreate(false)}>
               <div className="modal-content" onClick={e => e.stopPropagation()}>
                 <button className="modal-close" onClick={() => setShowCreate(false)}>×</button>
-                <CreateMissionForm onCreated={handleCreated} />
+                {/* CORRECTION ICI : utiliser handleCreated au lieu de handleMissionCreated et ajouter onCancel */}
+                <CreateMissionForm 
+                  onSuccess={handleCreated} 
+                  onCancel={() => setShowCreate(false)}
+                />
               </div>
             </div>
           )}
@@ -249,7 +253,8 @@ function App() {
                 }} />
               </div>
             </div>
-             )}
+          )}
+
           {editingMissionId && (
             <div className="modal-overlay" onClick={() => setEditingMissionId(null)}>
               <div className="modal-content" onClick={e => e.stopPropagation()}>

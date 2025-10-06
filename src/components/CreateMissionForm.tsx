@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabaseClient'
-import { missionCatalog, type MissionCatalogType } from '../lib/missionCatalog'
+import { missionCatalog } from '../lib/missionCatalog' // ✅ Supprimé MissionCatalogType inutilisé
 import type { Client, Collaborator, Mission } from '../types'
 import './CreateMissionForm.css'
 
@@ -40,8 +40,8 @@ const convertMissionToFormData = (mission: Partial<Mission>): Partial<MissionFor
     client_name: mission.client_name || '',
     title: mission.title || '',
     service: mission.service || '',
-    category_code: (mission as any).category_code || '', // Cast temporaire si category_code n'est pas dans Mission
-    prestation_code: (mission as any).prestation_code || '', // Cast temporaire si prestation_code n'est pas dans Mission
+    category_code: mission.category_code || '',
+    prestation_code: mission.prestation_code || '',
     description: mission.description || '',
     stage: mission.stage || 'opportunite',
     situation_state: mission.situation_state || '',
@@ -111,7 +111,7 @@ export function CreateMissionForm({ onSuccess, onCancel, initialData }: CreateMi
     fetchInitialData()
   }, [])
 
-  // Initialisation avec les données existantes (CORRIGÉ)
+  // Initialisation avec les données existantes
   useEffect(() => {
     if (initialData) {
       const convertedData = convertMissionToFormData(initialData)
@@ -120,15 +120,11 @@ export function CreateMissionForm({ onSuccess, onCancel, initialData }: CreateMi
         ...convertedData
       }))
       
-      // Utiliser le cast temporaire pour category_code et prestation_code
-      const categoryCode = (initialData as any).category_code
-      const prestationCode = (initialData as any).prestation_code
-      
-      if (categoryCode) {
-        setSelectedCategory(categoryCode)
+      if (initialData.category_code) {
+        setSelectedCategory(initialData.category_code)
       }
-      if (prestationCode) {
-        setSelectedPrestation(prestationCode)
+      if (initialData.prestation_code) {
+        setSelectedPrestation(initialData.prestation_code)
       }
     }
   }, [initialData])
