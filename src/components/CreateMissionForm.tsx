@@ -32,6 +32,15 @@ interface MissionFormData {
   recovery_amount: number
 }
 
+// Type pour le formulaire de création de client
+interface NewClientFormData {
+  name: string
+  email: string
+  phone: string
+  address: string
+  contact_person: string
+}
+
 // Fonction utilitaire pour convertir les données Mission en données formulaire
 const convertMissionToFormData = (mission: Partial<Mission>): Partial<MissionFormData> => {
   return {
@@ -62,6 +71,17 @@ export function CreateMissionForm({ onSuccess, onCancel, initialData }: CreateMi
   const [clients, setClients] = useState<Client[]>([])
   const [collaborators, setCollaborators] = useState<Collaborator[]>([])
   const [isInternalClient, setIsInternalClient] = useState(false)
+  
+  // États pour la création de nouveau client
+  const [showNewClientForm, setShowNewClientForm] = useState(false)
+  const [creatingClient, setCreatingClient] = useState(false)
+  const [newClientForm, setNewClientForm] = useState<NewClientFormData>({
+    name: '',
+    email: '',
+    phone: '',
+    address: '',
+    contact_person: ''
+  })
   
   // États du formulaire avec le type correct
   const [formData, setFormData] = useState<MissionFormData>({
@@ -172,17 +192,8 @@ export function CreateMissionForm({ onSuccess, onCancel, initialData }: CreateMi
   // Gestion des changements de client
   const handleClientChange = (clientId: string) => {
     if (clientId === "new_client") {
-      // Ici vous pouvez ouvrir un modal ou rediriger vers la création de client
-      // Pour l'instant, on va simplement reset la sélection
-      setFormData(prev => ({
-        ...prev,
-        client_id: "",
-        client_name: ""
-      }));
-      
-      // Optionnel : Afficher un message ou déclencher une action
-      setError("Fonctionnalité 'Nouveau client' - À implémenter");
-      return;
+      setShowNewClientForm(true)
+      return
     }
 
     const client = clients.find(c => c.id === clientId)
@@ -204,6 +215,89 @@ export function CreateMissionForm({ onSuccess, onCancel, initialData }: CreateMi
         recovery_amount: 0
       })
     }))
+  }
+
+  // Création d'un nouveau client
+  const handleCreateClient = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setCreatingClient(true)
+    setError(null)
+
+    try {
+      if (!newClientForm.name.trim()) {
+        throw new Error('Le nom du client est obligatoire')
+      }
+
+      const user = (await supabase.auth.getUser()).data.user
+      if (!user) throw new Error('Utilisateur non connecté')
+
+      // Insertion du nouveau client
+      const { data: newClient, error: clientError } = await supabase
+        .from('clients')
+        .insert([
+          {
+            name: newClientForm.name,
+            email: newClientForm.email || null,
+            phone: newClientForm.phone || null,
+            address: newClientForm.address || null,
+            contact_person: newClientForm.contact_person || null,
+            created_by: user.id
+          }
+        ])
+        .select()
+        .single()
+
+      if (clientError) throw clientError
+
+      // Mettre à jour la liste des clients
+      setClients(prev => [...prev, newClient])
+
+      // Sélectionner automatiquement le nouveau client
+      setIsInternalClient(newClient.name === 'INTERNE')
+      setFormData(prev => ({
+        ...prev,
+        client_id: newClient.id,
+        client_name: newClient.name,
+        ...(newClient.name === 'INTERNE' && {
+          billable: false,
+          stage: 'simple_suivi',
+          partner_id: '',
+          due_date: '',
+          fees_amount: 0,
+          invoice_amount: 0,
+          recovery_amount: 0
+        })
+      }))
+
+      // Fermer le formulaire de création de client
+      setShowNewClientForm(false)
+      setNewClientForm({
+        name: '',
+        email: '',
+        phone: '',
+        address: '',
+        contact_person: ''
+      })
+
+    } catch (err: any) {
+      console.error('Erreur création client:', err)
+      setError(err.message || 'Erreur lors de la création du client')
+    } finally {
+      setCreatingClient(false)
+    }
+  }
+
+  // Annuler la création de client
+  const handleCancelClientCreation = () => {
+    setShowNewClientForm(false)
+    setNewClientForm({
+      name: '',
+      email: '',
+      phone: '',
+      address: '',
+      contact_person: ''
+    })
+    setFormData(prev => ({ ...prev, client_id: '' }))
   }
 
   // Validation du formulaire
@@ -336,7 +430,7 @@ export function CreateMissionForm({ onSuccess, onCancel, initialData }: CreateMi
                 value={formData.client_id}
                 onChange={e => handleClientChange(e.target.value)}
                 required
-                disabled={loading}
+                disabled={loading || showNewClientForm}
               >
                 <option value="">Sélectionnez un client</option>
                 {clients.map(client => (
@@ -575,6 +669,112 @@ export function CreateMissionForm({ onSuccess, onCancel, initialData }: CreateMi
           </button>
         </div>
       </form>
+
+      {/* Modal de création de nouveau client */}
+      {showNewClientForm && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h3>Nouveau client</h3>
+              <button 
+                type="button" 
+                className="close-button" 
+                onClick={handleCancelClientCreation}
+                disabled={creatingClient}
+              >
+                ×
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateClient} className="client-form">
+              {error && (
+                <div className="error-message">
+                  ⚠️ {error}
+                </div>
+              )}
+
+              <div className="form-group">
+                <label htmlFor="client_name">Nom du client *</label>
+                <input
+                  id="client_name"
+                  type="text"
+                  value={newClientForm.name}
+                  onChange={e => setNewClientForm(prev => ({ ...prev, name: e.target.value }))}
+                  required
+                  disabled={creatingClient}
+                  placeholder="Nom de l'entreprise ou du client"
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="client_email">Email</label>
+                <input
+                  id="client_email"
+                  type="email"
+                  value={newClientForm.email}
+                  onChange={e => setNewClientForm(prev => ({ ...prev, email: e.target.value }))}
+                  disabled={creatingClient}
+                  placeholder="email@exemple.com"
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="client_phone">Téléphone</label>
+                <input
+                  id="client_phone"
+                  type="tel"
+                  value={newClientForm.phone}
+                  onChange={e => setNewClientForm(prev => ({ ...prev, phone: e.target.value }))}
+                  disabled={creatingClient}
+                  placeholder="+33 1 23 45 67 89"
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="client_contact">Personne à contacter</label>
+                <input
+                  id="client_contact"
+                  type="text"
+                  value={newClientForm.contact_person}
+                  onChange={e => setNewClientForm(prev => ({ ...prev, contact_person: e.target.value }))}
+                  disabled={creatingClient}
+                  placeholder="Nom du contact principal"
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="client_address">Adresse</label>
+                <textarea
+                  id="client_address"
+                  value={newClientForm.address}
+                  onChange={e => setNewClientForm(prev => ({ ...prev, address: e.target.value }))}
+                  disabled={creatingClient}
+                  placeholder="Adresse complète"
+                  rows={3}
+                />
+              </div>
+
+              <div className="modal-actions">
+                <button
+                  type="button"
+                  onClick={handleCancelClientCreation}
+                  disabled={creatingClient}
+                  className="cancel-button"
+                >
+                  Annuler
+                </button>
+                <button
+                  type="submit"
+                  disabled={creatingClient}
+                  className="submit-button"
+                >
+                  {creatingClient ? 'Création...' : 'Créer le client'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
