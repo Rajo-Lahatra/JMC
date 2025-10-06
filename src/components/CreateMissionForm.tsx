@@ -388,7 +388,6 @@ export function CreateMissionForm({ onSuccess, onCancel, initialData }: CreateMi
                 required
                 disabled={loading}
                 placeholder="Titre personnalisé (optionnel)"
-                className="large-input"
               />
             </div>
 
@@ -400,7 +399,6 @@ export function CreateMissionForm({ onSuccess, onCancel, initialData }: CreateMi
                 onChange={e => setFormData(prev => ({ ...prev, description: e.target.value }))}
                 disabled={loading}
                 placeholder="Description complémentaire..."
-                className="large-textarea"
               />
             </div>
           </div>
@@ -525,7 +523,6 @@ export function CreateMissionForm({ onSuccess, onCancel, initialData }: CreateMi
                 onChange={e => setFormData(prev => ({ ...prev, situation_state: e.target.value }))}
                 disabled={loading}
                 placeholder="État d'avancement, difficultés rencontrées..."
-                className="extra-large-textarea"
               />
             </div>
 
@@ -537,7 +534,6 @@ export function CreateMissionForm({ onSuccess, onCancel, initialData }: CreateMi
                 onChange={e => setFormData(prev => ({ ...prev, situation_actions: e.target.value }))}
                 disabled={loading}
                 placeholder="Prochaines étapes, délais, responsables..."
-                className="extra-large-textarea"
               />
             </div>
           </div>
