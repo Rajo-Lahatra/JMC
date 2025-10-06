@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabaseClient'
-import { missionCatalog } from '../lib/missionCatalog' // ✅ Supprimé MissionCatalogType inutilisé
+import { missionCatalog } from '../lib/missionCatalog'
 import type { Client, Collaborator, Mission } from '../types'
 import './CreateMissionForm.css'
 
@@ -61,6 +61,7 @@ export function CreateMissionForm({ onSuccess, onCancel, initialData }: CreateMi
   const [error, setError] = useState<string | null>(null)
   const [clients, setClients] = useState<Client[]>([])
   const [collaborators, setCollaborators] = useState<Collaborator[]>([])
+  const [isInternalClient, setIsInternalClient] = useState(false)
   
   // États du formulaire avec le type correct
   const [formData, setFormData] = useState<MissionFormData>({
@@ -115,6 +116,9 @@ export function CreateMissionForm({ onSuccess, onCancel, initialData }: CreateMi
   useEffect(() => {
     if (initialData) {
       const convertedData = convertMissionToFormData(initialData)
+      const isInternal = convertedData.client_name === 'INTERNE'
+      
+      setIsInternalClient(isInternal)
       setFormData(prev => ({
         ...prev,
         ...convertedData
@@ -168,10 +172,23 @@ export function CreateMissionForm({ onSuccess, onCancel, initialData }: CreateMi
   // Gestion des changements de client
   const handleClientChange = (clientId: string) => {
     const client = clients.find(c => c.id === clientId)
+    const isInternal = client?.name === 'INTERNE'
+    
+    setIsInternalClient(isInternal)
     setFormData(prev => ({
       ...prev,
       client_id: clientId,
-      client_name: client?.name || ''
+      client_name: client?.name || '',
+      // Réinitialiser certains champs pour les missions internes
+      ...(isInternal && {
+        billable: false,
+        stage: 'simple_suivi',
+        partner_id: '',
+        due_date: '',
+        fees_amount: 0,
+        invoice_amount: 0,
+        recovery_amount: 0
+      })
     }))
   }
 
@@ -189,7 +206,8 @@ export function CreateMissionForm({ onSuccess, onCancel, initialData }: CreateMi
       setError('Le titre de la mission est obligatoire')
       return false
     }
-    if (!formData.partner_id) {
+    // Pour les missions non-internes, vérifier l'associé responsable
+    if (!isInternalClient && !formData.partner_id) {
       setError('Veuillez sélectionner un associé responsable')
       return false
     }
@@ -272,9 +290,16 @@ export function CreateMissionForm({ onSuccess, onCancel, initialData }: CreateMi
           </div>
         )}
 
+        {/* Message pour les missions INTERNE */}
+        {isInternalClient && (
+          <div className="internal-note">
+            <strong>Mission INTERNE</strong> - Les informations de gestion et financières sont masquées pour les missions internes.
+          </div>
+        )}
+
         <div className="form-grid">
           {/* Section identification */}
-          <div className="form-section">
+          <div className={`form-section ${isInternalClient ? 'internal-client-section' : ''}`}>
             <h3>Identification</h3>
             
             <div className="form-group">
@@ -310,7 +335,7 @@ export function CreateMissionForm({ onSuccess, onCancel, initialData }: CreateMi
           </div>
 
           {/* Section catalogue */}
-          <div className="form-section">
+          <div className="form-section catalog-section">
             <h3>Catalogue des missions</h3>
 
             <div className="form-group">
@@ -363,6 +388,7 @@ export function CreateMissionForm({ onSuccess, onCancel, initialData }: CreateMi
                 required
                 disabled={loading}
                 placeholder="Titre personnalisé (optionnel)"
+                className="large-input"
               />
             </div>
 
@@ -372,119 +398,123 @@ export function CreateMissionForm({ onSuccess, onCancel, initialData }: CreateMi
                 id="description"
                 value={formData.description}
                 onChange={e => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                rows={4}
                 disabled={loading}
                 placeholder="Description complémentaire..."
+                className="large-textarea"
               />
             </div>
           </div>
 
-          {/* Section gestion */}
-          <div className="form-section">
-            <h3>Gestion</h3>
+          {/* Section gestion - Conditionnelle pour INTERNE */}
+          {!isInternalClient && (
+            <div className="form-section management-section">
+              <h3>Gestion</h3>
 
-            <div className="form-group">
-              <label htmlFor="partner_id">Associé responsable *</label>
-              <select
-                id="partner_id"
-                value={formData.partner_id}
-                onChange={e => setFormData(prev => ({ ...prev, partner_id: e.target.value }))}
-                required
-                disabled={loading}
-              >
-                <option value="">Sélectionnez un associé</option>
-                {collaborators
-                  .filter(c => c.grade === 'Partner')
-                  .map(collab => (
-                    <option key={collab.id} value={collab.id}>
-                      {collab.first_name} {collab.last_name}
-                    </option>
-                  ))
-                }
-              </select>
-            </div>
+              <div className="form-group">
+                <label htmlFor="partner_id">Associé responsable *</label>
+                <select
+                  id="partner_id"
+                  value={formData.partner_id}
+                  onChange={e => setFormData(prev => ({ ...prev, partner_id: e.target.value }))}
+                  required
+                  disabled={loading}
+                >
+                  <option value="">Sélectionnez un associé</option>
+                  {collaborators
+                    .filter(c => c.grade === 'Partner')
+                    .map(collab => (
+                      <option key={collab.id} value={collab.id}>
+                        {collab.first_name} {collab.last_name}
+                      </option>
+                    ))
+                  }
+                </select>
+              </div>
 
-            <div className="form-group">
-              <label htmlFor="stage">Étape</label>
-              <select
-                id="stage"
-                value={formData.stage}
-                onChange={e => setFormData(prev => ({ ...prev, stage: e.target.value }))}
-                disabled={loading}
-              >
-                <option value="opportunite">Opportunité</option>
-                <option value="lettre_envoyee">Lettre envoyée</option>
-                <option value="lettre_signee">Lettre signée</option>
-                <option value="staff_traitement">Traitement interne</option>
-                <option value="revue_manager">Revue manager</option>
-                <option value="revue_associes">Revue des associés</option>
-                <option value="livrable_envoye">Livrable envoyé</option>
-                <option value="simple_suivi">Suivi simple</option>
-              </select>
-            </div>
+              <div className="form-group">
+                <label htmlFor="stage">Étape</label>
+                <select
+                  id="stage"
+                  value={formData.stage}
+                  onChange={e => setFormData(prev => ({ ...prev, stage: e.target.value }))}
+                  disabled={loading}
+                >
+                  <option value="opportunite">Opportunité</option>
+                  <option value="lettre_envoyee">Lettre envoyée</option>
+                  <option value="lettre_signee">Lettre signée</option>
+                  <option value="staff_traitement">Traitement interne</option>
+                  <option value="revue_manager">Revue manager</option>
+                  <option value="revue_associes">Revue des associés</option>
+                  <option value="livrable_envoye">Livrable envoyé</option>
+                  <option value="simple_suivi">Suivi simple</option>
+                </select>
+              </div>
 
-            <div className="form-group">
-              <label htmlFor="due_date">Échéance</label>
-              <input
-                id="due_date"
-                type="date"
-                value={formData.due_date}
-                onChange={e => setFormData(prev => ({ ...prev, due_date: e.target.value }))}
-                disabled={loading}
-              />
-            </div>
-          </div>
-
-          {/* Section financière */}
-          <div className="form-section">
-            <h3>Informations financières</h3>
-
-            <div className="form-group checkbox-group">
-              <label>
+              <div className="form-group">
+                <label htmlFor="due_date">Échéance</label>
                 <input
-                  type="checkbox"
-                  checked={formData.billable}
-                  onChange={e => setFormData(prev => ({ ...prev, billable: e.target.checked }))}
+                  id="due_date"
+                  type="date"
+                  value={formData.due_date}
+                  onChange={e => setFormData(prev => ({ ...prev, due_date: e.target.value }))}
                   disabled={loading}
                 />
-                Mission facturable
-              </label>
+              </div>
             </div>
+          )}
 
-            {formData.billable && (
-              <>
-                <div className="form-group">
-                  <label htmlFor="currency">Devise</label>
-                  <select
-                    id="currency"
-                    value={formData.currency}
-                    onChange={e => setFormData(prev => ({ ...prev, currency: e.target.value }))}
-                    disabled={loading}
-                  >
-                    <option value="USD">USD</option>
-                    <option value="EUR">EUR</option>
-                    <option value="GNF">GNF</option>
-                  </select>
-                </div>
+          {/* Section financière - Conditionnelle pour INTERNE */}
+          {!isInternalClient && (
+            <div className="form-section finance-section">
+              <h3>Informations financières</h3>
 
-                <div className="form-group">
-                  <label htmlFor="fees_amount">Honoraires estimés</label>
+              <div className="form-group checkbox-group">
+                <label>
                   <input
-                    id="fees_amount"
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    value={formData.fees_amount}
-                    onChange={e => setFormData(prev => ({ ...prev, fees_amount: parseFloat(e.target.value) || 0 }))}
+                    type="checkbox"
+                    checked={formData.billable}
+                    onChange={e => setFormData(prev => ({ ...prev, billable: e.target.checked }))}
                     disabled={loading}
                   />
-                </div>
-              </>
-            )}
-          </div>
+                  Mission facturable
+                </label>
+              </div>
+
+              {formData.billable && (
+                <>
+                  <div className="form-group">
+                    <label htmlFor="currency">Devise</label>
+                    <select
+                      id="currency"
+                      value={formData.currency}
+                      onChange={e => setFormData(prev => ({ ...prev, currency: e.target.value }))}
+                      disabled={loading}
+                    >
+                      <option value="USD">USD</option>
+                      <option value="EUR">EUR</option>
+                      <option value="GNF">GNF</option>
+                    </select>
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="fees_amount">Honoraires estimés</label>
+                    <input
+                      id="fees_amount"
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={formData.fees_amount}
+                      onChange={e => setFormData(prev => ({ ...prev, fees_amount: parseFloat(e.target.value) || 0 }))}
+                      disabled={loading}
+                    />
+                  </div>
+                </>
+              )}
+            </div>
+          )}
 
           {/* Section situation */}
-          <div className="form-section full-width">
+          <div className="form-section full-width situation-section">
             <h3>Situation et actions</h3>
 
             <div className="form-group">
@@ -493,9 +523,9 @@ export function CreateMissionForm({ onSuccess, onCancel, initialData }: CreateMi
                 id="situation_state"
                 value={formData.situation_state}
                 onChange={e => setFormData(prev => ({ ...prev, situation_state: e.target.value }))}
-                rows={3}
                 disabled={loading}
                 placeholder="État d'avancement, difficultés rencontrées..."
+                className="extra-large-textarea"
               />
             </div>
 
@@ -505,9 +535,9 @@ export function CreateMissionForm({ onSuccess, onCancel, initialData }: CreateMi
                 id="situation_actions"
                 value={formData.situation_actions}
                 onChange={e => setFormData(prev => ({ ...prev, situation_actions: e.target.value }))}
-                rows={3}
                 disabled={loading}
                 placeholder="Prochaines étapes, délais, responsables..."
+                className="extra-large-textarea"
               />
             </div>
           </div>

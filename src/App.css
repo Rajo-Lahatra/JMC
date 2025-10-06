@@ -1,327 +1,372 @@
-/* ─── Palette inspirée du logo ───────────────────────────────── */
-:root {
-  --font-family: 'Segoe UI', Roboto, sans-serif;
-
-  /* Couleurs principales */
-  --color-bg: #fdfaf6;            /* Fond général beige doux */
-  --color-card: #ffffff;          /* Cartes, drawer */
-  --color-primary: #fba519;       /* Boutons, accents */
-  --color-primary-dark: #492a1d;  /* Titres, header */
-  --color-text: #65452f;          /* Texte principal */
-  --color-border: #988577;        /* Bordures douces */
-  --color-error: #dc2626;         /* Erreurs */
-
-  /* Design system */
-  --radius: 8px;
-  --spacing: 16px;
-}
-
-/* ─── Reset & base ───────────────────────────────────────────── */
-* {
-  box-sizing: border-box;
-  margin: 0;
+/* Conteneur principal de la modale - BEAUCOUP PLUS GRAND */
+.modal-content {
+  width: 95vw;
+  max-width: 1400px;
+  height: 95vh;
+  max-height: 90vh;
+  overflow-y: auto;
   padding: 0;
-  }
-body {
-  font-family: var(--font-family);
-  background-color: var(--color-bg);
-  color: var(--color-text);
-  line-height: 1.5;
-  padding: var(--spacing);
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 }
 
-/* ─── Conteneur principal ────────────────────────────────────── */
-.App {
-  max-width: 1200px;
-  margin: 0 auto;
+/* Conteneur du formulaire - PLEINE HAUTEUR */
+.create-mission-form-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  animation: fadeIn 0.4s ease-out;
 }
 
-/* ─── En-tête avec logo ──────────────────────────────────────── */
-.App-header {
+/* En-tête fixe */
+.form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2rem;
+  border-bottom: 2px solid #e1e8ed;
+  background: #f8f9fa;
+  border-radius: 12px 12px 0 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: white;
+}
+
+.form-header h2 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+/* Contenu défilable */
+.mission-form {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+/* Grille principale - OPTIMISÉE POUR L'ESPACE */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5rem;
+  margin-bottom: 2rem;
+  min-height: 600px;
+}
+
+/* Sections de formulaire avec hauteur adaptative */
+.form-section {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 12px;
+  border: 1px solid #e1e8ed;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+}
+
+.form-section h3 {
+  margin: 0 0 1.5rem 0;
+  color: #2c3e50;
+  font-size: 1.3rem;
+  font-weight: 700;
+  border-bottom: 3px solid #0078d4;
+  padding-bottom: 0.8rem;
+}
+
+/* Section pleine largeur */
+.form-section.full-width {
+  grid-column: 1 / -1;
+  min-height: 400px;
+}
+
+/* Groupes de formulaire avec espacement amélioré */
+.form-group {
+  margin-bottom: 2rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group:last-child {
+  margin-bottom: 0;
+}
+
+/* Labels */
+.form-group label {
+  font-weight: 600;
+  margin-bottom: 0.8rem;
+  color: #2c3e50;
+  font-size: 1.1rem;
+}
+
+/* CHAMPS DE TEXTE BEAUCOUP PLUS GRANDS */
+.form-group input,
+.form-group select {
+  font-size: 1.1rem;
+  padding: 1rem 1.2rem;
+  border: 2px solid #e1e8ed;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  background-color: #fafbfc;
+  min-height: 56px;
+}
+
+/* CHAMPS TEXTEAREA TRÈS LARGES */
+.form-group textarea {
+  font-size: 1.1rem;
+  padding: 1.2rem;
+  border: 2px solid #e1e8ed;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  background-color: #fafbfc;
+  resize: vertical;
+  font-family: inherit;
+  line-height: 1.6;
+  flex: 1;
+  min-height: 150px;
+}
+
+/* Champs spécifiques encore plus grands */
+#title {
+  min-height: 70px;
+  font-size: 1.2rem;
+}
+
+#description {
+  min-height: 200px;
+  font-size: 1.1rem;
+}
+
+#situation_state,
+#situation_actions {
+  min-height: 180px;
+  font-size: 1.1rem;
+}
+
+/* États de focus */
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #0078d4;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(0, 120, 212, 0.15);
+  transform: translateY(-2px);
+}
+
+/* Section catalogue avec hauteur fixe pour stabilité */
+.catalog-section {
+  min-height: 400px;
+}
+
+/* Informations de prestation */
+.prestation-info {
+  background: #e3f2fd;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-left: 4px solid #2196f3;
+  margin-top: 1rem;
+  flex: none;
+}
+
+.prestation-info h4 {
+  margin: 0 0 1rem 0;
+  color: #1976d2;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.prestation-info p {
+  margin: 0;
+  color: #424242;
+  line-height: 1.6;
+  white-space: pre-line;
+}
+
+/* Sections conditionnelles pour INTERNE */
+.internal-client-section {
+  background: #fff3e0;
+  border-left: 4px solid #ff9800;
+}
+
+.internal-client-section h3 {
+  border-bottom-color: #ff9800;
+  color: #e65100;
+}
+
+/* Masquer les sections pour INTERNE */
+.internal-hidden {
+  display: none;
+}
+
+/* Override pour les sections financières et gestion quand INTERNE */
+.form-section.finance-section,
+.form-section.management-section {
+  transition: all 0.3s ease;
+}
+
+/* Style pour indiquer les champs masqués pour INTERNE */
+.internal-note {
+  background: #fff3e0;
+  padding: 1rem;
+  border-radius: 6px;
+  border-left: 4px solid #ff9800;
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  color: #e65100;
+}
+
+/* Boutons d'action en bas */
+.form-actions {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: flex-end;
+  margin-top: 3rem;
+  padding: 2rem 0 1rem 0;
+  border-top: 2px solid #e1e8ed;
+  position: sticky;
+  bottom: 0;
+  background: white;
+  z-index: 50;
+}
+
+.cancel-button {
+  padding: 1.2rem 2.5rem;
+  border: 2px solid #6c757d;
+  background: white;
+  color: #6c757d;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  min-width: 140px;
+}
+
+.cancel-button:hover:not(:disabled) {
+  background: #6c757d;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+}
+
+.submit-button {
+  padding: 1.2rem 3rem;
+  border: 2px solid #0078d4;
+  background: #0078d4;
+  color: white;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  min-width: 200px;
+}
+
+.submit-button:hover:not(:disabled) {
+  background: #0056b3;
+  border-color: #0056b3;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 120, 212, 0.4);
+}
+
+/* Message d'erreur */
+.error-message {
+  background: #f8d7da;
+  border: 1px solid #f5c6cb;
+  color: #721c24;
+  padding: 1.5rem;
+  border-radius: 10px;
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+/* Checkbox group */
+.checkbox-group {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: var(--spacing);
-  margin-bottom: var(--spacing);
+  gap: 1rem;
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
 }
 
-.App-logo {
-  height: 48px;
-  width: auto;
+.checkbox-group input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  margin: 0;
 }
 
-.App-header h1 {
-  font-size: 1.75rem;
-  line-height: 1.2;
-  color: var(--color-primary-dark);
-}
-
-/* ─── Contenu principal ──────────────────────────────────────── */
-.main-content {
-  padding: var(--spacing) 0;
-}
-
-/* ─── Bouton “Créer une mission” ─────────────────────────────── */
-.btn-create-mission {
-  background-color: var(--color-primary-dark); /* marron */
-  color: white;
-  border: none;
-  border-radius: var(--radius);
-  padding: 0.75em 1.5em;
+.checkbox-group label {
+  margin: 0;
+  font-weight: 600;
   cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.3s ease;
+  font-size: 1.1rem;
 }
 
-.btn-create-mission:hover {
-  background-color: #3a1f14;
-}
-/* ─── Drawer (panneau latéral) ───────────────────────────────── */
-.drawer-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.4);
-  display: flex;
-  justify-content: flex-end;
-  z-index: 1000;
+/* Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
-.drawer-content {
-  background: var(--color-card);
-  width: 360px;
-  max-width: 90%;
-  height: 100%;
-  padding: var(--spacing);
-  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.2);
-  overflow-y: auto;
-  position: relative;
-  border-left: 4px solid var(--color-primary-dark);
-  color: var(--color-text);
+/* Responsive */
+@media (max-width: 1200px) {
+  .modal-content {
+    width: 98vw;
+    height: 98vh;
+  }
+  
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  
+  .mission-form {
+    padding: 1.5rem;
+  }
+  
+  .form-section {
+    padding: 1.5rem;
+  }
 }
 
-.drawer-close {
-  background-color: var(--color-primary-dark); /* marron */
-  color: white;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  padding: 0.25em 0.5em;
-  border-radius: var(--radius);
-}
-
-/* ─── Responsive ─────────────────────────────────────────────── */
-@media (max-width: 800px) {
-  .btn-create-mission {
+@media (max-width: 768px) {
+  .form-header {
+    padding: 1.5rem;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+  
+  .form-header h2 {
+    font-size: 1.6rem;
+    text-align: center;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .cancel-button,
+  .submit-button {
     width: 100%;
     text-align: center;
   }
-
-  .drawer-content {
-    width: 100%;
+  
+  .form-group textarea {
+    min-height: 120px;
   }
-
-  .App main {
-    display: block;
-  }
-}
-.profil-container {
-  background-color: #f9f9f9;
-  padding: 2rem;
-  border-radius: 8px;
-  max-width: 500px;
-  margin: 2rem auto;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.profil-container h2 {
-  margin-bottom: 1rem;
-  color: #333;
-}
-
-.profil-container ul {
-  list-style: none;
-  padding: 0;
-}
-
-.profil-container li {
-  margin-bottom: 0.5rem;
-  font-size: 1rem;
-}
-.profil-section {
-  margin: 2rem auto;
-  max-width: 600px;
-}
-.btn-logout {
-  background-color: #e74c3c;
-  color: white;
-  border: none;
-  padding: 0.6rem 1rem;
-  border-radius: 4px;
-  cursor: pointer;
-  margin: 1rem 0;
-  font-weight: bold;
-}
-
-.btn-logout:hover {
-  background-color: #c0392b;
-}
-.mission-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding: 1.5rem;
-}
-
-.mission-form label {
-  display: flex;
-  flex-direction: column;
-  font-weight: bold;
-}
-
-.checkbox-label {
-  flex-direction: row;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-fieldset {
-  border: 1px solid #ccc;
-  padding: 1rem;
-  border-radius: 6px;
-}
-
-.disabled-section {
-  opacity: 0.5;
-  pointer-events: none;
-}
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background: white;
-  padding: 2rem;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 700px;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-}
-
-.modal-close {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  font-size: 1.5rem;
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-.create-mission-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.create-mission-form label {
-  font-weight: bold;
-  margin-bottom: 0.3rem;
-}
-
-.create-mission-form input,
-.create-mission-form select,
-.create-mission-form textarea {
-  padding: 0.6rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 1rem;
-}
-
-.create-mission-form textarea {
-  min-height: 120px;
-  resize: vertical;
-}
-
-.profil-floating {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background-color: #fdfdfd;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  padding: 0.8rem;
-  width: 200px;
-  font-size: 0.85rem;
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
-  z-index: 100;
-}
-
-.profil-floating h2 {
-  font-size: 0.95rem;
-  margin-bottom: 0.4rem;
-}
-
-.profil-floating ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.profil-floating li {
-  margin-bottom: 0.2rem;
-  line-height: 1.2;
-}
-
-.profil-name {
-  font-weight: 500;
-  white-space: nowrap;
-}
-.btn-logout {
-  padding: 0.2rem 0.5rem;
-  font-size: 0.75rem;
-  background-color: #e74c3c;
-  color: white;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-}
-
-.btn-logout:hover {
-  background-color: #c0392b;
-}
-.mission-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 2rem;
-  font-size: 0.9rem;
-}
-
-.mission-table th,
-.mission-table td {
-  border: 1px solid #ddd;
-  padding: 0.6rem;
-  text-align: left;
-}
-
-.mission-table th {
-  background-color: #f5f5f5;
-  font-weight: bold;
-}
-
-.mission-table tr:hover {
-  background-color: #f9f9f9;
 }
