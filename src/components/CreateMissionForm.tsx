@@ -171,6 +171,20 @@ export function CreateMissionForm({ onSuccess, onCancel, initialData }: CreateMi
 
   // Gestion des changements de client
   const handleClientChange = (clientId: string) => {
+    if (clientId === "new_client") {
+      // Ici vous pouvez ouvrir un modal ou rediriger vers la création de client
+      // Pour l'instant, on va simplement reset la sélection
+      setFormData(prev => ({
+        ...prev,
+        client_id: "",
+        client_name: ""
+      }));
+      
+      // Optionnel : Afficher un message ou déclencher une action
+      setError("Fonctionnalité 'Nouveau client' - À implémenter");
+      return;
+    }
+
     const client = clients.find(c => c.id === clientId)
     const isInternal = client?.name === 'INTERNE'
     
@@ -330,6 +344,10 @@ export function CreateMissionForm({ onSuccess, onCancel, initialData }: CreateMi
                     {client.name}
                   </option>
                 ))}
+                {/* Ajout de l'option Nouveau client */}
+                <option value="new_client" className="new-client-option">
+                  + Nouveau client
+                </option>
               </select>
             </div>
           </div>
