@@ -209,41 +209,26 @@ export function CreateMissionForm({ onSuccess, onCancel, initialData }: CreateMi
     }))
   }
 
-  // Création d'un nouveau client - Version corrigée
-const handleCreateClient = async (e: React.FormEvent) => {
-  e.preventDefault()
-  setCreatingClient(true)
-  setError(null)
+  // Création d'un nouveau client - Version sans created_by
+  const handleCreateClient = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setCreatingClient(true)
+    setError(null)
 
-  try {
-    if (!newClientForm.name.trim()) {
-      throw new Error('Le nom du client est obligatoire')
-    }
+    try {
+      if (!newClientForm.name.trim()) {
+        throw new Error('Le nom du client est obligatoire')
+      }
 
-    // Récupérer l'utilisateur connecté
-    const { data: { user }, error: userError } = await supabase.auth.getUser()
-    
-    if (userError) {
-      console.error('Erreur récupération utilisateur:', userError)
-      throw new Error('Erreur d\'authentification')
-    }
-
-    if (!user) {
-      throw new Error('Utilisateur non connecté')
-    }
-
-    // Préparer les données pour l'insertion
-    const clientData: any = {
-      name: newClientForm.name,
-      created_by: user.id // Utiliser l'ID de l'utilisateur connecté
-    }
-
-    console.log('Données client à insérer:', clientData)
-
-    // Insertion du nouveau client
+    // Insertion du nouveau client sans created_by
     const { data: newClient, error: clientError } = await supabase
       .from('clients')
-      .insert([clientData])
+      .insert([
+        {
+          name: newClientForm.name
+          // created_by temporairement désactivé
+        }
+      ])
       .select()
       .single()
 
@@ -278,13 +263,13 @@ const handleCreateClient = async (e: React.FormEvent) => {
       name: ''
     })
 
-  } catch (err: any) {
-    console.error('Erreur création client:', err)
-    setError(err.message || 'Erreur lors de la création du client')
-  } finally {
-    setCreatingClient(false)
+    } catch (err: any) {
+      console.error('Erreur création client:', err)
+      setError(err.message || 'Erreur lors de la création du client')
+    } finally {
+      setCreatingClient(false)
+    }
   }
-}
 
   // Annuler la création de client
   const handleCancelClientCreation = () => {
@@ -317,7 +302,7 @@ const handleCreateClient = async (e: React.FormEvent) => {
     return true
   }
 
-  // Soumission du formulaire
+  // Soumission du formulaire - Version sans created_by
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
@@ -327,25 +312,40 @@ const handleCreateClient = async (e: React.FormEvent) => {
     setLoading(true)
 
     try {
-      const user = (await supabase.auth.getUser()).data.user
-      if (!user) throw new Error('Utilisateur non connecté')
-
-      // Préparer les données pour l'insertion
+      // Préparer les données pour l'insertion sans created_by
       const missionData = {
-        ...formData,
-        created_by: user.id,
+        dossier_number: formData.dossier_number,
+        client_id: formData.client_id,
+        client_name: formData.client_name,
+        title: formData.title,
+        service: formData.service,
+        category_code: formData.category_code,
+        prestation_code: formData.prestation_code,
+        description: formData.description,
+        stage: formData.stage,
+        situation_state: formData.situation_state,
+        situation_actions: formData.situation_actions,
         due_date: formData.due_date || null,
+        partner_id: formData.partner_id || null,
+        billable: formData.billable,
+        currency: formData.currency,
         fees_amount: formData.fees_amount || 0,
         invoice_amount: formData.invoice_amount || 0,
         recovery_amount: formData.recovery_amount || 0
+        // created_by temporairement omis
       }
+
+      console.log('Données mission à insérer:', missionData)
 
       const { error: supabaseError } = await supabase
         .from('missions')
         .insert([missionData])
         .select()
 
-      if (supabaseError) throw supabaseError
+      if (supabaseError) {
+        console.error('Erreur Supabase détaillée:', supabaseError)
+        throw supabaseError
+      }
 
       onSuccess()
       
