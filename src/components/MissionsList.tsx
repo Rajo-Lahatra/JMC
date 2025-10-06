@@ -26,12 +26,12 @@ export function MissionsList({ refreshFlag, onEdit }: MissionsListProps) {
   const [selected, setSelected] = useState<Mission | null>(null)
   const [emailMission, setEmailMission] = useState<Mission | null>(null)
   const [selectedRecipients, setSelectedRecipients] = useState<string[]>([])
-const [searchTerm, setSearchTerm] = useState('')
-const [filterService, setFilterService] = useState('')
-const [filterCreator, setFilterCreator] = useState('')
-const [filterPartner, setFilterPartner] = useState('')
-const [filterStage, setFilterStage] = useState('')
-const [filterBillable, setFilterBillable] = useState('')
+  const [searchTerm, setSearchTerm] = useState('')
+  const [filterService, setFilterService] = useState('')
+  const [filterCreator, setFilterCreator] = useState('')
+  const [filterPartner, setFilterPartner] = useState('')
+  const [filterStage, setFilterStage] = useState('')
+  const [filterBillable, setFilterBillable] = useState('')
 
   useEffect(() => {
     setLoading(true)
@@ -102,91 +102,92 @@ Bien cordialement,`
     const mailto = `mailto:${to}?subject=${subject}${cc ? `&cc=${cc}` : ''}&body=${body}`
     window.location.href = mailto
   }
-const filteredMissions = missions.filter(m => {
-  const matchesSearch =
-    m.client_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    m.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    m.dossier_number?.toLowerCase().includes(searchTerm.toLowerCase())
 
-  const matchesService = filterService ? m.service === filterService : true
-  const matchesCreator = filterCreator ? m.created_by === filterCreator : true
-  const matchesPartner = filterPartner ? m.partner_id === filterPartner : true
-  const matchesStage = filterStage ? m.stage === filterStage : true
-  const matchesBillable =
-    filterBillable === ''
-      ? true
-      : filterBillable === 'true'
-      ? m.billable === true
-      : m.billable === false
+  const filteredMissions = missions.filter(m => {
+    const matchesSearch =
+      m.client_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      m.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      m.dossier_number?.toLowerCase().includes(searchTerm.toLowerCase())
 
-  return (
-    matchesSearch &&
-    matchesService &&
-    matchesCreator &&
-    matchesPartner &&
-    matchesStage &&
-    matchesBillable
-  )
-})
+    const matchesService = filterService ? m.service === filterService : true
+    const matchesCreator = filterCreator ? m.created_by === filterCreator : true
+    const matchesPartner = filterPartner ? m.partner_id === filterPartner : true
+    const matchesStage = filterStage ? m.stage === filterStage : true
+    const matchesBillable =
+      filterBillable === ''
+        ? true
+        : filterBillable === 'true'
+        ? m.billable === true
+        : m.billable === false
+
+    return (
+      matchesSearch &&
+      matchesService &&
+      matchesCreator &&
+      matchesPartner &&
+      matchesStage &&
+      matchesBillable
+    )
+  })
+
   return (
     <>
+      <div className="filters-bar">
+        <input
+          type="text"
+          placeholder="🔍 Rechercher..."
+          value={searchTerm}
+          onChange={e => setSearchTerm(e.target.value)}
+        />
 
-    <div className="filters-bar">
-  <input
-    type="text"
-    placeholder="🔍 Rechercher..."
-    value={searchTerm}
-    onChange={e => setSearchTerm(e.target.value)}
-  />
+        <select value={filterService} onChange={e => setFilterService(e.target.value)}>
+          <option value="">Toutes les lignes</option>
+          <option value="TLS">TLS (Tax & Legal Services)</option>
+          <option value="GCS">GCS (Global Compliance Services)</option>
+          <option value="LTS">LTS (Litigation Services)</option>
+          <option value="Advisory">Advisory</option>
+        </select>
 
-<select value={filterService} onChange={e => setFilterService(e.target.value)}>
-  <option value="">Toutes les lignes</option>
-  <option value="TLS">TLS (Tax & Legal Services)</option>
-  <option value="GCS">GCS (Global Compliance Services)</option>
-  <option value="LTS">LTS (Litigation Services)</option>
-  <option value="Advisory">Advisory</option>
-</select>
+        <select value={filterCreator} onChange={e => setFilterCreator(e.target.value)}>
+          <option value="">Tous les créateurs</option>
+          {collabs.map(c => (
+            <option key={c.id} value={c.id}>
+              {c.first_name} {c.last_name}
+            </option>
+          ))}
+        </select>
 
-  <select value={filterCreator} onChange={e => setFilterCreator(e.target.value)}>
-    <option value="">Tous les créateurs</option>
-    {collabs.map(c => (
-      <option key={c.id} value={c.id}>
-        {c.first_name} {c.last_name}
-      </option>
-    ))}
-  </select>
+        <select value={filterPartner} onChange={e => setFilterPartner(e.target.value)}>
+          <option value="">Tous les associés</option>
+          {collabs
+            .filter(c => c.grade === 'Partner')
+            .map(c => (
+              <option key={c.id} value={c.id}>
+                {c.first_name} {c.last_name}
+              </option>
+            ))}
+        </select>
 
-  <select value={filterPartner} onChange={e => setFilterPartner(e.target.value)}>
-    <option value="">Tous les associés</option>
-    {collabs
-      .filter(c => c.grade === 'Partner')
-      .map(c => (
-        <option key={c.id} value={c.id}>
-          {c.first_name} {c.last_name}
-        </option>
-      ))}
-  </select>
+        <select value={filterStage} onChange={e => setFilterStage(e.target.value)}>
+          <option value="">Toutes les étapes</option>
+          {Object.entries(stageLabels).map(([key, label]) => (
+            <option key={key} value={key}>
+              {label}
+            </option>
+          ))}
+        </select>
 
-  <select value={filterStage} onChange={e => setFilterStage(e.target.value)}>
-    <option value="">Toutes les étapes</option>
-    {Object.entries(stageLabels).map(([key, label]) => (
-      <option key={key} value={key}>
-        {label}
-      </option>
-    ))}
-  </select>
-
-  <select value={filterBillable} onChange={e => setFilterBillable(e.target.value)}>
-    <option value="">Toutes les missions</option>
-    <option value="true">Facturables</option>
-    <option value="false">Non facturables</option>
-  </select>
-</div>
+        <select value={filterBillable} onChange={e => setFilterBillable(e.target.value)}>
+          <option value="">Toutes les missions</option>
+          <option value="true">Facturables</option>
+          <option value="false">Non facturables</option>
+        </select>
+      </div>
 
       <table className="missions-table">
         <thead>
           <tr>
-            <th>Créateur</th>
+            {/* Colonne Créateur supprimée */}
             <th>Dossier</th>
             <th>Client</th>
             <th>Titre</th>
@@ -200,11 +201,11 @@ const filteredMissions = missions.filter(m => {
         </thead>
         <tbody>
           {loading ? (
-            <tr><td colSpan={10}>Chargement…</td></tr>
+            <tr><td colSpan={9}>Chargement…</td></tr>
           ) : (
             filteredMissions.map(m => (
               <tr key={m.id}>
-                <td>{getName(m.created_by!)}</td>
+                {/* Cellule Créateur supprimée */}
                 <td>{m.dossier_number}</td>
                 <td>{m.client_name}</td>
                 <td>{m.title}</td>
@@ -213,13 +214,46 @@ const filteredMissions = missions.filter(m => {
                 <td>{stageLabels[m.stage] || m.stage}</td>
                 <td>{new Date(m.created_at!).toLocaleDateString()}</td>
                 <td>{m.due_date ? new Date(m.due_date).toLocaleDateString() : '–'}</td>
-                <td>
-                  <button onClick={() => setSelected(m)}>Voir</button>
-                  <button onClick={() => handleDelete(m.id)}>Supprimer</button>
-                  <button onClick={() => setEmailMission(m)}>Envoyer situation</button>
-                  {onEdit && (
-                    <button onClick={() => onEdit(m.id)}>✏️ Éditer</button>
-                  )}
+                <td className="actions-cell">
+                  <div className="action-buttons">
+                    {/* Bouton Voir - Icône loupe */}
+                    <button 
+                      className="action-btn view-btn"
+                      onClick={() => setSelected(m)}
+                      title="Voir les détails"
+                    >
+                      🔍
+                    </button>
+                    
+                    {/* Bouton Éditer - Icône crayon */}
+                    {onEdit && (
+                      <button 
+                        className="action-btn edit-btn"
+                        onClick={() => onEdit(m.id)}
+                        title="Modifier la mission"
+                      >
+                        ✏️
+                      </button>
+                    )}
+                    
+                    {/* Bouton Envoyer situation - Icône mail */}
+                    <button 
+                      className="action-btn send-btn"
+                      onClick={() => setEmailMission(m)}
+                      title="Envoyer la situation"
+                    >
+                      ✉️
+                    </button>
+                    
+                    {/* Bouton Supprimer - Icône corbeille */}
+                    <button 
+                      className="action-btn delete-btn"
+                      onClick={() => handleDelete(m.id)}
+                      title="Supprimer la mission"
+                    >
+                      🗑️
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))
@@ -268,7 +302,7 @@ const filteredMissions = missions.filter(m => {
                         if (e.target.checked) {
                           setSelectedRecipients(prev => [...prev, c.email])
                         } else {
-                                                    setSelectedRecipients(prev => prev.filter(mail => mail !== c.email))
+                          setSelectedRecipients(prev => prev.filter(mail => mail !== c.email))
                         }
                       }}
                     />
