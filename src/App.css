@@ -1,4 +1,111 @@
-/* Conteneur principal de la modale - BEAUCOUP PLUS GRAND */
+/* STYLES GÉNÉRAUX DE L'APPLICATION */
+.App {
+  text-align: center;
+  background-color: #f8f9fa; /* Fond général clair */
+  min-height: 100vh;
+}
+
+.App-header {
+  background-color: #f8f9fa; /* Fond clair pour l'en-tête */
+  padding: 1rem;
+  color: #2c3e50; /* Texte sombre pour bonne visibilité */
+  border-bottom: 1px solid #e1e8ed;
+}
+
+.App-logo {
+  height: 60px; /* Taille normale du logo */
+  pointer-events: none;
+}
+
+.App-header h1 {
+  color: #2c3e50; /* Texte sombre */
+  font-size: 1.2rem;
+  margin: 0.5rem 0 0 0;
+  font-weight: 600;
+}
+
+/* Barre de profil */
+.profil-bar {
+  background: #ffffff;
+  padding: 0.8rem 1.5rem;
+  border-bottom: 1px solid #e1e8ed;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.profil-name {
+  color: #2c3e50;
+  font-weight: 500;
+}
+
+/* Contenu principal */
+.main-content {
+  padding: 1.5rem;
+  background-color: #f8f9fa;
+  min-height: calc(100vh - 200px);
+}
+
+/* Boutons principaux */
+.btn-create-mission,
+.btn-import-mission {
+  background: #0078d4;
+  color: white;
+  border: none;
+  padding: 0.7rem 1.2rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.btn-create-mission:hover,
+.btn-import-mission:hover {
+  background: #0056b3;
+}
+
+/* Section missions */
+.missions-list {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 6px;
+  border: 1px solid #e1e8ed;
+  margin-top: 1.5rem;
+}
+
+.missions-list h2 {
+  color: #2c3e50;
+  margin-top: 0;
+  border-bottom: 1px solid #e1e8ed;
+  padding-bottom: 0.8rem;
+}
+
+/* Sections stats */
+.stats-section,
+.logs-section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 6px;
+  border: 1px solid #e1e8ed;
+  margin-top: 1rem;
+}
+
+/* STYLES POUR LE FORMULAIRE DE CRÉATION DE MISSION */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Conteneur principal de la modale */
 .modal-content {
   width: 95vw;
   max-width: 1400px;
@@ -369,4 +476,13 @@
   .form-group textarea {
     min-height: 120px;
   }
+}
+
+/* Section login */
+.login-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+  background-color: #f8f9fa;
 }
