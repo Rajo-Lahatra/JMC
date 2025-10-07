@@ -23,7 +23,6 @@ export function LoginLogs() {
           <tr>
             <th>Utilisateur</th>
             <th>Date de connexion</th>
-            <th>Date de déconnexion</th>
           </tr>
         </thead>
 <tbody>
@@ -31,12 +30,6 @@ export function LoginLogs() {
     <tr key={i}>
       <td>{log.profiles?.email || log.user_id}</td>
       <td>{new Date(log.login_time).toLocaleString()}</td>
-      <td>
-  {log.logout_time
-    ? new Date(log.logout_time).toLocaleString()
-    : '—'}
-</td>
-
     </tr>
   ))}
 </tbody>

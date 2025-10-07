@@ -1,116 +1,223 @@
-
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(73, 41, 28, 0.7); /* --cocoa-bean avec transparence */
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  backdrop-filter: blur(2px);
 }
 
 .modal-content {
-  background: white;
-  border-radius: 8px;
-  max-width: 90vw;
-  max-height: 90vh;
-  overflow: auto;
-  position: relative;
+  background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
+  padding: 1.5rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 380px; /* Réduit de 400px à 380px */
+  box-shadow: 0 8px 32px rgba(73, 41, 28, 0.3);
+  border: 1px solid var(--french-gray);
+  animation: modalSlideIn 0.3s ease-out;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 .modal-close {
   position: absolute;
   top: 10px;
-  right: 10px;
-  background: none;
+  right: 12px;
+  background: linear-gradient(135deg, var(--quincy) 0%, var(--millbrook) 100%);
+  color: white;
   border: none;
-  font-size: 1.5rem;
+  border-radius: 50%;
+  width: 32px; /* Réduit */
+  height: 32px; /* Réduit */
+  font-size: 1.2rem; /* Réduit */
   cursor: pointer;
-  color: #6c757d;
-}
-
-.new-client-option {
-  font-weight: bold;
-  color: #1976d2;
-  border-top: 1px solid #ddd;
-  padding-top: 4px;
-  margin-top: 4px;
-  background-color: #f8f9fa;
-}
-/* Styles pour le modal de création de client */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
-  justify-content: center;
   align-items: center;
-  z-index: 1000;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(90, 63, 48, 0.3);
 }
 
-.modal-content {
-  background: white;
-  padding: 2rem;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 400px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+.modal-close:hover {
+  background: linear-gradient(135deg, var(--millbrook) 0%, var(--cocoa-bean) 100%);
+  transform: scale(1.05);
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
-  border-bottom: 1px solid #e1e5e9;
-  padding-bottom: 1rem;
+  margin-bottom: 1.2rem; /* Réduit */
+  border-bottom: 2px solid var(--fuel-yellow);
+  padding-bottom: 0.8rem; /* Réduit */
 }
 
 .modal-header h3 {
   margin: 0;
-  color: #2c3e50;
+  color: var(--cocoa-bean);
+  font-size: 1.3rem; /* Réduit */
+  font-weight: 600;
 }
 
 .client-form {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.8rem; /* Réduit */
+}
+
+/* Styles pour les champs de formulaire compacts */
+.client-form .form-group {
+  margin-bottom: 0.8rem; /* Réduit */
+}
+
+.client-form label {
+  display: block;
+  margin-bottom: 0.4rem; /* Réduit */
+  font-weight: 500;
+  color: var(--cocoa-bean);
+  font-size: 0.9rem; /* Réduit */
+}
+
+.client-form input {
+  width: 100%;
+  padding: 0.6rem 0.8rem; /* Réduit */
+  font-size: 0.9rem; /* Réduit */
+  border: 1px solid var(--french-gray);
+  border-radius: 6px;
+  background: white;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+  color: var(--cocoa-bean);
+}
+
+.client-form input:focus {
+  outline: none;
+  border-color: var(--fuel-yellow);
+  box-shadow: 0 0 0 2px rgba(238, 161, 37, 0.1);
 }
 
 .modal-actions {
   display: flex;
-  gap: 1rem;
+  gap: 0.8rem; /* Réduit */
   justify-content: flex-end;
-  margin-top: 1.5rem;
-  padding-top: 1rem;
-  border-top: 1px solid #e1e5e9;
+  margin-top: 1.2rem; /* Réduit */
+  padding-top: 1rem; /* Réduit */
+  border-top: 1px solid var(--french-gray);
+}
+
+.modal-actions button {
+  padding: 0.6rem 1.2rem; /* Réduit */
+  font-size: 0.9rem; /* Réduit */
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.modal-actions .cancel-button {
+  background: white;
+  color: var(--sand-dune);
+  border: 1px solid var(--sand-dune);
+}
+
+.modal-actions .cancel-button:hover {
+  background: var(--sand-dune);
+  color: white;
+}
+
+.modal-actions .submit-button {
+  background: linear-gradient(135deg, var(--fuel-yellow) 0%, var(--sun) 100%);
+  color: var(--cocoa-bean);
+  box-shadow: 0 2px 6px rgba(238, 161, 37, 0.3);
+}
+
+.modal-actions .submit-button:hover {
+  background: linear-gradient(135deg, var(--sun) 0%, var(--tulip-tree) 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(238, 161, 37, 0.4);
 }
 
 /* Style pour l'option nouveau client */
 .new-client-option {
   font-weight: bold;
-  color: #1976d2;
-  border-top: 1px solid #ddd;
-  padding-top: 4px;
-  margin-top: 4px;
-  background-color: #f8f9fa;
+  color: var(--fuel-yellow);
+  border-top: 1px solid var(--french-gray);
+  padding-top: 6px;
+  margin-top: 6px;
+  background-color: rgba(238, 161, 37, 0.05);
+  font-size: 0.9rem; /* Réduit */
 }
 
-/* Responsive */
-@media (max-width: 768px) {
+/* Message d'erreur compact */
+.error-message {
+  background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+  border: 1px solid #f5c6cb;
+  color: var(--cocoa-bean);
+  padding: 0.8rem; /* Réduit */
+  border-radius: 6px;
+  margin-bottom: 1rem; /* Réduit */
+  font-size: 0.85rem; /* Réduit */
+  font-weight: 500;
+  border-left: 3px solid #d32f2f;
+}
+
+/* Responsive pour mobiles */
+@media (max-width: 480px) {
   .modal-content {
     width: 95%;
-    margin: 1rem;
-    padding: 1rem;
+    margin: 0.5rem;
+    padding: 1.2rem; /* Réduit */
+    max-width: none;
+  }
+  
+  .modal-header h3 {
+    font-size: 1.2rem; /* Réduit */
   }
   
   .modal-actions {
     flex-direction: column;
+    gap: 0.6rem; /* Réduit */
   }
+  
+  .modal-actions button {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .client-form input {
+    padding: 0.5rem 0.7rem; /* Réduit */
+    font-size: 0.85rem; /* Réduit */
+  }
+}
+
+/* Amélioration de l'accessibilité */
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--fuel-yellow);
+  outline-offset: 1px;
+}
+
+/* Placeholder plus discret */
+.client-form input::placeholder {
+  color: var(--zorba);
+  font-size: 0.85rem; /* Réduit */
+  opacity: 0.7;
 }
