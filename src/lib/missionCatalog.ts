@@ -30,11 +30,29 @@ Conseils en droit de la concurrence et de la consommation
 Contrats de confidentialité (NDA) et de propriété intellectuelle`
       },
       A4: {
+        label: 'Due Diligence Juridique',
+        description: `Audit juridique complet dans le cadre d'opérations de fusion-acquisition
+Examen des contrats, conventions et engagements en cours
+Vérification de la conformité légale et réglementaire
+Analyse des litiges en cours et potentiels
+Évaluation des droits de propriété intellectuelle et industrielle
+Examen des aspects sociaux et du droit du travail
+Rapport de due diligence avec identification des risques juridiques`
+      },
+      A5: {
         label: 'Fusions-Acquisitions & Restructurations',
-        description: `Due diligence juridique (audit d'acquisition)
-Structuration d'opérations (fusion, scission, apport d'actifs)
+        description: `Structuration d'opérations (fusion, scission, apport d'actifs)
 Négociation des garanties de passif et des clauses contractuelles
-Conseils sur les procédures de licenciement collectif (si applicable)`
+Conseils sur les procédures de licenciement collectif (si applicable)
+Accompagnement dans les opérations de LBO et de transmission`
+      },
+      A6: {
+        label: 'Formation en Droit des Affaires',
+        description: `Formation sur le droit des sociétés OHADA et ses évolutions
+Formation sur la rédaction et la négociation des contrats commerciaux
+Sensibilisation aux obligations légales des dirigeants et administrateurs
+Ateliers pratiques sur la gouvernance d'entreprise
+Formation adaptée aux besoins spécifiques de l'entreprise`
       },
     },
   },
@@ -49,23 +67,51 @@ Optimisation de la fiscalité des groupes et des dirigeants
 Conseils sur les incitations fiscales (Code Minier, Code des Investissements)`
       },
       B2: {
+        label: 'Due Diligence Fiscale',
+        description: `Audit fiscal approfondi dans le cadre d'opérations de fusion-acquisition
+Examen de la conformité des déclarations fiscales passées
+Identification des risques fiscaux latents et des contentieux potentiels
+Analyse des positions fiscales et des options retenues
+Vérification du calcul des impôts différés actifs et passifs
+Évaluation des opportunités d'optimisation fiscale
+Rapport de due diligence fiscale avec cartographie des risques`
+      },
+      B3: {
+        label: 'Revue Fiscale',
+        description: `Examen complet de la situation fiscale de l'entreprise
+Vérification de la conformité des pratiques fiscales
+Identification des risques de redressement
+Analyse de l'optimisation fiscale et des économies d'impôts possibles
+Recommandations pour sécuriser la position fiscale
+Revue des provisions pour impôts et des impôts différés
+Élaboration d'un plan d'action correctif si nécessaire`
+      },
+      B4: {
         label: 'Déclarations Fiscales et Travaux de Fin d\'Année',
         description: `Préparation et dépôt des déclarations fiscales annuelles (IS, Bilan fiscal)
 Établissement des liasses fiscales
 Gestion des obligations périodiques (TVA, déclaration des salaires, etc.)`
       },
-      B3: {
+      B5: {
         label: 'Contentieux Fiscal et Relation avec l\'Administration',
         description: `Assistance lors d'un contrôle fiscal de la Direction Générale des Impôts (DGI)
 Rédaction de réclamations et de recours contentieux
 Procédure de rescrit fiscal (demande d'avis préalable à l'administration)
 Négociation de plans de paiement (délais, étalement)`
       },
-      B4: {
+      B6: {
         label: 'Fiscalité Internationale et Douane',
         description: `Conseils en matière de prix de transfert
 Optimisation de la chaîne de valeur et des opérations transfrontalières
 Conseils en droit douanier guinéen et contentieux douanier`
+      },
+      B7: {
+        label: 'Formation en Fiscalité',
+        description: `Formation sur la fiscalité des entreprises en Guinée (IS, TVA, droits d'accises)
+Ateliers sur l'optimisation fiscale légale et la conformité
+Formation spécifique sur le Code Minier et les incitations fiscales
+Sensibilisation aux risques contentieux et aux procédures de contrôle
+Formation sur la fiscalité internationale et les prix de transfert`
       },
     },
   },
@@ -98,6 +144,14 @@ Rédaction de contrats de promotion immobilière et de construction`
 Lutte contre la corruption et le blanchiment (Conformité LCB-FT)
 Audit de conformité réglementaire sectoriel`
       },
+      C5: {
+        label: 'Formations Sectorielles Spécialisées',
+        description: `Formation sur le droit minier et pétrolier guinéen
+Ateliers sur les marchés publics et les appels d'offres
+Formation en droit immobilier et foncier en Guinée
+Sensibilisation à la conformité sectorielle (RGPD, anti-corruption)
+Formation sur la RSE et le droit environnemental`
+      },
     },
   },
   D: {
@@ -119,83 +173,128 @@ Recours pour excès de pouvoir`
         description: `Négociation et transaction
 Médiation et arbitrage (notamment CIRCI)`
       },
+      D4: {
+        label: 'Assistance en Contentieux Juridique',
+        description: `Analyse et évaluation des risques contentieux
+Élaboration de stratégies de défense et de négociation
+Assistance dans la préparation des dossiers de contentieux
+Coordination avec les avocats et conseils externes
+Suivi et reporting sur l\'avancement des procédures`
+      },
+      D5: {
+        label: 'Formation en Contentieux et Gestion des Litiges',
+        description: `Formation sur les procédures contentieuses devant les juridictions guinéennes
+Ateliers sur les techniques de négociation et de médiation
+Formation à la gestion stratégique des litiges
+Sensibilisation aux modes alternatifs de résolution des conflits
+Formation sur la préparation des dossiers de contentieux`
+      },
     },
   },
   E: {
     label: 'Missions Transverses & Consulting Stratégique',
     prestations: {
       E1: {
-        label: 'Audit Juridique et Due Diligence',
+        label: 'Audit Juridique et Due Diligence Globale',
         description: `Audit juridique et fiscal complet d'une société
-Due diligence pour opération de fusion-acquisition ou investissement`
+Due diligence intégrée (juridique, fiscale, sociale) pour opération de fusion-acquisition
+Coordination des différentes expertises (juridique, fiscale, comptable)
+Évaluation globale des risques et opportunités
+Recommandations stratégiques pour la sécurisation des opérations`
       },
       E2: {
         label: 'Conseil aux Investisseurs Étrangers',
         description: `Accompagnement dans l'entrée sur le marché guinéen
-Conseils sur le Code des Investissements et les autorisations spécifiques`
+Conseils sur le Code des Investissements et les autorisations spécifiques
+Assistance dans le montage des dossiers d'investissement
+Due diligence pré-investissement`
       },
       E3: {
         label: 'Conseil en Restructuration et Transmission',
         description: `Conseil pour la transmission d'entreprise (cession, donation)
-Optimisation juridique et fiscale de la restructuration d'un groupe`
+Optimisation juridique et fiscale de la restructuration d'un groupe
+Due diligence préalable à la transmission
+Audit de valorisation et conseil en pricing`
+      },
+      E4: {
+        label: 'Formation en Consulting Juridique Stratégique',
+        description: `Formation sur les techniques d'audit juridique et de due diligence
+Ateliers sur l'accompagnement des investisseurs étrangers
+Formation en stratégie de restructuration et transmission d'entreprise
+Sensibilisation aux enjeux du consulting stratégique en droit des affaires
+Formation adaptée aux conseils d'administration et comités stratégiques`
       },
     },
   },
   F: {
-    label: 'Missions Internes & Administratives',
+    label: 'Interne & Administration',
     prestations: {
       F1: {
-        label: 'Réunions Internes & Développement d\'Affaires',
-        description: `Réunion de briefing / débriefing client
-Préparation de propositions commerciales (proposals)
-Recherche juridique et analyse de la jurisprudence
-Formation interne / veille juridique et fiscale`
+        label: 'Développement Commercial et Stratégie',
+        description: `Stratégie commerciale, analyse de marché, définition des offres et tarifs
+Participation à des salons et conférences en tant qu'exposant
+Prospection active, rendez-vous et networking
+Préparation de propositions commerciales (pitchs et RFPs)
+Réunions de briefing/débriefing client`
       },
       F2: {
-        label: 'Gestion et Administration',
-        description: `Gestion et mise à jour des dossiers clients
+        label: 'Gestion des Ressources Humaines',
+        description: `Rédaction de fiches de poste, analyse de CV, entretiens d'embauche
+Intégration et formation des nouveaux collaborateurs
+Gestion des congés, absences et évaluations annuelles
+Gestion des conflits internes`
+      },
+      F3: {
+        label: 'Gestion Administrative et Financière',
+        description: `Facturation clients et relance des impayés
+Gestion de la trésorerie, paie et charges sociales
+Paiement des fournisseurs et gestion budgétaire
+Déclarations fiscales du cabinet et clôture comptable
+Gestion et mise à jour des dossiers clients
 Travaux de secrétariat juridique (tenue des registres légaux)`
       },
-    },
-  },
-
-G: {
-    label: 'INTERNE – Non Facturable',
-    prestations: {
-      G1: {
-        label: 'Développement Commercial',
-        description: `Stratégie commerciale, analyse de marché, définition des offres, participation à des salons, prospection, rendez-vous, networking, newsletters, pitchs et propositions commerciales.`
+      F4: {
+        label: 'Veille, Formation et Connaissances',
+        description: `Formations internes et externes
+Veille juridique et fiscale générale
+Rédaction d'articles, fiches pratiques et guides méthodologiques
+Recherche juridique et analyse de jurisprudence`
       },
-      G2: {
-        label: 'Gestion RH (Recrutement, Formation)',
-        description: `Fiches de poste, analyse de CV, entretiens, intégration, formation interne, gestion des congés et absences, évaluations annuelles, gestion des conflits.`
+      F5: {
+        label: 'Management et Réunions Internes',
+        description: `Réunions de comité de direction et associés
+Réunions stratégiques sur l'avenir du cabinet
+Planification et répartition des missions
+Réunions de brief/débrief d'équipe
+Contrôle qualité interne et relecture croisée`
       },
-      G3: {
-        label: 'Gestion Administrative & Financière',
-        description: `Facturation, relances, trésorerie, paie, fournisseurs, budget, déclarations fiscales, clôture comptable, travail avec l’expert-comptable.`
+      F6: {
+        label: 'Gestion Informatique et Infrastructure',
+        description: `Gestion et maintenance du parc informatique
+Administration du logiciel de gestion des temps et missions
+Cybersécurité et sauvegarde des données
+Gestion des locaux, équipements et fournitures`
       },
-      G4: {
-        label: 'Veille & Formation',
-        description: `Formations internes/externes, veille juridique et fiscale, rédaction de guides et supports, production de connaissances.`
+      F7: {
+        label: 'Formation Interne et Développement des Compétences',
+        description: `Formation continue des collaborateurs du cabinet
+Organisation de séminaires et ateliers de perfectionnement
+Développement des compétences managériales et commerciales
+Tutorat et accompagnement des jeunes collaborateurs
+Programmes de formation sur les outils et processus internes`
       },
-      G5: {
-        label: 'Réunions de Direction & Management',
-        description: `Comité de direction, réunions stratégiques, planification des missions, brief/débrief d’équipe, contrôle qualité interne.`
-      },
-      G6: {
-        label: 'Congés / Absences',
-        description: `Pauses, congés, maladie, temps d’inactivité non imputable à un client.`
-      },
-      G7: {
-        label: 'Divers',
-        description: `Tâches personnelles, gestion d’e-mails non liés à un dossier client.`
+      F8: {
+        label: 'Congés, Absences et Divers',
+        description: `Gestion des pauses, congés et absences maladie
+Temps d'inactivité non imputable à un client
+Tâches personnelles et gestion d'emails non liés aux dossiers`
       }
     }
   },
-H: {
+  G: {
     label: 'Global Compliance Services (GCS)',
     prestations: {
-      H1: {
+      G1: {
         label: 'Tenue de la Comptabilité',
         description: `Prise en charge complète et externalisée de la fonction comptable
 Saisie et enregistrement des pièces comptables (factures clients et fournisseurs, notes de frais, relevés bancaires)
@@ -205,7 +304,7 @@ Comptabilisation des paies et des charges sociales
 Établissement des déclarations de TVA périodiques
 Tenue et mise à jour des grands livres, journaux auxiliaires et général`
       },
-      H2: {
+      G2: {
         label: 'Inventaires Annuels ou Revue des Comptes',
         description: `Travaux de préparation et de vérification approfondie des comptes annuels
 Analyse et justification des soldes de tous les comptes du bilan
@@ -214,7 +313,7 @@ Vérification de la validité et de l'évaluation des immobilisations
 Identification et justification des écritures d'inventaire nécessaires
 Préparation des annexes et états de synthèse pour l'audit`
       },
-      H3: {
+      G3: {
         label: 'Élaboration des États Financiers',
         description: `Production formalisée des états financiers de fin d'exercice conformément au référentiel comptable (SYSCOHADA)
 Établissement du Bilan, Compte de Résultat et Tableau des Flux de Trésorerie
@@ -222,7 +321,7 @@ Préparation des notes annexes détaillant les méthodes comptables
 Mise en forme professionnelle et présentation des états pour approbation
 Aggrégation et structuration des données issues de la comptabilité`
       },
-      H4: {
+      G4: {
         label: 'Paramétrage et Mise en Place de la Comptabilité dans le Logiciel Sage',
         description: `Conseil et assistance technique pour l'installation et la configuration du logiciel Sage
 Analyse des besoins et de la structure de l'entreprise
@@ -231,7 +330,7 @@ Configuration des journaux comptables, des modèles d'écriture et des tableaux 
 Formation du personnel à l'utilisation du logiciel
 Assistance au démarrage et suivi post-lancement`
       },
-      H5: {
+      G5: {
         label: 'Élaboration de Bilan d\'Ouverture',
         description: `Création du bilan initial d'une nouvelle société ou lors d'un changement de logiciel
 Recensement et évaluation de tous les éléments d'actif et de passif à la date d'ouverture
@@ -239,7 +338,7 @@ Calcul des capitaux propres initiaux
 Saisie du bilan d'ouverture dans le logiciel comptable pour initialiser les soldes
 Rédaction d'une note justificative des valuations retenues`
       },
-      H6: {
+      G6: {
         label: 'Conseil aux Problématiques Comptables',
         description: `Prestation d'expertise ponctuelle pour répondre à des questions techniques spécifiques
 Analyse de la problématique posée par le client
@@ -247,6 +346,15 @@ Recherche et interprétation de la norme comptable applicable (SYSCOHADA)
 Rédaction d'une note de conseil argumentée
 Présentation orale et recommandations opérationnelles
 Proposition d'écriture comptable corrective si nécessaire`
+      },
+      G7: {
+        label: 'Formation en Comptabilité et Fiscalité',
+        description: `Formation sur les principes comptables SYSCOHADA et leur application
+Ateliers pratiques sur la tenue de comptabilité et l'établissement des états financiers
+Formation sur les déclarations fiscales et les obligations périodiques
+Sensibilisation aux normes comptables internationales (IFRS)
+Formation sur l'utilisation des logiciels comptables (Sage, etc.)
+Programmes de formation adaptés aux responsables comptables et financiers`
       },
     },
   },
