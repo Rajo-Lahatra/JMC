@@ -191,8 +191,65 @@ G: {
         description: `Tâches personnelles, gestion d’e-mails non liés à un dossier client.`
       }
     }
-  }
-
+  },
+H: {
+    label: 'Global Compliance Services (GCS)',
+    prestations: {
+      H1: {
+        label: 'Tenue de la Comptabilité',
+        description: `Prise en charge complète et externalisée de la fonction comptable
+Saisie et enregistrement des pièces comptables (factures clients et fournisseurs, notes de frais, relevés bancaires)
+Lettrage et rapprochement bancaire mensuel ou trimestriel
+Gestion et suivi comptable des immobilisations (amortissements, dépréciations)
+Comptabilisation des paies et des charges sociales
+Établissement des déclarations de TVA périodiques
+Tenue et mise à jour des grands livres, journaux auxiliaires et général`
+      },
+      H2: {
+        label: 'Inventaires Annuels ou Revue des Comptes',
+        description: `Travaux de préparation et de vérification approfondie des comptes annuels
+Analyse et justification des soldes de tous les comptes du bilan
+Contrôle de l'exactitude physique et comptable des stocks
+Vérification de la validité et de l'évaluation des immobilisations
+Identification et justification des écritures d'inventaire nécessaires
+Préparation des annexes et états de synthèse pour l'audit`
+      },
+      H3: {
+        label: 'Élaboration des États Financiers',
+        description: `Production formalisée des états financiers de fin d'exercice conformément au référentiel comptable (SYSCOHADA)
+Établissement du Bilan, Compte de Résultat et Tableau des Flux de Trésorerie
+Préparation des notes annexes détaillant les méthodes comptables
+Mise en forme professionnelle et présentation des états pour approbation
+Aggrégation et structuration des données issues de la comptabilité`
+      },
+      H4: {
+        label: 'Paramétrage et Mise en Place de la Comptabilité dans le Logiciel Sage',
+        description: `Conseil et assistance technique pour l'installation et la configuration du logiciel Sage
+Analyse des besoins et de la structure de l'entreprise
+Conception et paramétrage du plan comptable général et des plans auxiliaires
+Configuration des journaux comptables, des modèles d'écriture et des tableaux de bord
+Formation du personnel à l'utilisation du logiciel
+Assistance au démarrage et suivi post-lancement`
+      },
+      H5: {
+        label: 'Élaboration de Bilan d\'Ouverture',
+        description: `Création du bilan initial d'une nouvelle société ou lors d'un changement de logiciel
+Recensement et évaluation de tous les éléments d'actif et de passif à la date d'ouverture
+Calcul des capitaux propres initiaux
+Saisie du bilan d'ouverture dans le logiciel comptable pour initialiser les soldes
+Rédaction d'une note justificative des valuations retenues`
+      },
+      H6: {
+        label: 'Conseil aux Problématiques Comptables',
+        description: `Prestation d'expertise ponctuelle pour répondre à des questions techniques spécifiques
+Analyse de la problématique posée par le client
+Recherche et interprétation de la norme comptable applicable (SYSCOHADA)
+Rédaction d'une note de conseil argumentée
+Présentation orale et recommandations opérationnelles
+Proposition d'écriture comptable corrective si nécessaire`
+      },
+    },
+  },
 }
 export type MissionCatalogType = {
   [categoryCode: string]: {
