@@ -4,7 +4,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(73, 41, 28, 0.7); /* --cocoa-bean avec transparence */
+  background: rgba(73, 41, 28, 0.7);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -14,21 +14,21 @@
 
 .modal-content {
   background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
-  padding: 1.5rem;
-  border-radius: 12px;
+  padding: 1.2rem;
+  border-radius: 10px;
   width: 90%;
-  max-width: 380px; /* Réduit de 400px à 380px */
-  box-shadow: 0 8px 32px rgba(73, 41, 28, 0.3);
+  max-width: 420px;
+  box-shadow: 0 6px 20px rgba(73, 41, 28, 0.25);
   border: 1px solid var(--french-gray);
-  animation: modalSlideIn 0.3s ease-out;
-  max-height: 85vh;
+  animation: modalSlideIn 0.2s ease-out;
+  max-height: 80vh;
   overflow-y: auto;
 }
 
 @keyframes modalSlideIn {
   from {
     opacity: 0;
-    transform: scale(0.9) translateY(-10px);
+    transform: scale(0.95) translateY(-8px);
   }
   to {
     opacity: 1;
@@ -38,21 +38,20 @@
 
 .modal-close {
   position: absolute;
-  top: 10px;
-  right: 12px;
+  top: 8px;
+  right: 10px;
   background: linear-gradient(135deg, var(--quincy) 0%, var(--millbrook) 100%);
   color: white;
   border: none;
   border-radius: 50%;
-  width: 32px; /* Réduit */
-  height: 32px; /* Réduit */
-  font-size: 1.2rem; /* Réduit */
+  width: 28px;
+  height: 28px;
+  font-size: 1.1rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 6px rgba(90, 63, 48, 0.3);
 }
 
 .modal-close:hover {
@@ -64,47 +63,48 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.2rem; /* Réduit */
+  margin-bottom: 1rem;
   border-bottom: 2px solid var(--fuel-yellow);
-  padding-bottom: 0.8rem; /* Réduit */
+  padding-bottom: 0.6rem;
 }
 
 .modal-header h3 {
   margin: 0;
   color: var(--cocoa-bean);
-  font-size: 1.3rem; /* Réduit */
+  font-size: 1.1rem;
   font-weight: 600;
 }
 
 .client-form {
   display: flex;
   flex-direction: column;
-  gap: 0.8rem; /* Réduit */
+  gap: 0.6rem;
 }
 
-/* Styles pour les champs de formulaire compacts */
+/* Styles compacts pour les champs */
 .client-form .form-group {
-  margin-bottom: 0.8rem; /* Réduit */
+  margin-bottom: 0.6rem;
 }
 
 .client-form label {
   display: block;
-  margin-bottom: 0.4rem; /* Réduit */
+  margin-bottom: 0.3rem;
   font-weight: 500;
   color: var(--cocoa-bean);
-  font-size: 0.9rem; /* Réduit */
+  font-size: 0.85rem;
 }
 
 .client-form input {
   width: 100%;
-  padding: 0.6rem 0.8rem; /* Réduit */
-  font-size: 0.9rem; /* Réduit */
+  padding: 0.5rem 0.7rem;
+  font-size: 0.85rem;
   border: 1px solid var(--french-gray);
-  border-radius: 6px;
+  border-radius: 5px;
   background: white;
   transition: all 0.2s ease;
   box-sizing: border-box;
   color: var(--cocoa-bean);
+  height: 36px;
 }
 
 .client-form input:focus {
@@ -115,21 +115,22 @@
 
 .modal-actions {
   display: flex;
-  gap: 0.8rem; /* Réduit */
+  gap: 0.6rem;
   justify-content: flex-end;
-  margin-top: 1.2rem; /* Réduit */
-  padding-top: 1rem; /* Réduit */
+  margin-top: 1rem;
+  padding-top: 0.8rem;
   border-top: 1px solid var(--french-gray);
 }
 
 .modal-actions button {
-  padding: 0.6rem 1.2rem; /* Réduit */
-  font-size: 0.9rem; /* Réduit */
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
   border: none;
-  border-radius: 6px;
+  border-radius: 5px;
   cursor: pointer;
   font-weight: 500;
   transition: all 0.2s ease;
+  height: 34px;
 }
 
 .modal-actions .cancel-button {
@@ -146,13 +147,13 @@
 .modal-actions .submit-button {
   background: linear-gradient(135deg, var(--fuel-yellow) 0%, var(--sun) 100%);
   color: var(--cocoa-bean);
-  box-shadow: 0 2px 6px rgba(238, 161, 37, 0.3);
+  box-shadow: 0 1px 4px rgba(238, 161, 37, 0.3);
 }
 
 .modal-actions .submit-button:hover {
   background: linear-gradient(135deg, var(--sun) 0%, var(--tulip-tree) 100%);
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(238, 161, 37, 0.4);
+  box-shadow: 0 2px 6px rgba(238, 161, 37, 0.4);
 }
 
 /* Style pour l'option nouveau client */
@@ -160,10 +161,10 @@
   font-weight: bold;
   color: var(--fuel-yellow);
   border-top: 1px solid var(--french-gray);
-  padding-top: 6px;
-  margin-top: 6px;
+  padding-top: 5px;
+  margin-top: 5px;
   background-color: rgba(238, 161, 37, 0.05);
-  font-size: 0.9rem; /* Réduit */
+  font-size: 0.85rem;
 }
 
 /* Message d'erreur compact */
@@ -171,10 +172,10 @@
   background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
   border: 1px solid #f5c6cb;
   color: var(--cocoa-bean);
-  padding: 0.8rem; /* Réduit */
-  border-radius: 6px;
-  margin-bottom: 1rem; /* Réduit */
-  font-size: 0.85rem; /* Réduit */
+  padding: 0.6rem;
+  border-radius: 5px;
+  margin-bottom: 0.8rem;
+  font-size: 0.8rem;
   font-weight: 500;
   border-left: 3px solid #d32f2f;
 }
@@ -184,27 +185,29 @@
   .modal-content {
     width: 95%;
     margin: 0.5rem;
-    padding: 1.2rem; /* Réduit */
+    padding: 1rem;
     max-width: none;
   }
   
   .modal-header h3 {
-    font-size: 1.2rem; /* Réduit */
+    font-size: 1rem;
   }
   
   .modal-actions {
     flex-direction: column;
-    gap: 0.6rem; /* Réduit */
+    gap: 0.5rem;
   }
   
   .modal-actions button {
     width: 100%;
     text-align: center;
+    height: 36px;
   }
   
   .client-form input {
-    padding: 0.5rem 0.7rem; /* Réduit */
-    font-size: 0.85rem; /* Réduit */
+    padding: 0.4rem 0.6rem;
+    font-size: 0.8rem;
+    height: 34px;
   }
 }
 
@@ -218,6 +221,25 @@ input:focus-visible {
 /* Placeholder plus discret */
 .client-form input::placeholder {
   color: var(--zorba);
-  font-size: 0.85rem; /* Réduit */
+  font-size: 0.8rem;
   opacity: 0.7;
+}
+
+/* Scrollbar personnalisée pour Webkit */
+.modal-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+  background: rgba(188, 189, 193, 0.1);
+  border-radius: 3px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+  background: var(--french-gray);
+  border-radius: 3px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+  background: var(--zorba);
 }
