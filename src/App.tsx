@@ -12,6 +12,7 @@ import { ImportMissionForm } from './components/ImportMissionForm'
 import { ClientStats } from './components/ClientStats'
 import { CollaboratorStats } from './components/CollaboratorStats'
 import { LoginLogs } from './components/LoginLogs'
+import { MissionCatalogPanel } from './components/MissionCatalogPanel'
 
 const AUTO_LOGOUT_MINUTES = 30
 
@@ -26,6 +27,7 @@ function App() {
   const [showStats, setShowStats] = useState(false)
   const [showCollaboratorStats, setShowCollaboratorStats] = useState(false)
   const [showLoginLogs, setShowLoginLogs] = useState(false)
+  const [showCatalog, setShowCatalog] = useState(false)
 
   const handleCreated = () => {
     setShowCreate(false)
@@ -178,6 +180,10 @@ function App() {
               📥 Importer des missions
             </button>
 
+            <button className="btn-catalog" onClick={() => setShowCatalog(true)}>
+              📚 Catalogue des missions
+            </button>
+
             <button onClick={() => setShowTimeManager(true)}>
               🕒 Gestion des temps passés
             </button>
@@ -234,7 +240,6 @@ function App() {
             <div className="modal-overlay" onClick={() => setShowCreate(false)}>
               <div className="modal-content" onClick={e => e.stopPropagation()}>
                 <button className="modal-close" onClick={() => setShowCreate(false)}>×</button>
-                {/* CORRECTION ICI : utiliser handleCreated au lieu de handleMissionCreated et ajouter onCancel */}
                 <CreateMissionForm 
                   onSuccess={handleCreated} 
                   onCancel={() => setShowCreate(false)}
@@ -266,6 +271,14 @@ function App() {
 
           {showTimeManager && (
             <TimeManagerModal onClose={() => setShowTimeManager(false)} />
+          )}
+
+          {showCatalog && (
+            <div className="modal-overlay" onClick={() => setShowCatalog(false)}>
+              <div className="modal-content catalog-modal" onClick={e => e.stopPropagation()}>
+                <MissionCatalogPanel onClose={() => setShowCatalog(false)} />
+              </div>
+            </div>
           )}
         </>
       )}
