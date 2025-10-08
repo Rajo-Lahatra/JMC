@@ -197,7 +197,7 @@ export function EditMissionForm({
   return (
     <div className="edit-mission-form-container">
       <div className="edit-form-header">
-        <h2>Modifier la mission</h2>
+          <h2 style={{ color: 'white' }}>Modifier la mission</h2>
       </div>
 
       <form onSubmit={handleUpdate} className="edit-mission-form">
