@@ -19,17 +19,22 @@
 }
 
 .App-header {
-  background: linear-gradient(135deg, var(--millbrook) 0%, var(--cocoa-bean) 100%);
+  background: linear-gradient(135deg, #8b6b4d 0%, #a88c6f 100%); /* Marron éclairci */
   padding: 1.5rem;
   color: white;
   border-bottom: 3px solid var(--fuel-yellow);
-  box-shadow: 0 2px 8px rgba(73, 41, 28, 0.2);
+  box-shadow: 0 2px 8px rgba(139, 107, 77, 0.3);
 }
 
 .App-logo {
   height: 70px;
   pointer-events: none;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  /* Ajout d'un contour blanc subtil pour mieux contraster */
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 5px;
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .App-header h1 {
@@ -42,19 +47,20 @@
 
 /* Barre de profil */
 .profil-bar {
-  background: linear-gradient(135deg, var(--quincy) 0%, var(--millbrook) 100%);
+  background: linear-gradient(135deg, #7d5d3f 0%, #94785a 100%); /* Marron éclairci */
   padding: 1rem 2rem;
   border-bottom: 2px solid var(--fuel-yellow);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 2px 8px rgba(73, 41, 28, 0.1);
+  box-shadow: 0 2px 8px rgba(125, 93, 63, 0.2);
 }
 
 .profil-name {
   color: white;
   font-weight: 600;
   font-size: 1.1rem;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
 }
 
 /* Contenu principal */
