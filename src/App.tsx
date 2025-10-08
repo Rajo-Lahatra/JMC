@@ -153,6 +153,9 @@ function App() {
           className="App-logo"
         />
         <h1>
+          JMC – DELTA
+        </h1>
+        <h1>
           Joe-Adams &amp; Madison Consulting Guinée –  
           Outil de suivi des dossiers, du temps passé, de la facturation et du recouvrement.
         </h1>
