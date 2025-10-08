@@ -358,7 +358,27 @@ button:hover {
 .catalog-section {
   min-height: 400px;
 }
+/* Bouton catalogue des missions */
+.btn-catalog {
+  background: linear-gradient(135deg, var(--fuel-yellow) 0%, var(--sun) 100%);
+  color: var(--cocoa-bean);
+  border: none;
+  padding: 0.9rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-right: 1rem;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(238, 161, 37, 0.3);
+}
 
+.btn-catalog:hover {
+  background: linear-gradient(135deg, var(--sun) 0%, var(--tulip-tree) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(238, 161, 37, 0.4);
+}
 /* Informations de prestation */
 .prestation-info {
   background: linear-gradient(135deg, rgba(238, 161, 37, 0.1) 0%, rgba(250, 166, 26, 0.1) 100%);

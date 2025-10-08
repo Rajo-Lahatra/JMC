@@ -1,24 +1,26 @@
-/* Styles spécifiques pour EditMissionForm */
+/* Styles spécifiques pour EditMissionForm - PALETTE CABINET */
 .edit-mission-form-container {
   max-width: 1200px;
   margin: 0 auto;
   background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(73, 41, 28, 0.1);
   overflow: hidden;
+  border: 1px solid var(--french-gray);
 }
 
 .edit-form-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--millbrook) 0%, var(--cocoa-bean) 100%);
   color: white;
   padding: 1.5rem 2rem;
-  border-bottom: 1px solid #e1e5e9;
+  border-bottom: 3px solid var(--fuel-yellow);
 }
 
 .edit-form-header h2 {
   margin: 0;
-  font-size: 1.5rem;
-  font-weight: 600;
+  font-size: 1.8rem;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .edit-mission-form {
@@ -33,19 +35,20 @@
 }
 
 .edit-form-section {
-  background: #fafbfc;
-  border: 1px solid #e1e5e9;
+  background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
+  border: 1px solid var(--french-gray);
   border-radius: 8px;
   padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(188, 189, 193, 0.15);
 }
 
 .edit-form-section h3 {
   margin: 0 0 1.5rem 0;
-  color: #2c3e50;
-  font-size: 1.2rem;
-  font-weight: 600;
-  padding-bottom: 0.75rem;
-  border-bottom: 2px solid #667eea;
+  color: var(--cocoa-bean);
+  font-size: 1.3rem;
+  font-weight: 700;
+  padding-bottom: 0.8rem;
+  border-bottom: 3px solid var(--fuel-yellow);
 }
 
 .edit-form-section.full-width {
@@ -58,35 +61,38 @@
 
 .edit-form-group label {
   display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-  color: #2c3e50;
-  font-size: 0.95rem;
+  margin-bottom: 0.8rem;
+  font-weight: 600;
+  color: var(--cocoa-bean);
+  font-size: 1rem;
 }
 
 .edit-form-group input,
 .edit-form-group select,
 .edit-form-group textarea {
   width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #d1d5db;
+  padding: 0.9rem 1rem;
+  border: 2px solid var(--french-gray);
   border-radius: 6px;
   font-size: 1rem;
-  transition: all 0.2s ease;
-  background: white;
+  transition: all 0.3s ease;
+  background: #fafbfc;
+  color: var(--cocoa-bean);
 }
 
 .edit-form-group input:focus,
 .edit-form-group select:focus,
 .edit-form-group textarea:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: var(--fuel-yellow);
+  background-color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(238, 161, 37, 0.15);
+  transform: translateY(-2px);
 }
 
 .edit-form-group textarea {
   resize: vertical;
-  min-height: 100px;
+  min-height: 120px;
 }
 
 .checkbox-group {
@@ -98,17 +104,19 @@
   align-items: center;
   gap: 0.75rem;
   cursor: pointer;
-  font-weight: 500 !important;
+  font-weight: 600 !important;
+  color: var(--cocoa-bean) !important;
 }
 
 .checkbox-label input[type="checkbox"] {
   width: auto !important;
-  transform: scale(1.2);
+  transform: scale(1.3);
+  accent-color: var(--fuel-yellow);
 }
 
 /* Section finances */
 .finance-section {
-  background: #f8fafc;
+  background: linear-gradient(135deg, rgba(238, 161, 37, 0.05) 0%, rgba(250, 166, 26, 0.05) 100%);
 }
 
 .finance-section-header {
@@ -121,24 +129,26 @@
 }
 
 .finance-toggle-btn {
-  background: white;
-  border: 1px solid #667eea;
-  color: #667eea;
+  background: linear-gradient(135deg, var(--fuel-yellow) 0%, var(--sun) 100%);
+  border: none;
+  color: var(--cocoa-bean);
   border-radius: 6px;
-  padding: 0.5rem 1rem;
+  padding: 0.7rem 1.2rem;
   font-size: 0.9rem;
   cursor: pointer;
-  transition: all 0.2s ease;
-  font-weight: 500;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(238, 161, 37, 0.3);
 }
 
 .finance-toggle-btn:hover {
-  background: #667eea;
-  color: white;
+  background: linear-gradient(135deg, var(--sun) 0%, var(--tulip-tree) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(238, 161, 37, 0.4);
 }
 
 .finance-fieldset {
-  border: 1px solid #e1e5e9;
+  border: 1px solid var(--french-gray);
   border-radius: 8px;
   padding: 1.5rem;
   background: white;
@@ -147,6 +157,7 @@
 
 .finance-fieldset:disabled {
   opacity: 0.7;
+  background: #f8f9fa;
 }
 
 .finance-grid {
@@ -159,16 +170,17 @@
 .finance-display {
   margin-top: 0.5rem;
   font-size: 0.85rem;
-  color: #666;
-  padding: 0.5rem;
-  background: #f8f9fa;
+  color: var(--quincy);
+  padding: 0.7rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   border-radius: 4px;
-  border-left: 3px solid #667eea;
+  border-left: 4px solid var(--fuel-yellow);
+  font-weight: 500;
 }
 
 .finance-summary {
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  border: 1px solid #dee2e6;
+  background: linear-gradient(135deg, rgba(238, 161, 37, 0.1) 0%, rgba(250, 166, 26, 0.1) 100%);
+  border: 1px solid var(--french-gray);
   border-radius: 8px;
   padding: 1.5rem;
   margin-top: 1rem;
@@ -179,7 +191,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 0.75rem 0;
-  border-bottom: 1px solid #e9ecef;
+  border-bottom: 1px solid rgba(188, 189, 193, 0.3);
 }
 
 .summary-item:last-child {
@@ -187,12 +199,12 @@
 }
 
 .summary-item span {
-  font-weight: 500;
-  color: #495057;
+  font-weight: 600;
+  color: var(--cocoa-bean);
 }
 
 .summary-item strong {
-  color: #2c3e50;
+  color: var(--millbrook);
   font-size: 1.1rem;
 }
 
@@ -204,9 +216,9 @@
 .timesheet-table-container {
   overflow-x: auto;
   margin: 1rem 0;
-  border: 1px solid #e1e5e9;
+  border: 1px solid var(--french-gray);
   border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(188, 189, 193, 0.15);
 }
 
 .timesheet-table {
@@ -217,18 +229,18 @@
 }
 
 .timesheet-table th {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--millbrook) 0%, var(--cocoa-bean) 100%);
   color: white;
-  padding: 1rem;
+  padding: 1.2rem;
   text-align: left;
   font-weight: 600;
-  border-bottom: 1px solid #5a6fc7;
+  border-bottom: 3px solid var(--fuel-yellow);
 }
 
 .timesheet-table td {
-  padding: 1rem;
-  border-bottom: 1px solid #f0f0f0;
-  color: #495057;
+  padding: 1.2rem;
+  border-bottom: 1px solid var(--french-gray);
+  color: var(--quincy);
 }
 
 .timesheet-table tr:last-child td {
@@ -236,20 +248,20 @@
 }
 
 .timesheet-table tr:hover {
-  background: #f8f9fa;
+  background: linear-gradient(135deg, rgba(238, 161, 37, 0.05) 0%, rgba(250, 166, 26, 0.05) 100%);
 }
 
 .no-data {
   text-align: center;
-  color: #6c757d;
+  color: var(--sand-dune);
   font-style: italic;
   padding: 2rem !important;
   background: #f8f9fa;
 }
 
 .add-timesheet-form {
-  background: #f8f9fa;
-  border: 1px solid #e1e5e9;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border: 1px solid var(--french-gray);
   border-radius: 8px;
   padding: 1.5rem;
   margin-top: 1.5rem;
@@ -257,9 +269,11 @@
 
 .add-timesheet-form h4 {
   margin: 0 0 1.5rem 0;
-  color: #2c3e50;
-  font-size: 1.1rem;
-  font-weight: 600;
+  color: var(--cocoa-bean);
+  font-size: 1.2rem;
+  font-weight: 700;
+  border-bottom: 2px solid var(--fuel-yellow);
+  padding-bottom: 0.8rem;
 }
 
 .timesheet-inputs {
@@ -270,47 +284,51 @@
 }
 
 .add-time-button {
-  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-  color: white;
+  background: linear-gradient(135deg, var(--fuel-yellow) 0%, var(--sun) 100%);
+  color: var(--cocoa-bean);
   border: none;
   border-radius: 6px;
-  padding: 0.75rem 1.5rem;
+  padding: 0.9rem 1.5rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   white-space: nowrap;
-  font-weight: 500;
+  font-weight: 600;
   font-size: 0.9rem;
+  box-shadow: 0 2px 8px rgba(238, 161, 37, 0.3);
 }
 
 .add-time-button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+  background: linear-gradient(135deg, var(--sun) 0%, var(--tulip-tree) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(238, 161, 37, 0.4);
 }
 
 /* Actions du formulaire */
 .edit-form-actions {
-  background: #f8f9fa;
-  border-top: 1px solid #e1e5e9;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-top: 2px solid var(--french-gray);
   padding: 1.5rem 2rem;
   display: flex;
   justify-content: flex-end;
 }
 
 .edit-submit-button {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: linear-gradient(135deg, var(--fuel-yellow) 0%, var(--sun) 100%);
+  color: var(--cocoa-bean);
   border: none;
-  border-radius: 6px;
-  padding: 0.75rem 2rem;
-  font-size: 1rem;
-  font-weight: 600;
+  border-radius: 8px;
+  padding: 1rem 2.5rem;
+  font-size: 1.1rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(238, 161, 37, 0.3);
 }
 
 .edit-submit-button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  background: linear-gradient(135deg, var(--sun) 0%, var(--tulip-tree) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(238, 161, 37, 0.4);
 }
 
 /* Responsive */
@@ -345,7 +363,7 @@
 @media (max-width: 768px) {
   .edit-mission-form-container {
     margin: 0.5rem;
-    border-radius: 6px;
+    border-radius: 8px;
   }
   
   .edit-form-header {
@@ -367,12 +385,13 @@
   
   .edit-submit-button {
     width: 100%;
+    text-align: center;
   }
 }
 
 /* Animations */
 .edit-form-section {
-  animation: slideUp 0.3s ease-out;
+  animation: slideUp 0.4s ease-out;
 }
 
 @keyframes slideUp {
@@ -391,32 +410,41 @@
 .edit-form-group select:disabled,
 .edit-form-group textarea:disabled {
   background-color: #f8f9fa;
-  color: #6c757d;
+  color: var(--sand-dune);
   cursor: not-allowed;
 }
 
 /* Styles pour les erreurs */
 .error-message {
-  background: #f8d7da;
-  color: #721c24;
-  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+  color: var(--cocoa-bean);
+  padding: 1rem 1.5rem;
   border-radius: 6px;
   border: 1px solid #f5c6cb;
-  margin-bottom: 1rem;
-  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border-left: 4px solid #d32f2f;
 }
 
 /* Amélioration de la lisibilité */
 .edit-form-group input::placeholder,
 .edit-form-group textarea::placeholder {
-  color: #6c757d;
-  opacity: 0.7;
+  color: var(--zorba);
+  opacity: 0.8;
 }
 
 /* Focus states améliorés */
 .edit-form-group input:focus-visible,
 .edit-form-group select:focus-visible,
 .edit-form-group textarea:focus-visible {
-  outline: 2px solid #667eea;
+  outline: 2px solid var(--fuel-yellow);
+  outline-offset: 2px;
+}
+
+.edit-submit-button:focus-visible,
+.finance-toggle-btn:focus-visible,
+.add-time-button:focus-visible {
+  outline: 2px solid var(--cocoa-bean);
   outline-offset: 2px;
 }
